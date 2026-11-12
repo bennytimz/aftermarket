@@ -1,0 +1,59 @@
+# Models under test (PLAN.md §3). Verify each is public before running.
+# Rule: if a model can't be loaded within 30 minutes, drop it and note why.
+base_revision: &base_rev af89d219b53ed9b13b8a4645f9c8028973510324
+
+models:
+  BASE:
+    name: Tiny Aya Global
+    hf_path: CohereLabs/tiny-aya-global
+    revision: *base_rev
+    fix_type: original
+    format: full
+    notes: Gated, accept the licence.
+  SDT:
+    name: Safety Doesn't Translate (tiny-aya-global-oneshot-repair)
+    hf_path: TODO  # find exact HF path from their README
+    fix_type: weight-space repair
+    format: full
+  GC:
+    name: Guardián colombiano
+    hf_path: vasmi-sas/guardian-tiny-aya-lisa
+    fix_type: Lisa hardening
+    format: lora
+    base: BASE
+  IL:
+    name: Intentlock
+    hf_path: Sykeclonex/signers-doubt-tiny-aya-hardened
+    fix_type: SafeGrad hardening
+    format: lora
+    base: BASE
+  RL:
+    name: RedLens guard
+    hf_path: AmberNeel/tiny-aya-global-redlens-guard-GGUF
+    fix_type: prompt guard in template
+    format: gguf
+    notes: Test with and without its template.
+  ST:
+    name: ScarTissue
+    hf_path: amugoodbad229/scartissue-tinyaya-repair-parameters
+    fix_type: rank-one repair
+    format: deltas
+    base: BASE
+    notes: Apply deltas with their loader.
+  SP:
+    name: SafetyPulse
+    hf_path: TODO  # path from their README
+    fix_type: SafeTune repair
+    format: TODO  # check format
+  AM:
+    name: Aftermarket-hardened (ours)
+    hf_path: TODO  # published after §6
+    fix_type: combined
+    format: lora
+    base: BASE
+
+optional:
+  RELAPSE:
+    name: Relapse (unlearning)
+    hf_path: TODO
+    notes: Separate table. Attack is relearning; metric is WMDP-bio recovery.
