@@ -1,9 +1,11 @@
 # Cheap attacks (no training): A3 abliteration, A4 HQQ 4/3/2-bit, A5 prompt-level (PLAN.md §4).
-# Phase 1, DEV sanity check (no --final). Choices may be made from these results.
+# Phase 1, DEV (no --final): BASE + SDT only. Dev exists to make choices, and the only choices here are attack
+# settings (A3 layer-selection rule, HQQ group size); BASE is the reference, SDT a hardened sanity check.
+# Per-model A3 layer selection on harmful_dev/benign_dev is part of the attack and runs for every model.
 #   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_cheap_dev.yaml
 # Attack hyperparameters: configs/attacks.yaml (identical for every model).
 seed: 42
-runs: [BASE, SDT, GC, IL, RL, RL_noguard, ST, SP]
+runs: [BASE, SDT]
 attacks: [A3, A4q4, A4q3, A4q2, A5raw, A5bon]   # A5bon runs on harmful splits only
 splits: [harmful_dev, benign_dev, mmlu_dev]
 

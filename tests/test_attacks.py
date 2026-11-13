@@ -110,3 +110,25 @@ def test_assign_groups_run_attack_pairs():
     for run in cfg["runs"]:
         for a in cfg["attacks"]:
             assert sum(any(j.run_id == run and j.attack_id == a for j in w) for w in plan) == 1
+
+
+def test_dev_phase_scope_is_base_and_sdt():
+    import yaml
+
+    from aftermarket.generate import REPO_ROOT
+
+    dev = yaml.safe_load((REPO_ROOT / "configs" / "gen_cheap_dev.yaml").read_text(encoding="utf-8"))
+    test = yaml.safe_load((REPO_ROOT / "configs" / "gen_cheap_test.yaml").read_text(encoding="utf-8"))
+    assert dev["runs"] == ["BASE", "SDT"] and len(test["runs"]) == 8
+    assert all(s.endswith("_dev") for s in dev["splits"]) and all(s.endswith("_test") for s in test["splits"])
+    assert len(make_jobs(dev)) == 32
+
+
+def test_select_attacks_override():
+    from aftermarket.generate import select_attacks
+
+    cfg = {"attacks": ["A3", "A4q4", "A5raw", "A5bon"]}
+    assert select_attacks(cfg, None) is cfg
+    assert select_attacks(cfg, "A3, A5raw")["attacks"] == ["A3", "A5raw"]
+    with pytest.raises(SystemExit):
+        select_attacks(cfg, "A2")

@@ -2,10 +2,16 @@
 # Own process, after generation (model and judge never share VRAM).
 gen_dir: results/gen
 out_dir: results/judged          # gitignored (contains completions)
-guard:
+guard:                           # PRIMARY for harmful_* splits
   model: meta-llama/Llama-Guard-3-1B   # gated (manual approval): accept at https://huggingface.co/meta-llama/Llama-Guard-3-1B
   revision: acf7aafa60f0410f8f42b1fa35e077d705892029
   batch_size: 16
+  max_response_tokens: 512
+wildguard:                       # PRIMARY refusal + harmfulness judge for xstest_* / benign_dev
+  model: allenai/wildguard       # gated (auto-approved after a form): https://huggingface.co/allenai/wildguard
+  revision: cbba4823f3e8020e5a74a5e29bf85072def6f2ff
+  load_in_4bit: true             # bitsandbytes nf4, ~4.5 GB on a T4
+  batch_size: 8
   max_response_tokens: 512
 push:
   enabled: true

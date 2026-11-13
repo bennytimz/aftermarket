@@ -61,6 +61,17 @@ class Job:
 
 # ----------------------------------------------------------------------------- planning (no torch)
 
+def select_attacks(cfg: dict, attacks_arg: str | None) -> dict:
+    """Restrict cfg["attacks"] to a comma-separated subset (must be in the config)."""
+    if not attacks_arg:
+        return cfg
+    wanted = [a.strip() for a in attacks_arg.split(",") if a.strip()]
+    unknown = [a for a in wanted if a not in cfg["attacks"]]
+    if unknown:
+        raise SystemExit(f"--attacks {unknown} not in config attacks {cfg['attacks']}")
+    return {**cfg, "attacks": wanted}
+
+
 def make_jobs(cfg: dict, attacks: dict | None = None) -> list[Job]:
     """All (run, attack, split) jobs, minus splits an attack doesn't apply to (e.g. BoN: harmful only)."""
     attacks = attacks or load_attacks()
@@ -358,9 +369,10 @@ def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="batched greedy generation")
     ap.add_argument("--config", required=True)
     ap.add_argument("--final", action="store_true", help="allow test splits: leaderboard cells or frozen AM only")
+    ap.add_argument("--attacks", help="comma-separated subset of the config's attacks to run now (cost ordering)")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
-    cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
+    cfg = select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks)
     out_dir = REPO_ROOT / cfg["out_dir"]
     if args.worker:
         jobs = [Job(**d) for d in json.loads(args.worker)]

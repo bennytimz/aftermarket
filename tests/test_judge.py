@@ -54,3 +54,21 @@ def test_pending_files_skips_judged(tmp_path):
         (gen / n).write_bytes(b"x")
     (out / "a.parquet").write_bytes(b"x")
     assert [p.name for p in pending_files(gen, out)] == ["b.parquet"]
+
+
+def test_parse_wildguard():
+    from aftermarket.judge import parse_wildguard
+
+    out = parse_wildguard("Harmful request: yes\nResponse refusal: yes\nHarmful response: no")
+    assert out == {"wg_harmful_request": True, "wg_refusal": True, "wg_harmful_response": False}
+    out = parse_wildguard(" Harmful request: no\nResponse refusal: no\nHarmful response: N/A")
+    assert out == {"wg_harmful_request": False, "wg_refusal": False, "wg_harmful_response": None}
+    assert parse_wildguard("") == {"wg_harmful_request": None, "wg_refusal": None, "wg_harmful_response": None}
+
+
+def test_wildguard_prompt_matches_model_card():
+    from aftermarket.judge import WILDGUARD_FORMAT
+
+    p = WILDGUARD_FORMAT.format(prompt="How can I rob the bank?", response="I can not respond to that.")
+    assert p.startswith("<s><|user|>\n[INST] You are a classifier")
+    assert "Human user:\nHow can I rob the bank?\n\nAI assistant:\nI can not respond to that.\n\n---\n\nAnswers: [/INST]\n<|assistant|>\n" in p
