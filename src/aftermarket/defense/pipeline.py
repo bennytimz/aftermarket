@@ -30,8 +30,10 @@ import yaml
 from aftermarket.data import REPO_ROOT
 
 DEV_A0, DEV_ATT = "configs/gen_defense_dev_a0.yaml", "configs/gen_defense_dev_attacks.yaml"
-BATTERY = "configs/gen_am_test.yaml"
-BATTERY_STAGES = ["A0,A3,A5raw", "A4q4,A4q3,A4q2", "A5bon", "A1", "A2"]
+BATTERY, CONTROLS = "configs/gen_am_test.yaml", "configs/gen_am_controls_test.yaml"
+# cheap first; controls only face A0, A3, A4q3, A2 (the attacks AM targets)
+BATTERY_STAGES = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3,A4q3"), (BATTERY, "A4q4,A4q3,A4q2"), (BATTERY, "A5bon"),
+                  (BATTERY, "A1"), (BATTERY, "A2"), (CONTROLS, "A2")]
 
 
 @dataclass
@@ -171,12 +173,13 @@ def build_stages(config: str, dcfg: dict, with_battery: bool) -> list[Stage]:
                                 "n_jobs": 0 if AM_FROZEN_YAML.exists() else 1, "source": "a-priori"}),
     ]
     if with_battery:
-        for a in BATTERY_STAGES:
-            stages.append(Stage(f"AM test battery {a}",
-                                (lambda a=a: sh("aftermarket.generate", "--config", BATTERY, "--final", "--attacks", a)),
-                                enabled=AM_FROZEN_YAML.exists, estimate=est_gen(BATTERY, a.split(","))))
+        for path, a in BATTERY_STAGES:
+            who = "AM" if path == BATTERY else "controls"
+            stages.append(Stage(f"test {who} {a}",
+                                (lambda path=path, a=a: sh("aftermarket.generate", "--config", path, "--final", "--attacks", a)),
+                                enabled=AM_FROZEN_YAML.exists, estimate=est_gen(path, a.split(","))))
         stages.append(Stage("AM test judge", lambda: sh("aftermarket.judge", "--config", "configs/judge.yaml"),
-                            enabled=AM_FROZEN_YAML.exists, estimate=judge_estimate(BATTERY)))
+                            enabled=AM_FROZEN_YAML.exists, estimate=judge_estimate(BATTERY, CONTROLS)))
     return stages
 
 

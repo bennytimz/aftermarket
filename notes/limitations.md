@@ -26,3 +26,12 @@ write-up as written here.
 - **The compression shield is part of AM's deployment recipe:** under A4, AM's protected layers stay 8-bit
   while the rest take the attack's bits. Other models get no shield, by design: the shield is what AM
   ships. The A4 rows of AM are reported with this marked.
+
+## Test battery (quota)
+- **Controls run a reduced battery.** AM faces every attack (A0, A1, A2, A3, A4q4/q3/q2, A5raw, A5bon).
+  AM_rand0, AM_rand1 and AM_all face only A0, A2, A3 and A4q3: enough to show whether placing the
+  hardening on L* matters for the attacks AM targets, not a full leaderboard row for each control.
+- **No XSTest under A4q4, A4q2 or A5raw, for every model** (team models and AM alike, so cells stay
+  comparable). These cells report harmful-prompt ASR and MMLU only. Over-refusal is mainly an A0 question;
+  it is still measured at A0, A1, A2, A3 and A4q3. Taken because the measured-rate estimate of the AM battery
+  (notebook 02 rates: ~0.6-0.8 prompts/s on harmful/XSTest, ~5 prompts/s on MMLU) was above 6 quota-hours.

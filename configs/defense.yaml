@@ -75,7 +75,10 @@ budget:                             # a-priori fallbacks for the cost estimate, 
   locate_s: 1800                    # GPU part; EAP-IG's CPU fallback can add up to eap_ig.timeout_s
   train_s: 1500                     # one defense adapter (measured: defense_meta.json train_seconds)
   load_s: 150                       # model load (+ attack prep) per (run, attack) group
-  gen_s: {harmful: 420, benign: 420, xstest: 420, mmlu: 40}   # seconds per 100 prompts (256 / 8 new tokens)
+  # seconds per 100 prompts. Reported from notebook 02 on Kaggle (A0, bs=16, fp16, 2xT4): ~0.6-0.8 prompts/s
+  # on harmful/xstest (midpoint 0.7 -> 143 s), ~5 prompts/s on MMLU (20 s). Used only when the pulled
+  # manifests have no rate for that split kind (the estimator prefers results/gen/*.json).
+  gen_s: {harmful: 143, benign: 143, xstest: 143, mmlu: 20}
   judge_s_per_file: 120
   ft_train_s: 1200                  # one A1/A2 QLoRA run (measured: manifests' attack_info.train_seconds)
 

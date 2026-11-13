@@ -415,3 +415,21 @@ def test_max_hours_counts_session_time_before_pipeline():
     clock.t = 3.5 * 3600  # notebook setup already used 3.5 h of the session
     stages = [_stage("a", clock, 0.6, ran), _stage("b", clock, 1, ran)]
     assert P.run_stages(stages, 4.0, 0.0, clock=clock, log=lambda *_: None) == ["a"]
+
+
+# ----------------------------------------------------------------------------- trimmed test battery
+
+def test_battery_controls_and_xstest_trim():
+    from aftermarket.generate import attack_applies
+
+    am = yaml.safe_load((REPO_ROOT / "configs" / "gen_am_test.yaml").read_text(encoding="utf-8"))
+    ctl = yaml.safe_load((REPO_ROOT / "configs" / "gen_am_controls_test.yaml").read_text(encoding="utf-8"))
+    assert am["runs"] == ["AM"] and set(am["attacks"]) == {"A0", "A1", "A2", "A3", "A4q4", "A4q3", "A4q2", "A5raw", "A5bon"}
+    assert ctl["runs"] == ["AM_rand0", "AM_rand1", "AM_all"] and set(ctl["attacks"]) == {"A0", "A2", "A3", "A4q3"}
+    assert am["splits"] == ctl["splits"]
+    for a in ("A4q4", "A4q2", "A5raw"):  # over-refusal is mainly an A0 question
+        assert not attack_applies(ATT[a], "xstest_test")
+        assert attack_applies(ATT[a], "harmful_test") and attack_applies(ATT[a], "mmlu_test")
+        assert attack_applies(ATT[a], "benign_dev")  # dev unchanged
+    for a in ("A0", "A1", "A2", "A3", "A4q3"):
+        assert attack_applies(ATT[a], "xstest_test")

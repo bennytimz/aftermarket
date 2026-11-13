@@ -51,13 +51,16 @@ attacks:
     write_matrices: [self_attn.o_proj, mlp.down_proj, embed_tokens]
     per_model: true                    # each model's own direction from its own activations
 
-  A4q4: {kind: hqq, nbits: 4, group_size: 64, simulates: "4-bit compression (HQQ)"}
-  A4q3: {kind: hqq, nbits: 3, group_size: 64, simulates: "3-bit compression (HQQ)"}
-  A4q2: {kind: hqq, nbits: 2, group_size: 64, simulates: "2-bit compression (HQQ)"}
+  A4q4: {kind: hqq, nbits: 4, group_size: 64, simulates: "4-bit compression (HQQ)", splits: [harmful, mmlu, benign]}
+  # no xstest_test: over-refusal is mainly an A0 question (quota; notes/limitations.md)
+  A4q3: {kind: hqq, nbits: 3, group_size: 64, simulates: "3-bit compression (HQQ)"}   # all splits (AM's shield target)
+  A4q2: {kind: hqq, nbits: 2, group_size: 64, simulates: "2-bit compression (HQQ)", splits: [harmful, mmlu, benign]}
+  # no xstest_test: over-refusal is mainly an A0 question (quota; notes/limitations.md)
 
   A5raw:
     kind: prompt
     mode: raw                 # chat template stripped: BOS + raw prompt text
+    splits: [harmful, mmlu, benign]  # no xstest_test (quota; notes/limitations.md)
     simulates: template removed (e.g. raw completion endpoint)
   A5bon:
     kind: prompt
