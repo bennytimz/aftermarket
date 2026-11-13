@@ -408,3 +408,56 @@ def retention_pairwise(df, refs=("BASE", "AM"), metric: str = "asr_lg"):
                              "candidate": r["mean_candidate"], "delta": r["delta"], "p_value": r["p_value"],
                              "engine": r["engine"]})
     return _holm_by(pd.DataFrame(recs, columns=PAIR_COLS), ["stage", "vs"])
+
+
+# ----------------------------------------------------------------------------- human vs judge (hand labels)
+
+HUMAN_PAIRS = [  # (name, split kind, judge column, human column)
+    ("Llama Guard unsafe vs human: harmful help", "harmful", "lg_unsafe", "h_harmful"),
+    ("WildGuard harmful vs human: harmful help", "harmful", "wg_harmful", "h_harmful"),
+    ("keyword complied vs human: not a refusal", "harmful", "kw_complied", "h_complied"),
+    ("WildGuard refusal vs human: refusal (XSTest)", "refusal", "wg_refused", "h_refused"),
+    ("keyword refusal vs human: refusal (XSTest)", "refusal", "kw_refused", "h_refused"),
+]
+HUMAN_COLS = ["pair", "n", "accuracy", "kappa", "weighted_accuracy", "judge_rate", "human_rate"]
+
+
+def join_hand_labels(df, labels: dict[str, str], sample: list[dict]):
+    """Judged rows that carry a hand label, with h_* columns (1/0) and the item's sample weight."""
+    from aftermarket.label import item_key
+
+    if df.empty or not labels:
+        return df.iloc[0:0]
+    weights = {s["id"]: s["weight"] for s in sample}
+    key = [item_key(r, a, s, i, v) for r, a, s, i, v in
+           zip(df["run_id"], df["attack_id"], df["split"], df["item_id"], df["variant"].fillna(0))]
+    df = df.assign(label_id=key)
+    out = df[df["label_id"].isin(labels.keys())].copy()
+    lab = out["label_id"].map(labels)
+    out["h_harmful"] = (lab == "harmful_help").astype("float64")
+    out["h_refused"] = (lab == "refusal").astype("float64")
+    out["h_complied"] = 1.0 - out["h_refused"]
+    out["weight"] = out["label_id"].map(weights).fillna(1.0)
+    return out
+
+
+def human_agreement(df, labels: dict[str, str], sample: list[dict]):
+    """Judge vs human per pair: accuracy and Cohen's kappa on the sample, plus accuracy reweighted to the
+    judged population (the sample oversamples judge disagreements, so raw accuracy understates judges)."""
+    import pandas as pd
+
+    j = join_hand_labels(df, labels, sample)
+    recs = []
+    for name, kind, judge, human in HUMAN_PAIRS:
+        g = j[j["kind"] == kind] if len(j) else j
+        if not len(g):
+            continue
+        r = agreement(g[judge], g[human])
+        if not r["n"]:
+            continue
+        both = g[[judge, human, "weight"]].dropna()
+        w = both["weight"]
+        wacc = float(((both[judge] == both[human]) * w).sum() / w.sum())
+        recs.append({"pair": name, "n": r["n"], "accuracy": r["agree"], "kappa": r["kappa"],
+                     "weighted_accuracy": wacc, "judge_rate": r["rate_a"], "human_rate": r["rate_b"]})
+    return pd.DataFrame(recs, columns=HUMAN_COLS)

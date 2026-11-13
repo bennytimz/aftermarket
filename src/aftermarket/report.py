@@ -26,12 +26,17 @@ import time
 from pathlib import Path
 
 from aftermarket.evaluate import (ATTACK_ORDER, RUN_ORDER, TEAM_RUNS, _rank, agreement_table, cell_ci_table,
-                                  cell_table, leaderboard_runs, load_judged, pairwise_table, retention_pairwise,
-                                  retention_table)
+                                  cell_table, human_agreement, leaderboard_runs, load_judged, pairwise_table,
+                                  retention_pairwise, retention_table)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIG_DIR, TABLE_DIR = REPO_ROOT / "results" / "figures", REPO_ROOT / "results" / "tables"
-DOCS = [REPO_ROOT / "README.md", REPO_ROOT / "ABSTRACT.md"]
+DOCS = [REPO_ROOT / "README.md", REPO_ROOT / "ABSTRACT.md",
+        *sorted((REPO_ROOT / "notes" / "disclosure").glob("*.md"))]  # disclosure drafts: each team's own row
+HAND_LABELS = REPO_ROOT / "data" / "hand_labels.jsonl"
+HAND_SAMPLE = REPO_ROOT / "data" / "hand_label_sample.jsonl"
+# a team's disclosure row: its run(s); RL is shown with its guard template on and off
+TEAM_ROWS = {"SDT": ["SDT"], "GC": ["GC"], "IL": ["IL"], "RL": ["RL", "RL_noguard"], "ST": ["ST"], "SP": ["SP"]}
 TBD = "TBD"
 
 # chart chrome + data colours (dataviz reference palette, light mode)
@@ -43,11 +48,44 @@ HIGHLIGHT = "AM"
 
 # ----------------------------------------------------------------------------- tables
 
-def collect(df) -> dict:
+def collect(df, labels: dict | None = None, sample: list | None = None) -> dict:
     """Every table the report needs, from normalized judged rows (AM dev candidates already dropped)."""
     return {"cells": cell_table(df), "ci": cell_ci_table(df), "pairwise": pairwise_table(df),
             "retention": retention_table(df), "retention_pairwise": retention_pairwise(df),
-            "agreement": agreement_table(df), "agreement_by_attack": agreement_table(df, by="attack_id")}
+            "agreement": agreement_table(df), "agreement_by_attack": agreement_table(df, by="attack_id"),
+            "human_agreement": human_agreement(df, labels or {}, sample or [])}
+
+
+def human_md(h) -> str:
+    import pandas as pd
+
+    if not len(h):
+        return "_Pending: no hand labels yet (`python -m aftermarket.label`)._"
+    t = pd.DataFrame({"n": h["n"].tolist(), "accuracy": [pct(v, 1) for v in h["accuracy"]],
+                      "Cohen's kappa": [f"{v:.2f}" if v == v else "-" for v in h["kappa"]],
+                      "accuracy, reweighted": [pct(v, 1) for v in h["weighted_accuracy"]],
+                      "judge rate": [pct(v, 1) for v in h["judge_rate"]],
+                      "human rate": [pct(v, 1) for v in h["human_rate"]]}, index=h["pair"].tolist())
+    return md_table(t, "judge vs human")
+
+
+def team_row_md(ci, runs: list[str], stage: str = "test") -> str:
+    """One team's results per attack (their run(s) next to BASE): ASR by both judges, over-refusal, MMLU."""
+    import pandas as pd
+
+    sub = ci[ci["stage"] == stage]
+    if not len(sub) or not set(runs) & set(sub["run"]):
+        return md_table(None)
+    get = {(r.run, r.attack, r.metric): pct_ci(r.value, r.lo, r.hi) for r in sub.itertuples()}
+    rows, index = [], []
+    for run in runs:
+        for a in _sorted({x for (r, x, _) in get if r == run}, ATTACK_ORDER):
+            index.append(f"{run} · {a}")
+            rows.append([get.get((run, a, "asr_lg"), "-"), get.get(("BASE", a, "asr_lg"), "-"),
+                         get.get((run, a, "asr_wg"), "-"), get.get((run, a, "over_refusal_wg"), "-"),
+                         get.get((run, a, "mmlu"), "-")])
+    cols = ["ASR, Llama Guard", "BASE ASR, Llama Guard", "ASR, WildGuard", "over-refusal (XSTest)", "MMLU"]
+    return md_table(pd.DataFrame(rows, index=index, columns=cols), "model · attack")
 
 
 def pct(v, digits: int = 0) -> str:
@@ -133,6 +171,8 @@ def write_tables(t: dict, out: Path = TABLE_DIR) -> dict[str, str]:
         "mmlu": md_table(ci_matrix(t["ci"], "mmlu", "test")),
         "retention": retention_md(t["retention"], t["retention_pairwise"], "test"),
         "agreement": agreement_md(t["agreement"]),
+        "human_agreement": human_md(t["human_agreement"]),
+        **{f"row_{team}": team_row_md(t["ci"], runs) for team, runs in TEAM_ROWS.items()},
     }
     for name, md in blocks.items():
         (out / f"{name}.md").write_text(md + "\n", encoding="utf-8")
@@ -181,6 +221,20 @@ def headline_values(t: dict, n_rows: int) -> dict[str, str]:
         v["kappa_lg_wg"], v["agree_lg_wg"] = f"{lg_wg.iloc[0].kappa:.2f}", pct(lg_wg.iloc[0].agree, 1)
     broken = test_cells[test_cells["broken"] == True] if len(test_cells) else test_cells  # noqa: E712
     v["broken_cells"] = str(len(broken)) if len(test_cells) else TBD
+    h = t["human_agreement"]
+    hv = {r.pair.split(" vs ")[0]: r for r in h.itertuples()} if len(h) else {}
+    v["human_n"] = str(int(max(h["n"]))) if len(h) else TBD
+    for key, judge in [("lg", "Llama Guard unsafe"), ("wg", "WildGuard harmful"), ("wgref", "WildGuard refusal")]:
+        r = hv.get(judge)
+        v[f"human_acc_{key}"] = pct(r.weighted_accuracy, 1) if r is not None else TBD
+        v[f"human_kappa_{key}"] = f"{r.kappa:.2f}" if r is not None and r.kappa == r.kappa else TBD
+    full = tr[~tr["partial"]] if len(tr) else tr
+    order = list(full["run"]) if len(full) else []
+    for run in TEAM_RUNS:  # disclosure drafts: always present, TBD until the run has a retention score
+        row = tr[tr["run"] == run] if len(tr) else tr
+        v[f"{run}_retention"] = f"{row.iloc[0].retention:.2f} [{row.iloc[0].lo:.2f}–{row.iloc[0].hi:.2f}]" \
+            if len(row) else TBD
+        v[f"{run}_rank"] = f"{order.index(run) + 1} of {len(order)}" if run in order else TBD
     return v
 
 
@@ -426,14 +480,18 @@ def fig_capability_vs_asr(cells, stage: str, out: Path = FIG_DIR) -> list[Path]:
     return _save(fig, f"capability_vs_asr_{stage}", out)
 
 
-def fig_agreement(agree, out: Path = FIG_DIR) -> list[Path]:
-    """(d) judge-agreement table as a figure."""
-    if not len(agree):
+def fig_agreement(agree, out: Path = FIG_DIR, human=None) -> list[Path]:
+    """(d) judge-agreement table as a figure: judge vs judge (row level), then judge vs human (hand labels)."""
+    if not len(agree) and (human is None or not len(human)):
         return []
     plt = _mpl()
     cols = ["labels compared", "n", "agreement", "Cohen's κ", "rate (first)", "rate (second)"]
     rows = [[r.pair, f"{r.n:,}", pct(r.agree, 1), f"{r.kappa:.2f}" if r.kappa == r.kappa else "-",
              pct(r.rate_a, 1), pct(r.rate_b, 1)] for r in agree.itertuples()]
+    if human is not None and len(human):  # human rows: accuracy reweighted to the judged population
+        rows += [[r.pair + " (hand labels)", f"{r.n:,}", pct(r.weighted_accuracy, 1),
+                  f"{r.kappa:.2f}" if r.kappa == r.kappa else "-", pct(r.judge_rate, 1), pct(r.human_rate, 1)]
+                 for r in human.itertuples()]
     fig, ax = plt.subplots(figsize=(8.6, 0.3 * (len(rows) + 1) + 0.45))
     ax.axis("off")
     tab = ax.table(cellText=rows, colLabels=cols, bbox=[0, 0, 1, 1], cellLoc="right", colLoc="right",
@@ -449,7 +507,8 @@ def fig_agreement(agree, out: Path = FIG_DIR) -> list[Path]:
             c.get_text().set_horizontalalignment("left")
         if i == 0:
             c.set_text_props(color=INK2, fontweight="bold")
-    ax.set_title("Judge agreement, row level (each best-of-N variant counts once)", fontsize=9.5)
+    ax.set_title("Judge agreement, row level (each best-of-N variant counts once); hand-label rows: "
+                 "accuracy reweighted to the judged population", fontsize=9.5)
     return _save(fig, "judge_agreement", out)
 
 
@@ -460,7 +519,7 @@ def make_figures(t: dict, out: Path = FIG_DIR) -> list[Path]:
         paths += fig_heatmap(t["ci"], stage, out)
         paths += fig_retention(t["retention"], stage, out)
         paths += fig_capability_vs_asr(t["cells"], stage, out)
-    paths += fig_agreement(t["agreement"], out)
+    paths += fig_agreement(t["agreement"], out, t.get("human_agreement"))
     return paths
 
 
@@ -478,12 +537,17 @@ def pull_judged(config: str = "configs/judge.yaml", judged_dir: Path | None = No
 
 
 def run(judged_dir: Path, fill: bool = True, fig_dir: Path = FIG_DIR, table_dir: Path = TABLE_DIR,
-        docs=DOCS) -> dict:
+        docs=DOCS, labels_path: Path = HAND_LABELS, sample_path: Path = HAND_SAMPLE) -> dict:
+    from aftermarket.label import current_labels, read_jsonl
+
     df = load_judged(judged_dir)
     n_all = len(df)
     df = leaderboard_runs(df) if len(df) else df
     print(f"{n_all:,} judged rows ({n_all - len(df):,} from AM dev candidates left out)", flush=True)
-    t = collect(df)
+    labels = current_labels(labels_path)
+    t = collect(df, labels, read_jsonl(sample_path))
+    if labels:
+        print(f"{len(labels)} hand labels joined", flush=True)
     blocks = write_tables(t, table_dir)
     figs = make_figures(t, fig_dir)
     values = headline_values(t, len(df))

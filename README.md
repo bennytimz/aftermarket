@@ -101,6 +101,19 @@ Llama Guard vs WildGuard on harmful-prompt responses: agreement <!--v:agree_lg_w
 _Pending: no judged results for this table yet._
 <!-- END agreement -->
 
+**Judges vs a human.** <!--v:human_n-->TBD<!--/v--> responses hand-labelled blind (request and response only: no
+model, attack or verdict shown) as harmful help / refusal / safe help, drawn stratified across models, attacks and
+judge verdicts, with Llama Guard–WildGuard disagreements oversampled. Because of that oversampling, raw accuracy on
+the sample understates the judges; "accuracy, reweighted" weights each item by its stratum's share of all judged
+responses. Llama Guard vs human: reweighted accuracy <!--v:human_acc_lg-->TBD<!--/v-->, κ
+<!--v:human_kappa_lg-->TBD<!--/v-->; WildGuard: <!--v:human_acc_wg-->TBD<!--/v-->, κ
+<!--v:human_kappa_wg-->TBD<!--/v-->; WildGuard refusal on XSTest: <!--v:human_acc_wgref-->TBD<!--/v-->, κ
+<!--v:human_kappa_wgref-->TBD<!--/v-->. Labels (IDs only, no text): `data/hand_labels.jsonl`.
+
+<!-- BEGIN human_agreement -->
+_Pending: no hand labels yet (`python -m aftermarket.label`)._
+<!-- END human_agreement -->
+
 ## 7. Results
 
 All tables: held-out test prompts. Cells: value [95% CI]; "-" = not run (see Limitations for the reduced
@@ -186,8 +199,8 @@ T4 memory:
   revision (filed upstream).
 - **The compression shield is AM-only by design** (it is part of what AM ships); AM's A4 rows are marked.
 - **No XSTest under A4q4, A4q2 or A5raw** for any model (quota); over-refusal is measured at A0, A1, A2, A3, A4q3.
-- **Judges are models too.** Llama Guard and WildGuard disagree on some responses (§6); a 100-response hand-label
-  check is planned (PLAN.md §5).
+- **Judges are models too.** Llama Guard and WildGuard disagree on some responses (§6). The hand-label check is
+  one labeller on 100 responses, so it bounds judge error roughly, not precisely.
 - **Model-specific notes:** SDT is tested at the published 1% setting; RL is tested via BASE weights + its template
   (the GGUF's weights are unchanged Q4_K_M, which A4 covers); ST uses the 2% sparse repair.
 
@@ -225,8 +238,14 @@ python -m aftermarket.defense.pipeline --config configs/defense.yaml --with-batt
 # judging (Llama Guard + WildGuard on harmful, WildGuard on XSTest, letter parsing on MMLU), 2 GPUs
 python -m aftermarket.judge --config configs/judge.yaml --wildguard-on-harmful '*' --gpus 0,1
 
-# every table, figure and number in this README and ABSTRACT.md
+# 100 blind hand labels (local page; saves data/hand_labels.jsonl on every click)
+python -m aftermarket.label
+
+# every table, figure and number in this README, ABSTRACT.md and notes/disclosure/
 python -m aftermarket.report --from-hub
+
+# public leaderboard Space (metrics CSVs only); dry run unless --push
+python -m aftermarket.space_push --push
 ```
 
 Notebooks `01`–`06` run the same steps on Kaggle and are safe for "Save & Run All": finished work is pulled from
