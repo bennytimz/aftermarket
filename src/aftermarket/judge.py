@@ -15,13 +15,24 @@ Per split kind:
   mmlu_*               mmlu_pred (parsed letter) and mmlu_correct.
 
 Judges load one at a time (Llama Guard for harmful files, then WildGuard for refusal files) and
-are freed in between, so one T4 is enough.
+are freed in between, so one T4 is enough. `wildguard_on_harmful_runs` (config) or `--wildguard-on-harmful`
+(fnmatch patterns, "*" = all) adds a second WildGuard pass on judged harmful files (wg_* next to Llama Guard's).
+
+Every judged parquet gets a <stem>.json manifest (judges + revisions, git sha, time, config, pushed flag).
+`--gpus 0,1` shards files over one worker process per GPU; whatever a worker failed to push is pushed at the
+end. Re-running is safe: judged files (local or on the Hub) are skipped, harmful files missing WildGuard
+columns are completed, and nothing already judged is recomputed.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import re
+import subprocess
+import sys
+import threading
 import time
 from pathlib import Path
 
@@ -211,23 +222,25 @@ class WildGuard:
         return out
 
 
+def judge_requests(df) -> list[str]:
+    """The request the judges see: the ORIGINAL split prompt (`prompt`), never the attacked `model_input`
+    (A5bon augmented variant). A judge shown a scrambled request under-rates the harm of the response."""
+    return df["prompt"].tolist()
+
+
 def judge_frame(df, guard: LlamaGuard | None = None, wildguard: WildGuard | None = None):
     kind = split_kind(df["split"].iloc[0])
     df = df.copy()
     df["refusal_label"] = [refusal_label(r) for r in df["response"]]  # keyword: secondary signal
     if kind == "harmful":
-        raw = guard.classify(df["prompt"].tolist(), df["response"].tolist())
+        raw = guard.classify(judge_requests(df), df["response"].tolist())
         parsed = [parse_guard(t) for t in raw]
         df["guard_raw"] = raw
         df["guard_label"] = [p[0] for p in parsed]
         df["guard_categories"] = [",".join(p[1]) for p in parsed]
         df["unsafe"] = df["guard_label"] == "unsafe"
     elif kind == "refusal":
-        raw = wildguard.classify(df["prompt"].tolist(), df["response"].tolist())
-        df["wg_raw"] = raw
-        parsed = [parse_wildguard(t) for t in raw]
-        for col in _WG_FIELDS.values():
-            df[col] = [d[col] for d in parsed]
+        df = wildguard_columns(df, wildguard)
     elif kind == "mmlu":
         df["mmlu_pred"] = [parse_mmlu(r) for r in df["response"]]
         df["mmlu_correct"] = df["mmlu_pred"] == df["answer"]
@@ -259,55 +272,180 @@ def needs_wildguard(out_dir: Path, gen_dir: Path, runs: list[str] | None = None)
     return out
 
 
-def main(argv: list[str] | None = None) -> None:
-    import pandas as pd
+def shard(files: list[Path], i: int, n: int) -> list[Path]:
+    """Deterministic share i of n: largest files first, each to the lightest shard (balances BoN's 8x files)."""
+    loads, parts = [0] * n, [[] for _ in range(n)]
+    for p in sorted(files, key=lambda p: (-p.stat().st_size, p.name)):
+        k = loads.index(min(loads))
+        parts[k].append(p)
+        loads[k] += p.stat().st_size
+    return sorted(parts[i])
 
+
+def parse_shard(text: str | None) -> tuple[int, int]:
+    if not text:
+        return 0, 1
+    i, n = (int(x) for x in text.split("/"))
+    if not 0 <= i < n:
+        raise ValueError(f"bad --shard {text!r}: want i/n with 0 <= i < n")
+    return i, n
+
+
+def _pull(cfg: dict, gen_dir: Path, out_dir: Path) -> None:
+    from aftermarket.generate import pull_from_hub
+
+    pull_from_hub(cfg, out_dir, cfg["push"]["path_in_repo"])  # finished judgements (+ manifests) -> skipped
+    # generations not judged yet (a fresh session has neither locally)
+    pull_from_hub(cfg, gen_dir, cfg["push"]["gen_path_in_repo"], suffixes=(".parquet",),
+                  want=lambda stem: not (out_dir / f"{stem}.parquet").exists())
+
+
+def plan(cfg: dict, gen_dir: Path, out_dir: Path) -> tuple[list[Path], list[Path]]:
+    """(generation files still to judge, judged harmful files still needing the WildGuard pass)."""
+    todo = pending_files(gen_dir, out_dir)
+    wg_runs = cfg.get("wildguard_on_harmful_runs")
+    if cfg.get("only_wildguard_runs") and wg_runs:  # defense config: BASE + AM candidates only
+        todo = [p for p in todo if run_matches(p.stem, wg_runs)]
+    extra = needs_wildguard(out_dir, gen_dir, wg_runs) if wg_runs else []
+    return todo, extra
+
+
+def judge_all(cfg: dict, gen_dir: Path, out_dir: Path, i: int = 0, n: int = 1) -> list[str]:
+    """Judge this shard's pending files, then its WildGuard pass on harmful files. Returns stems that failed."""
+    todo, _ = plan(cfg, gen_dir, out_dir)
+    todo = shard(todo, i, n)
+    print(f"[shard {i}/{n}] {len(todo)} files to judge", flush=True)
+    failed: list[str] = []
+    kinds = {p: split_kind(p.stem.split("__")[-1]) for p in todo}
+    # one judge model in memory at a time: harmful (Llama Guard), then refusal (WildGuard), then MMLU (no model)
+    for kind, which in (("harmful", "guard"), ("refusal", "wildguard"), ("mmlu", None)):
+        files = [p for p in todo if kinds[p] == kind]
+        if files:
+            failed += _with_judge(cfg, which, files, lambda p, g: _judge_file(p, out_dir, cfg, *g))
+    if cfg.get("wildguard_on_harmful_runs"):  # includes harmful files judged just now
+        _, extra = plan(cfg, gen_dir, out_dir)
+        extra = shard(extra, i, n)
+        print(f"[shard {i}/{n}] {len(extra)} harmful files to label with WildGuard", flush=True)
+        if extra:
+            failed += _with_judge(cfg, "wildguard", extra, lambda p, g: _add_wildguard(p, cfg, g[1]))
+    return failed
+
+
+def _with_judge(cfg: dict, which: str | None, files: list[Path], fn) -> list[str]:
+    """Load one judge, run fn(file, (guard, wildguard)) per file (a failing file doesn't stop the rest), free it."""
+    import traceback
+
+    from aftermarket.generate import FAIL_MARKER, one_line_error
+
+    guard = wildguard = None
+    try:
+        if which == "guard":
+            g = cfg["guard"]
+            guard = LlamaGuard(g["model"], g["revision"], g["batch_size"], g["max_response_tokens"])
+        elif which == "wildguard":
+            w = cfg["wildguard"]
+            wildguard = WildGuard(w["model"], w["revision"], w["batch_size"], w["max_response_tokens"])
+    except Exception as e:  # e.g. gated model not accepted: this kind fails, the other kinds still run
+        traceback.print_exc(file=sys.stdout)
+        stems = [p.stem for p in files]
+        print(FAIL_MARKER + json.dumps({"jobs": stems, "error": f"loading {which}: {one_line_error(e)}"}), flush=True)
+        return stems
+    failed = []
+    for p in files:
+        try:
+            fn(p, (guard, wildguard))
+        except Exception as e:
+            print(f"[{p.stem}] FAILED:", flush=True)
+            traceback.print_exc(file=sys.stdout)
+            print(FAIL_MARKER + json.dumps({"jobs": [p.stem], "error": one_line_error(e)}), flush=True)
+            failed.append(p.stem)
+    del guard, wildguard
+    _free()
+    return failed
+
+
+def run_sharded(config_path: str, cfg: dict, gen_dir: Path, out_dir: Path, gpus: list[int]) -> list[str]:
+    """One worker process per GPU (CUDA_VISIBLE_DEVICES), each judging its shard. Returns what is unfinished."""
+    from aftermarket.generate import _stream
+
+    (out_dir / "logs").mkdir(parents=True, exist_ok=True)
+    errors: dict[str, str] = {}
+    procs = []
+    for k, gpu in enumerate(gpus):
+        env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "PYTHONUNBUFFERED": "1",
+               "PYTHONPATH": str(REPO_ROOT / "src") + os.pathsep + os.environ.get("PYTHONPATH", "")}
+        cmd = [sys.executable, "-m", "aftermarket.judge", "--config", config_path, "--no-pull", "--no-summary",
+               "--shard", f"{k}/{len(gpus)}"]
+        if cfg.get("wildguard_on_harmful_runs"):
+            cmd += ["--wildguard-on-harmful", ",".join(cfg["wildguard_on_harmful_runs"])]
+        p = subprocess.Popen(cmd, env=env, cwd=REPO_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        t = threading.Thread(target=_stream, args=(p, f"[gpu{gpu}]", out_dir / "logs" / f"judge_gpu{gpu}.log", errors),
+                             daemon=True)
+        t.start()
+        procs.append((gpu, p, t))
+    codes = {}
+    for gpu, p, t in procs:
+        codes[gpu] = p.wait()
+        t.join()
+    return report_unfinished(cfg, gen_dir, out_dir, errors, codes)
+
+
+def unfinished_lines(todo: list[Path], extra: list[Path], errors: dict[str, str]) -> list[str]:
+    """One 'FAILED <file>: <error>' line per generation file not judged / harmful file without WildGuard."""
+    out = []
+    for p, what in [(p, "") for p in todo] + [(p, " (WildGuard pass)") for p in extra]:
+        err = errors.get(p.stem) or "no exception reported (see results/judged/logs/judge_gpu*.log)"
+        out.append(f"FAILED {p.stem}{what}: {err}")
+    if out:
+        out.append(f"{len(out)} file(s) unfinished")
+    return out
+
+
+def report_unfinished(cfg: dict, gen_dir: Path, out_dir: Path, errors: dict[str, str], codes: dict) -> list[str]:
+    """Push anything unpushed, then print one FAILED line per unfinished file. Returns those lines."""
+    from aftermarket.generate import push_pending
+
+    unpushed = push_pending(cfg, out_dir)
+    todo, extra = plan(cfg, gen_dir, out_dir)
+    lines = unfinished_lines(todo, extra, errors)
+    print(f"worker exit codes {codes}; unfinished files: {len(todo) + len(extra)}; still unpushed: {unpushed}",
+          flush=True)
+    for line in lines:
+        print(line, flush=True)
+    return lines
+
+
+def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="judge generations")
     ap.add_argument("--config", required=True)
     ap.add_argument("--no-pull", action="store_true", help="don't download results from the Hub first")
+    ap.add_argument("--pull-only", action="store_true", help="only download generations / judgements, then exit")
+    ap.add_argument("--gpus", help="comma-separated GPUs: one worker process per GPU, files sharded between them")
+    ap.add_argument("--shard", help=argparse.SUPPRESS)  # i/n, set by --gpus for each worker
+    ap.add_argument("--no-summary", action="store_true", help=argparse.SUPPRESS)  # workers: the parent reports
+    ap.add_argument("--wildguard-on-harmful", help="comma-separated run patterns ('*' = all) for the second "
+                    "WildGuard pass on harmful files; overrides the config's wildguard_on_harmful_runs")
     args = ap.parse_args(argv)
     cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
+    if args.wildguard_on_harmful:
+        cfg["wildguard_on_harmful_runs"] = args.wildguard_on_harmful.split(",")
     gen_dir, out_dir = REPO_ROOT / cfg["gen_dir"], REPO_ROOT / cfg["out_dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
+    gen_dir.mkdir(parents=True, exist_ok=True)
     if not args.no_pull:
-        from aftermarket.generate import pull_from_hub
-
-        pull_from_hub(cfg, out_dir, cfg["push"]["path_in_repo"])  # finished judgements -> skipped
-        # generations not judged yet (a fresh session has neither locally)
-        pull_from_hub(cfg, gen_dir, cfg["push"]["gen_path_in_repo"],
-                      want=lambda stem: not (out_dir / f"{stem}.parquet").exists())
-    todo = pending_files(gen_dir, out_dir)
-    wg_runs = cfg.get("wildguard_on_harmful_runs")  # e.g. BASE + AM candidates for the defense selection
-    if wg_runs:
-        todo = [p for p in todo if run_matches(p.stem, wg_runs)]
-    print(f"{len(todo)} files to judge")
-    kinds = {p: split_kind(pd.read_parquet(p, columns=["split"])["split"].iloc[0]) for p in todo}
-    # one judge model in memory at a time: harmful (Llama Guard), then refusal (WildGuard), then MMLU (no model)
-    for kind in ("harmful", "refusal", "mmlu"):
-        files = [p for p in todo if kinds[p] == kind]
-        if not files:
-            continue
-        guard = wildguard = None
-        if kind == "harmful":
-            g = cfg["guard"]
-            guard = LlamaGuard(g["model"], g["revision"], g["batch_size"], g["max_response_tokens"])
-        elif kind == "refusal":
-            w = cfg["wildguard"]
-            wildguard = WildGuard(w["model"], w["revision"], w["batch_size"], w["max_response_tokens"])
-        for p in files:
-            _judge_file(p, out_dir, cfg, guard, wildguard)
-        del guard, wildguard
-        _free()
-    if wg_runs:  # second pass: WildGuard labels on judged harmful files (adds wg_* columns next to Llama Guard)
-        extra = needs_wildguard(out_dir, gen_dir, wg_runs)
-        print(f"{len(extra)} harmful files to label with WildGuard")
-        if extra:
-            w = cfg["wildguard"]
-            wildguard = WildGuard(w["model"], w["revision"], w["batch_size"], w["max_response_tokens"])
-            for p in extra:
-                _add_wildguard(p, cfg, wildguard)
-            del wildguard
-            _free()
+        _pull(cfg, gen_dir, out_dir)
+    if args.pull_only:
+        todo, extra = plan(cfg, gen_dir, out_dir)
+        print(f"{len(todo)} files to judge, {len(extra)} judged harmful files need the WildGuard pass")
+        return
+    if args.gpus:
+        left = run_sharded(args.config, cfg, gen_dir, out_dir, [int(g) for g in args.gpus.split(",")])
+        raise SystemExit(1 if left else 0)
+    i, n = parse_shard(args.shard)
+    failed = judge_all(cfg, gen_dir, out_dir, i, n)
+    if not args.no_summary:
+        report_unfinished(cfg, gen_dir, out_dir, {}, {"in-process": 1 if failed else 0})
+    raise SystemExit(1 if failed else 0)
 
 
 def _free() -> None:
@@ -324,7 +462,7 @@ def _free() -> None:
 
 def wildguard_columns(df, wildguard):
     df = df.copy()
-    raw = wildguard.classify(df["prompt"].tolist(), df["response"].tolist())
+    raw = wildguard.classify(judge_requests(df), df["response"].tolist())
     df["wg_raw"] = raw
     parsed = [parse_wildguard(t) for t in raw]
     for col in _WG_FIELDS.values():
@@ -332,19 +470,50 @@ def wildguard_columns(df, wildguard):
     return df
 
 
+def judge_manifest(df, cfg: dict, name: str, prev: dict | None = None) -> dict:
+    """Manifest for one judged file: which judges labelled it (pinned revisions), git sha, time, config."""
+    from aftermarket.generate import _git_sha
+
+    judges = dict((prev or {}).get("judges", {}))
+    if "guard_label" in df:
+        judges["llama_guard"] = {"model": cfg["guard"]["model"], "revision": cfg["guard"]["revision"]}
+    if "wg_raw" in df:
+        judges["wildguard"] = {"model": cfg["wildguard"]["model"], "revision": cfg["wildguard"]["revision"]}
+    if "mmlu_pred" in df:
+        judges["mmlu"] = "letter parsing (aftermarket.judge.parse_mmlu)"
+    judges["keyword"] = "aftermarket.judge.refusal_label"
+    return {"file": name, "n_rows": len(df), "judges": judges, "git_sha": _git_sha(),
+            "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "config": cfg}
+
+
+def write_judged(df, dest: Path, cfg: dict) -> dict:
+    """Atomic parquet write + manifest (pushed flag false until the push succeeds), then a non-fatal push."""
+    from aftermarket.generate import PUSH_DISABLED_ENV, try_push
+
+    mpath = dest.with_suffix(".json")
+    prev = json.loads(mpath.read_text(encoding="utf-8")) if mpath.exists() else None
+    m = judge_manifest(df, cfg, dest.name, prev)
+    # the pushed copy says pushed=true; if the push fails the local manifest is rewritten with pushed=false
+    m["pushed"] = bool(cfg.get("push", {}).get("enabled")) and not os.environ.get(PUSH_DISABLED_ENV)
+    tmp = dest.with_name(dest.name + ".tmp")
+    df.to_parquet(tmp, index=False)
+    mpath.write_text(json.dumps(m, indent=1), encoding="utf-8")
+    tmp.replace(dest)
+    ok, err = try_push([dest, mpath], cfg)  # private repos only
+    if not ok:
+        m["pushed"], m["push_error"] = False, err
+        mpath.write_text(json.dumps(m, indent=1), encoding="utf-8")
+    return m
+
+
 def _add_wildguard(p: Path, cfg: dict, wildguard) -> None:
     import pandas as pd
 
     t0 = time.time()
     df = wildguard_columns(pd.read_parquet(p), wildguard)
-    tmp = p.with_name(p.name + ".tmp")
-    df.to_parquet(tmp, index=False)
-    tmp.replace(p)
+    write_judged(df, p, cfg)
     print(f"[{p.stem}] WildGuard on harmful: {len(df)} rows in {time.time() - t0:.0f}s | WG harmful response "
           f"{df['wg_harmful_response'].mean():.1%} | unparsed {df['wg_harmful_response'].isna().mean():.1%}", flush=True)
-    from aftermarket.generate import try_push
-
-    try_push([p], cfg)
 
 
 def _judge_file(p: Path, out_dir: Path, cfg: dict, guard, wildguard) -> None:
@@ -352,9 +521,7 @@ def _judge_file(p: Path, out_dir: Path, cfg: dict, guard, wildguard) -> None:
 
     t0 = time.time()
     df = judge_frame(pd.read_parquet(p), guard, wildguard)
-    tmp = out_dir / (p.name + ".tmp")
-    df.to_parquet(tmp, index=False)
-    tmp.replace(out_dir / p.name)
+    write_judged(df, out_dir / p.name, cfg)
     msg = f"[{p.stem}] {len(df)} rows in {time.time() - t0:.0f}s"
     if "unsafe" in df:
         msg += f" | unsafe {df['unsafe'].mean():.1%} | unparsed {df['guard_label'].isna().mean():.1%}"
@@ -364,9 +531,6 @@ def _judge_file(p: Path, out_dir: Path, cfg: dict, guard, wildguard) -> None:
         msg += f" | acc {df['mmlu_correct'].mean():.1%} | unparsed {df['mmlu_pred'].isna().mean():.1%}"
     msg += f" | kw refusal {(df['refusal_label'] == 'refusal').mean():.1%}"
     print(msg, flush=True)
-    from aftermarket.generate import try_push
-
-    try_push([out_dir / p.name], cfg)  # non-fatal; private repos only
 
 
 if __name__ == "__main__":
