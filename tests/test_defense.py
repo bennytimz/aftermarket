@@ -442,3 +442,71 @@ def test_battery_stages_cover_configs_exactly():
         staged = [a for p, s in P.BATTERY_STAGES if p == path for a in s.split(",")]
         assert sorted(staged) == sorted(cfg["attacks"])
     assert not any(a in ("A4q4", "A4q2") for _, s in P.BATTERY_STAGES for a in s.split(","))
+
+
+# ----------------------------------------------------------------------------- notebook 07: battery gate + summary
+
+REV = "a" * 40
+NEED = ["AM", "AM_all", "AM_rand0", "AM_rand1"]
+
+
+def _frozen(rev=REV, drop=None, **override):
+    models = {i: {"status": "active", "hf_path": "me/aftermarket-am", "subfolder": i, "revision": rev,
+                  "files": ["adapter_model.safetensors", "defense_meta.json"]} for i in NEED if i != drop}
+    for i, kv in override.items():
+        models[i].update(kv)
+    return {"store": {"repo": "me/aftermarket-am", "revision": rev}, "models": models}
+
+
+def _files(ids=NEED):
+    return {f"{i}/{f}" for i in ids for f in ("adapter_model.safetensors", "defense_meta.json")}
+
+
+def test_battery_needs_exactly_the_frozen_family():
+    jobs = P.battery_jobs(ATT)
+    assert sorted({j.run_id for j in jobs}) == NEED
+    assert {j.attack_id for j in jobs if j.run_id == "AM"} == {"A0", "A1", "A2", "A3", "A4q3", "A5raw", "A5bon"}
+    assert {j.attack_id for j in jobs if j.run_id != "AM"} == {"A0", "A2", "A3"}
+    assert all(j.split.endswith("_test") for j in jobs) and len(jobs) == len(set(jobs))
+
+
+def test_frozen_gate_accepts_pinned_hub_copy():
+    assert P.frozen_problems(_frozen(), None, NEED, _files()) == []
+    assert P.frozen_problems(_frozen(), _frozen(), NEED, _files()) == []
+
+
+@pytest.mark.parametrize("hub,local,files,why", [
+    (None, None, set(), "no am_frozen.yaml on the private Hub"),
+    (_frozen(rev="main"), None, _files(), "not a pinned 40-hex"),
+    (_frozen(), _frozen(rev="b" * 40), _files(), "delete the local file"),
+    (_frozen(drop="AM_all"), None, _files(), "AM_all missing"),
+    (_frozen(AM={"local": True}), None, _files(), "AM is not pinned"),
+    (_frozen(AM_rand0={"revision": "b" * 40}), None, _files(), "AM_rand0 is not pinned"),
+    (_frozen(), None, _files(["AM", "AM_rand0", "AM_rand1"]), "AM_all: files missing"),
+    (_frozen(), None, None, "could not list"),
+])
+def test_frozen_gate_refuses(hub, local, files, why):
+    problems = P.frozen_problems(hub, local, NEED, files)
+    assert problems and any(why in p for p in problems), problems
+
+
+def test_battery_summary(tmp_path):
+    jobs = P.battery_jobs(ATT)
+    a, b, c = jobs[0], jobs[1], jobs[2]
+    (tmp_path / f"{a.name}.parquet").write_bytes(b"")                       # finished this session
+    (tmp_path / f"{a.name}.json").write_text(json.dumps({"pushed": True}))
+    (tmp_path / f"{b.name}.json").write_text(json.dumps({"pushed": True}))  # finished earlier, manifest pulled
+    (tmp_path / f"{c.name}.parquet").write_bytes(b"")                       # finished here, push failed
+    (tmp_path / f"{c.name}.json").write_text(json.dumps({"pushed": False}))
+    lines, s = P.battery_summary(jobs, tmp_path)
+    assert s["done"] == 3 and s["total"] == len(jobs) and len(s["pending"]) == len(jobs) - 3
+    assert s["unpushed"] == [c.name]
+    assert len(lines) == 1 + len({(j.run_id, j.attack_id) for j in jobs})
+
+
+def test_battery_only_stages_and_table_have_no_duplicate_rows():
+    stages = P.build_stages("configs/defense.yaml", DCFG, with_battery=False, battery_only=True)
+    names = [s.name for s in stages]
+    assert names == [f"test {'AM' if p == P.BATTERY else 'controls'} {a}" for p, a in P.BATTERY_STAGES]
+    full = [s.name for s in P.build_stages("configs/defense.yaml", DCFG, with_battery=True)]
+    assert len(full) == len(set(full)) and full[-len(names):] == names

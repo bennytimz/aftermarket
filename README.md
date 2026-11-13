@@ -233,7 +233,8 @@ python -m aftermarket.generate --config configs/gen_ft_dev.yaml                 
 python -m aftermarket.generate --config configs/gen_ft_test.yaml --final                     # A1/A2
 
 # AM defense: locate, harden, select on dev, freeze, then the frozen AM's test battery
-python -m aftermarket.defense.pipeline --config configs/defense.yaml --with-battery
+python -m aftermarket.defense.pipeline --config configs/defense.yaml                  # dev: locate .. freeze
+python -m aftermarket.defense.pipeline --config configs/defense.yaml --battery-only   # test battery (frozen AM only)
 
 # judging (Llama Guard + WildGuard on harmful, WildGuard on XSTest, letter parsing on MMLU), 2 GPUs
 python -m aftermarket.judge --config configs/judge.yaml --wildguard-on-harmful '*' --gpus 0,1
@@ -248,7 +249,8 @@ python -m aftermarket.report --from-hub
 python -m aftermarket.space_push --push
 ```
 
-Notebooks `01`–`06` run the same steps on Kaggle and are safe for "Save & Run All": finished work is pulled from
+Notebooks `01`–`07` run the same steps on Kaggle (`07_am_battery.ipynb`: the frozen AM's test battery,
+refuses to start unless AM is frozen and pinned on the Hub) and are safe for "Save & Run All": finished work is pulled from
 the private Hub dataset and skipped. Judging (`06_judge.ipynb`) also runs on Google Colab (free T4, one judge
 worker, `HF_TOKEN` in Colab secrets), off the Kaggle GPU quota; re-run it after a disconnect and it resumes from the Hub:
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bennytimz/aftermarket/blob/main/notebooks/06_judge.ipynb)

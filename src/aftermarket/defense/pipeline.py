@@ -9,6 +9,8 @@ Stages (each skips finished work, so a re-run resumes):
   [--with-battery: the frozen AM family on test (--final), cheap attacks first; AM gets A4 at 3-bit only,
    controls get A0, A2, A3 (notes/limitations.md). The test generations are judged by notebook 06 on Colab,
    off the Kaggle quota; --with-test-judge judges them here instead]
+  [--battery-only: the battery stages alone (notebook 07); refuses to start unless configs/am_frozen.yaml is
+   pinned on the Hub (frozen_problems); --summary-only prints the per-cell battery status (battery_summary)]
 Before running, it prints the estimated quota-hours / GPU-hours per stage (budget.py). After each stage it
 checks the elapsed session time; once it reaches --max-hours it stops cleanly (no stage is interrupted) and
 lists what is left for the next session.
@@ -21,6 +23,7 @@ import json
 import os
 import subprocess
 import sys
+import re
 import threading
 import time
 from dataclasses import dataclass, field
@@ -70,6 +73,85 @@ def run_stages(stages: list[Stage], max_hours: float | None, started: float, clo
     return ran
 
 
+# ----------------------------------------------------------------------------- frozen gate + summary (pure)
+
+SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+
+
+def frozen_problems(hub: dict | None, local: dict | None, need: list[str],
+                    files_at_rev: set[str] | None) -> list[str]:
+    """Why the battery may NOT start ([] = OK). `hub` is am_frozen.yaml as stored on the private Hub,
+    `local` configs/am_frozen.yaml if present, `need` the AM-family runs of the battery, `files_at_rev` the
+    store's files at the pinned revision (None if they could not be listed)."""
+    if not hub:
+        return ["no am_frozen.yaml on the private Hub store: freeze AM first (notebook 05)"]
+    store_ = hub.get("store") or {}
+    rev, repo = store_.get("revision") or "", store_.get("repo")
+    out = []
+    if not SHA_RE.match(rev):
+        out.append(f"store revision {rev!r} is not a pinned 40-hex commit sha")
+    local_rev = (local.get("store") or {}).get("revision") if local is not None else rev
+    if local_rev != rev:
+        out.append(f"configs/am_frozen.yaml pins {local_rev!r} but the Hub copy pins {rev!r}: "
+                   "delete the local file (the Hub copy is the frozen one)")
+    models = hub.get("models") or {}
+    for i in need:
+        m = models.get(i)
+        if not m:
+            out.append(f"{i} missing from am_frozen.yaml")
+            continue
+        if m.get("status") != "active" or m.get("local") or m.get("revision") != rev or m.get("hf_path") != repo:
+            out.append(f"{i} is not pinned to {repo}@{rev[:10]}")
+        if files_at_rev is None:
+            continue
+        sub = m.get("subfolder", i)
+        missing = [f for f in m.get("files") or [] if f"{sub}/{f}" not in files_at_rev]
+        if not m.get("files") or missing:
+            out.append(f"{i}: files missing at the pinned revision: {missing or 'no file list'}")
+    if files_at_rev is None and not out:
+        out.append(f"could not list {repo}@{rev[:10]} on the Hub (login / network?)")
+    return out
+
+
+def battery_jobs(attacks: dict) -> list:
+    """Every (run, attack, split) job of the trimmed battery, in BATTERY_STAGES order."""
+    from aftermarket.generate import make_jobs
+
+    jobs = []
+    for path, a in BATTERY_STAGES:
+        cfg = yaml.safe_load((REPO_ROOT / path).read_text(encoding="utf-8"))
+        jobs += make_jobs({**cfg, "attacks": a.split(",")}, attacks)
+    return jobs
+
+
+def battery_summary(jobs: list, gen_dir: Path) -> tuple[list[str], dict]:
+    """Per (run, attack): finished / total splits. A job is finished when its parquet is here or its manifest
+    (pulled from the Hub) says pushed. Local-only results (pushed=false) are listed: they die with the session."""
+    gen_dir = Path(gen_dir)
+    have = {p.stem for p in gen_dir.glob("*.parquet")}
+    pushed, unpushed = set(), set()
+    for p in gen_dir.glob("*.json"):
+        try:
+            m = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        (pushed if m.get("pushed") else unpushed).add(p.stem)
+    cells: dict[tuple[str, str], list[int]] = {}
+    pending = []
+    for j in jobs:
+        c = cells.setdefault((j.run_id, j.attack_id), [0, 0])
+        c[1] += 1
+        if j.name in have or j.name in pushed:
+            c[0] += 1
+        else:
+            pending.append(j.name)
+    lines = [f"{'run':10s} {'attack':7s} done"]
+    lines += [f"{r:10s} {a:7s} {d}/{n}" + ("" if d == n else "  <- pending") for (r, a), (d, n) in cells.items()]
+    names = {j.name for j in jobs}
+    return lines, {"done": len(jobs) - len(pending), "total": len(jobs), "pending": pending,
+                   "unpushed": sorted(unpushed & have & names)}
+
+
 # ----------------------------------------------------------------------------- commands
 
 def _env(**extra) -> dict:
@@ -103,7 +185,8 @@ def sh_parallel(args_per_gpu: list[list[str]]) -> None:
 
 # ----------------------------------------------------------------------------- stages
 
-def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool = False) -> list[Stage]:
+def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool = False,
+                 battery_only: bool = False) -> list[Stage]:
     from aftermarket.defense import budget, store
     from aftermarket.defense.harden import candidate_grid
     from aftermarket.defense.select import SELECTION, frozen_ids
@@ -174,6 +257,8 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
               estimate=lambda: {"gpu_s": 0.0, "wall_s": 0.0 if AM_FROZEN_YAML.exists() else 600.0,
                                 "n_jobs": 0 if AM_FROZEN_YAML.exists() else 1, "source": "a-priori"}),
     ]
+    if battery_only:
+        stages, with_battery = [], True
     if with_battery:
         for path, a in BATTERY_STAGES:
             who = "AM" if path == BATTERY else "controls"
@@ -186,15 +271,71 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     return stages
 
 
+def require_frozen(dcfg: dict) -> None:
+    """Battery gate: the Hub copy of am_frozen.yaml must pin every battery run (frozen_problems); it is
+    installed into configs/ if missing here. Exits with code 2 and the reasons otherwise."""
+    from huggingface_hub import HfApi, hf_hub_download
+
+    from aftermarket.defense import store
+    from aftermarket.generate import load_attacks
+    from aftermarket.load import AM_FROZEN_YAML
+
+    hub, files, text = None, None, None
+    try:
+        repo = store._repo(dcfg)
+        hub_path = hf_hub_download(repo, store.FROZEN_FILE, repo_type="model", force_download=True)
+        text = Path(hub_path).read_text(encoding="utf-8")
+        hub = yaml.safe_load(text)
+        rev = (hub.get("store") or {}).get("revision")
+        files = set(HfApi().list_repo_files(repo, repo_type="model", revision=rev)) if rev else None
+    except Exception as e:
+        print(f"Hub check: {type(e).__name__}: {e}", flush=True)
+    local = yaml.safe_load(AM_FROZEN_YAML.read_text(encoding="utf-8")) if AM_FROZEN_YAML.exists() else None
+    need = sorted({j.run_id for j in battery_jobs(load_attacks())})
+    problems = frozen_problems(hub, local, need, files)
+    if problems:
+        print("REFUSED: the AM battery needs a frozen AM pinned on the Hub.\n  - " + "\n  - ".join(problems), flush=True)
+        raise SystemExit(2)
+    if local is None:
+        AM_FROZEN_YAML.write_text(text, encoding="utf-8")
+        print(f"installed configs/{AM_FROZEN_YAML.name} from the Hub", flush=True)
+    s = hub["store"]
+    print(f"frozen AM OK: {', '.join(need)} pinned at {s['repo']}@{s['revision'][:10]} "
+          f"(frozen {hub.get('frozen_at_utc')}, recipe {hub.get('recipe')})", flush=True)
+
+
+def print_battery_summary(started: float, max_hours: float | None, frozen: bool = True) -> dict:
+    from aftermarket.generate import load_attacks
+
+    lines, s = battery_summary(battery_jobs(load_attacks()), REPO_ROOT / "results" / "gen")
+    print("\n== AM battery summary (test, --final) ==")
+    print("\n".join(lines))
+    print(f"jobs done {s['done']}/{s['total']} | session {(time.time() - started) / 3600:.2f} h"
+          + (f" of --max-hours {max_hours}" if max_hours else ""))
+    if s["unpushed"]:
+        print(f"WARNING {len(s['unpushed'])} results are local only (push failed), lost when the session ends: "
+              f"{s['unpushed']}. Push them: python -m aftermarket.generate --config <its config> --push-pending")
+    if not frozen:
+        print("REFUSED: no frozen AM pinned on the Hub, so nothing ran on test. Freeze AM in notebook 05 first.")
+    elif s["pending"]:
+        print(f"{len(s['pending'])} jobs left: commit this notebook again to resume")
+    else:
+        print("battery complete: judge it with notebooks/06_judge.ipynb on Colab")
+    return s
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="AM defense pipeline with a quota guard")
     ap.add_argument("--config", required=True)
     ap.add_argument("--max-hours", type=float, help="stop cleanly after the stage that crosses this session time")
     ap.add_argument("--session-start", type=float, help="epoch seconds the Kaggle session started (default: now)")
     ap.add_argument("--with-battery", action="store_true", help="also run the frozen AM family on test (--final)")
+    ap.add_argument("--battery-only", action="store_true",
+                    help="only the AM test battery (notebook 07); refuses unless AM is frozen and pinned on the Hub")
     ap.add_argument("--with-test-judge", action="store_true",
                     help="also judge the battery here (default: notebook 06 judges it on Colab, off the Kaggle quota)")
     ap.add_argument("--plan-only", action="store_true", help="print the estimate and exit")
+    ap.add_argument("--summary-only", action="store_true", help="print the AM battery status and exit")
     args = ap.parse_args(argv)
     started = args.session_start or time.time()
     dcfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
@@ -202,12 +343,21 @@ def main(argv: list[str] | None = None) -> None:
     from aftermarket.defense import budget, store
     from aftermarket.generate import pull_from_hub
 
-    # timings for the estimate: job manifests (json only) and defense metadata from the private Hub
     gen_cfg = yaml.safe_load((REPO_ROOT / DEV_A0).read_text(encoding="utf-8"))
+    if args.summary_only:  # manifests from the Hub count jobs finished in earlier sessions
+        from aftermarket.load import AM_FROZEN_YAML
+
+        pull_from_hub(gen_cfg, REPO_ROOT / gen_cfg["out_dir"], want=lambda stem: True, suffixes=(".json",))
+        print_battery_summary(started, args.max_hours, frozen=AM_FROZEN_YAML.exists())
+        return
+    if args.battery_only:
+        require_frozen(dcfg)
+    # timings for the estimate: job manifests (json only) and defense metadata from the private Hub
     pull_from_hub(gen_cfg, REPO_ROOT / gen_cfg["out_dir"], want=lambda stem: True, suffixes=(".json",))
-    store.pull_all(dcfg, want=lambda top: top in ("locate", "selection.json", store.FROZEN_FILE))
-    store.pull_all(dcfg, suffixes=(store.META,))
-    stages = build_stages(args.config, dcfg, args.with_battery, args.with_test_judge)
+    if not args.battery_only:
+        store.pull_all(dcfg, want=lambda top: top in ("locate", "selection.json", store.FROZEN_FILE))
+        store.pull_all(dcfg, suffixes=(store.META,))
+    stages = build_stages(args.config, dcfg, args.with_battery, args.with_test_judge, args.battery_only)
     print("Estimated cost of the work left (Kaggle quota = session wall time):")
     print(budget.fmt_table([(s.name, s.estimate()) for s in stages]))
     if args.max_hours:
