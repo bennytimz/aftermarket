@@ -27,12 +27,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-ATTACK_ORDER = ["A0", "A1", "A2", "A3", "A4q4", "A4q3", "A4q2", "A5raw", "A5bon"]
+# A4 headline = A4q3 (the bit width every model, AM included, has on test). A4q4 / A4q2 are extra data where they
+# exist (notebook 03 v2 was stopped early): ordered last and left out of retention (notes/limitations.md).
+EXTRA_ATTACKS = ["A4q4", "A4q2"]
+ATTACK_ORDER = ["A0", "A1", "A2", "A3", "A4q3", "A5raw", "A5bon", *EXTRA_ATTACKS]
 RUN_ORDER = ["BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP", "AM", "AM_rand0", "AM_rand1", "AM_all"]
 TEAM_RUNS = ["SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP"]
 DEV_CANDIDATE_PREFIX = "AMc_"  # AM dev candidates: never in the leaderboard (configs/models.yaml)
 N_BOOT, BOOT_SEED = 1000, 42
-RETENTION_FAMILIES = {"A1": ["A1"], "A2": ["A2"], "A3": ["A3"], "A4": ["A4q4", "A4q3", "A4q2"],
+RETENTION_FAMILIES = {"A1": ["A1"], "A2": ["A2"], "A3": ["A3"], "A4": ["A4q3"],
                       "A5": ["A5raw", "A5bon"]}
 # metric -> (split kind, item label column, NaN policy): item labels are aggregated over variants with item_any
 METRICS = {"asr_lg": ("harmful", "lg_unsafe", "drop"), "asr_wg": ("harmful", "wg_harmful", "drop"),

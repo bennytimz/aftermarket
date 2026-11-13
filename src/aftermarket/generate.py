@@ -602,9 +602,12 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--runs", help="comma-separated runs replacing the config's runs (e.g. an AM candidate)")
     ap.add_argument("--push-pending", action="store_true", help="only push local results with pushed=false")
     ap.add_argument("--no-pull", action="store_true", help="don't download finished results from the Hub first")
+    ap.add_argument("--gpus", help="comma-separated GPU ids replacing the config's (e.g. 0 on a one-T4 Colab)")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     cfg = select_runs(select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks), args.runs)
+    if args.gpus:
+        cfg = {**cfg, "gpus": [int(g) for g in args.gpus.split(",")]}
     out_dir = REPO_ROOT / cfg["out_dir"]
     if args.push_pending:
         left = push_pending(cfg, out_dir)

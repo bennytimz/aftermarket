@@ -75,14 +75,15 @@ def test_pairwise_pairs_by_item_and_skips_missing_reference():
 
 
 def test_families_of():
-    assert families_of(["A0", "A3", "A4q2", "A4q4", "A5bon"]) == {"A3": ["A3"], "A4": ["A4q4", "A4q2"],
-                                                                 "A5": ["A5bon"]}
+    assert families_of(["A0", "A3", "A4q3", "A4q2", "A4q4", "A5bon"]) == {"A3": ["A3"], "A4": ["A4q3"],
+                                                                         "A5": ["A5bon"]}
+    assert families_of(["A0", "A4q4", "A4q2"]) == {}  # extra bit widths never stand in for the A4 headline
 
 
 def test_retention_weights_each_family_equally():
-    # A0 ASR 0; A3 ASR 1.0; A4: q4 0, q3 0, q2 0.6 -> family 0.2. Retention = 1 - (1.0 + 0.2) / 2 = 0.4
-    df = frame({("BASE", "A0"): 0, ("BASE", "A3"): 10, ("BASE", "A4q4"): 0, ("BASE", "A4q3"): 0,
-                ("BASE", "A4q2"): 6})
+    # A0 ASR 0; A3 ASR 1.0; A4 = A4q3 ASR 0.2 (q4 / q2 are extra data, ignored). Retention = 1 - (1.0 + 0.2) / 2 = 0.4
+    df = frame({("BASE", "A0"): 0, ("BASE", "A3"): 10, ("BASE", "A4q4"): 0, ("BASE", "A4q3"): 2,
+                ("BASE", "A4q2"): 9})
     lab = item_labels(df, "asr_lg")
     mat = lab.pivot_table(index="item_id", columns="attack_id", values="y", aggfunc="first")
     r = item_retention(mat, mat.columns)

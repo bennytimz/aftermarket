@@ -9,7 +9,7 @@ Stages (each skips finished work, so a re-run resumes):
   [--with-battery: the frozen AM family on test (--final), cheap attacks first; AM gets A4 at 3-bit only,
    controls get A0, A2, A3 (notes/limitations.md). The test generations are judged by notebook 06 on Colab,
    off the Kaggle quota; --with-test-judge judges them here instead]
-  [--battery-only: the battery stages alone (notebook 07); refuses to start unless configs/am_frozen.yaml is
+  [--battery-only --part kaggle|colab: one part of the battery alone (notebook 07 / 08); refuses to start unless configs/am_frozen.yaml is
    pinned on the Hub (frozen_problems); --summary-only prints the per-cell battery status (battery_summary)]
 Before running, it prints the estimated quota-hours / GPU-hours per stage (budget.py). After each stage it
 checks the elapsed session time; once it reaches --max-hours it stops cleanly (no stage is interrupted) and
@@ -36,9 +36,14 @@ from aftermarket.data import REPO_ROOT
 
 DEV_A0, DEV_ATT = "configs/gen_defense_dev_a0.yaml", "configs/gen_defense_dev_attacks.yaml"
 BATTERY, CONTROLS = "configs/gen_am_test.yaml", "configs/gen_am_controls_test.yaml"
-# cheap first; AM gets A4 at 3-bit only; controls only face A0, A3, A2 (quota, notes/limitations.md)
-BATTERY_STAGES = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3"), (BATTERY, "A4q3"), (BATTERY, "A5bon"),
-                  (BATTERY, "A1"), (BATTERY, "A2"), (CONTROLS, "A2")]
+# The battery is split to fit the Kaggle quota (notes/limitations.md). Cheap attacks first in each part.
+#   kaggle (notebook 07, 2x T4): AM A0, A2, A3, A4q3, A5raw + controls A0, A2, A3
+#   colab  (notebook 08, 1x T4): AM A1, A5bon (+ team-model fill-in cells; the Hub check found none missing)
+# AM A4q3 (one ~1 h HQQ group) and AM A2 share a stage so they run on the two T4s side by side
+KAGGLE_BATTERY = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3"), (BATTERY, "A4q3,A2"), (CONTROLS, "A2")]
+COLAB_BATTERY = [(BATTERY, "A5bon"), (BATTERY, "A1")]
+BATTERY_STAGES = KAGGLE_BATTERY + COLAB_BATTERY
+PARTS = {"all": BATTERY_STAGES, "kaggle": KAGGLE_BATTERY, "colab": COLAB_BATTERY}
 
 
 @dataclass
@@ -113,12 +118,12 @@ def frozen_problems(hub: dict | None, local: dict | None, need: list[str],
     return out
 
 
-def battery_jobs(attacks: dict) -> list:
-    """Every (run, attack, split) job of the trimmed battery, in BATTERY_STAGES order."""
+def battery_jobs(attacks: dict, part: str = "all") -> list:
+    """Every (run, attack, split) job of the trimmed battery (or one part of it), in stage order."""
     from aftermarket.generate import make_jobs
 
     jobs = []
-    for path, a in BATTERY_STAGES:
+    for path, a in PARTS[part]:
         cfg = yaml.safe_load((REPO_ROOT / path).read_text(encoding="utf-8"))
         jobs += make_jobs({**cfg, "attacks": a.split(",")}, attacks)
     return jobs
@@ -186,14 +191,16 @@ def sh_parallel(args_per_gpu: list[list[str]]) -> None:
 # ----------------------------------------------------------------------------- stages
 
 def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool = False,
-                 battery_only: bool = False) -> list[Stage]:
+                 battery_only: bool = False, part: str = "all", gpus: str | None = None) -> list[Stage]:
+    """`part` picks the battery stages (PARTS); `gpus` (e.g. "0" on Colab) overrides the configs' GPUs for the
+    battery and the estimate."""
     from aftermarket.defense import budget, store
     from aftermarket.defense.harden import candidate_grid
     from aftermarket.defense.select import SELECTION, frozen_ids
     from aftermarket.generate import load_attacks, make_jobs
     from aftermarket.load import AM_FROZEN_YAML
 
-    b = dcfg["budget"]
+    b = {**dcfg["budget"], **({"gpus": len(gpus.split(","))} if gpus else {})}
     attacks = load_attacks()
     manifests = budget.read_manifests(REPO_ROOT / "results" / "gen")
     rates, ft_s = budget.prompt_rates(manifests), budget.ft_train_seconds(manifests)
@@ -260,10 +267,12 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     if battery_only:
         stages, with_battery = [], True
     if with_battery:
-        for path, a in BATTERY_STAGES:
+        gpu_arg = ["--gpus", gpus] if gpus else []
+        for path, a in PARTS[part]:
             who = "AM" if path == BATTERY else "controls"
             stages.append(Stage(f"test {who} {a}",
-                                (lambda path=path, a=a: sh("aftermarket.generate", "--config", path, "--final", "--attacks", a)),
+                                (lambda path=path, a=a: sh("aftermarket.generate", "--config", path, "--final", "--attacks", a,
+                                                            *gpu_arg)),
                                 enabled=AM_FROZEN_YAML.exists, estimate=est_gen(path, a.split(","))))
     if with_battery and test_judge:
         stages.append(Stage("AM test judge", lambda: sh("aftermarket.judge", "--config", "configs/judge.yaml"),
@@ -271,7 +280,7 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     return stages
 
 
-def require_frozen(dcfg: dict) -> None:
+def require_frozen(dcfg: dict, part: str = "all") -> None:
     """Battery gate: the Hub copy of am_frozen.yaml must pin every battery run (frozen_problems); it is
     installed into configs/ if missing here. Exits with code 2 and the reasons otherwise."""
     from huggingface_hub import HfApi, hf_hub_download
@@ -291,7 +300,7 @@ def require_frozen(dcfg: dict) -> None:
     except Exception as e:
         print(f"Hub check: {type(e).__name__}: {e}", flush=True)
     local = yaml.safe_load(AM_FROZEN_YAML.read_text(encoding="utf-8")) if AM_FROZEN_YAML.exists() else None
-    need = sorted({j.run_id for j in battery_jobs(load_attacks())})
+    need = sorted({j.run_id for j in battery_jobs(load_attacks(), part) if j.run_id.startswith("AM")})
     problems = frozen_problems(hub, local, need, files)
     if problems:
         print("REFUSED: the AM battery needs a frozen AM pinned on the Hub.\n  - " + "\n  - ".join(problems), flush=True)
@@ -304,11 +313,11 @@ def require_frozen(dcfg: dict) -> None:
           f"(frozen {hub.get('frozen_at_utc')}, recipe {hub.get('recipe')})", flush=True)
 
 
-def print_battery_summary(started: float, max_hours: float | None, frozen: bool = True) -> dict:
+def print_battery_summary(started: float, max_hours: float | None, frozen: bool = True, part: str = "all") -> dict:
     from aftermarket.generate import load_attacks
 
-    lines, s = battery_summary(battery_jobs(load_attacks()), REPO_ROOT / "results" / "gen")
-    print("\n== AM battery summary (test, --final) ==")
+    lines, s = battery_summary(battery_jobs(load_attacks(), part), REPO_ROOT / "results" / "gen")
+    print(f"\n== AM battery summary, part {part} (test, --final) ==")
     print("\n".join(lines))
     print(f"jobs done {s['done']}/{s['total']} | session {(time.time() - started) / 3600:.2f} h"
           + (f" of --max-hours {max_hours}" if max_hours else ""))
@@ -336,6 +345,9 @@ def main(argv: list[str] | None = None) -> None:
                     help="also judge the battery here (default: notebook 06 judges it on Colab, off the Kaggle quota)")
     ap.add_argument("--plan-only", action="store_true", help="print the estimate and exit")
     ap.add_argument("--summary-only", action="store_true", help="print the AM battery status and exit")
+    ap.add_argument("--part", choices=sorted(PARTS), default="all",
+                    help="battery part: kaggle (notebook 07), colab (notebook 08) or all")
+    ap.add_argument("--gpus", help="comma-separated GPUs for the battery (default: the configs'; Colab: 0)")
     args = ap.parse_args(argv)
     started = args.session_start or time.time()
     dcfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
@@ -348,17 +360,19 @@ def main(argv: list[str] | None = None) -> None:
         from aftermarket.load import AM_FROZEN_YAML
 
         pull_from_hub(gen_cfg, REPO_ROOT / gen_cfg["out_dir"], want=lambda stem: True, suffixes=(".json",))
-        print_battery_summary(started, args.max_hours, frozen=AM_FROZEN_YAML.exists())
+        print_battery_summary(started, args.max_hours, frozen=AM_FROZEN_YAML.exists(), part=args.part)
         return
-    if args.battery_only:
-        require_frozen(dcfg)
+    if args.battery_only and not args.plan_only:  # the estimate itself is harmless; running needs the frozen AM
+        require_frozen(dcfg, args.part)
     # timings for the estimate: job manifests (json only) and defense metadata from the private Hub
     pull_from_hub(gen_cfg, REPO_ROOT / gen_cfg["out_dir"], want=lambda stem: True, suffixes=(".json",))
     if not args.battery_only:
         store.pull_all(dcfg, want=lambda top: top in ("locate", "selection.json", store.FROZEN_FILE))
         store.pull_all(dcfg, suffixes=(store.META,))
-    stages = build_stages(args.config, dcfg, args.with_battery, args.with_test_judge, args.battery_only)
-    print("Estimated cost of the work left (Kaggle quota = session wall time):")
+    stages = build_stages(args.config, dcfg, args.with_battery, args.with_test_judge, args.battery_only,
+                          args.part, args.gpus)
+    print("Estimated cost of the work left (Colab, one T4: no Kaggle quota):" if args.battery_only and args.part == "colab"
+          else "Estimated cost of the work left (Kaggle quota = session wall time):")
     print(budget.fmt_table([(s.name, s.estimate()) for s in stages]))
     if args.max_hours:
         print(f"--max-hours {args.max_hours}: stops after the stage that crosses it "

@@ -510,3 +510,20 @@ def test_battery_only_stages_and_table_have_no_duplicate_rows():
     assert names == [f"test {'AM' if p == P.BATTERY else 'controls'} {a}" for p, a in P.BATTERY_STAGES]
     full = [s.name for s in P.build_stages("configs/defense.yaml", DCFG, with_battery=True)]
     assert len(full) == len(set(full)) and full[-len(names):] == names
+
+
+def test_battery_split_kaggle_colab():
+    k, c = P.battery_jobs(ATT, "kaggle"), P.battery_jobs(ATT, "colab")
+    assert not set(k) & set(c) and sorted(k + c) == sorted(P.battery_jobs(ATT))
+    by = lambda jobs, runs: {j.attack_id for j in jobs if j.run_id in runs}
+    ctl = {"AM_rand0", "AM_rand1", "AM_all"}
+    assert by(k, {"AM"}) == {"A0", "A2", "A3", "A4q3", "A5raw"} and by(k, ctl) == {"A0", "A2", "A3"}
+    assert by(c, {"AM"}) == {"A1", "A5bon"} and not by(c, ctl)
+
+
+def test_colab_part_on_one_gpu_is_serial():
+    st = P.build_stages("configs/defense.yaml", DCFG, False, battery_only=True, part="colab", gpus="0")
+    assert [s.name for s in st] == ["test AM A5bon", "test AM A1"]
+    for s in st:
+        e = s.estimate()
+        assert e["wall_s"] == pytest.approx(e["gpu_s"])  # one T4: wall time = GPU time

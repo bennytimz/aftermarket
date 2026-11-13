@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 
 DATA = Path(__file__).resolve().parent / "data"
-ATTACK_ORDER = ["A0", "A1", "A2", "A3", "A4q4", "A4q3", "A4q2", "A5raw", "A5bon"]
+ATTACK_ORDER = ["A0", "A1", "A2", "A3", "A4q3", "A5raw", "A5bon", "A4q4", "A4q2"]  # A4 = A4q3; q4/q2 extra
 RUN_ORDER = ["BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP", "AM", "AM_rand0", "AM_rand1", "AM_all"]
 METRICS = {  # label -> (metric id, lower is better)
     "Attack success, Llama Guard (primary)": ("asr_lg", True),
@@ -20,7 +20,7 @@ METRICS = {  # label -> (metric id, lower is better)
     "MMLU accuracy": ("mmlu", False),
 }
 ATTACK_NAMES = {"A0": "as released", "A1": "benign fine-tune", "A2": "harmful fine-tune", "A3": "abliteration",
-                "A4q4": "4-bit", "A4q3": "3-bit", "A4q2": "2-bit", "A5raw": "template removed",
+                "A4q4": "4-bit (extra, partial)", "A4q3": "3-bit (A4)", "A4q2": "2-bit (extra, partial)", "A5raw": "template removed",
                 "A5bon": "best-of-8 perturbations"}
 FILES = {"ci": "cell_ci.csv", "retention": "retention.csv", "retention_pairwise": "retention_pairwise.csv",
          "agreement": "agreement.csv", "human_agreement": "human_agreement.csv"}

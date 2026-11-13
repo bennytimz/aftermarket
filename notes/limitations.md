@@ -28,13 +28,23 @@ write-up as written here.
   ships. The A4 rows of AM are reported with this marked.
 
 ## Test battery (quota)
-- **AM faces A4 at 3-bit only.** AM's battery is A0, A1, A2, A3, A4q3, A5raw and A5bon; A4q4 and A4q2 were
-  dropped for AM (the team models keep their full A4q4/q3/q2 data). 3-bit is the A4 setting AM was selected
-  on (dev A4q3), so the A4 result we can claim is the 3-bit one; we make no claim about AM at 4-bit or 2-bit.
-  In the per-model retention table AM's A4 family is A4q3 alone while the team models average three bit
-  widths, so AM's A4 term is not directly comparable to theirs: compare it with their A4q3 cell. Pairwise
-  retention (AM vs BASE, team model vs AM) uses only attacks both models have, so it is like for like. Taken because the Kaggle GPU quota ran short (about 8.75 h left with no weekly reset before the
-  deadline) and HQQ 3/2-bit generation is several times slower than fp16 A0 (measured in notebook 03 v2).
+- **A4 is reported at 3-bit (A4q3) for every model.** Notebook 03 v2 (team models x A3/A4 on test) was stopped
+  after 6.3 h because HQQ generation is about 6x slower than fp16 A0 (measured: ~7.1 s vs ~1.2 s per harmful
+  prompt), to keep quota for notebook 05 and the AM battery. A Hub check of the test cells it left:
+  every team model (and BASE) has A3 and A4q3 on harmful_test, xstest_test and mmlu_test, so no fill-in cells
+  were needed. A4q4 exists only for BASE, GC and IL (harmful_test and mmlu_test; no XSTest under A4q4 by
+  design) and A4q2 for no model on test. The leaderboard's A4 column and the A4 term of every retention score
+  are therefore A4q3 alone, for team models and AM alike, so A4 is like for like across rows. A4q4 / A4q2 cells
+  are shown as extra data where they exist (last columns, marked partial) and never enter retention or
+  rankings. We make no claim about any model at 4-bit or 2-bit beyond those extra cells. This changes PLAN.md
+  §4's A4 (4/3/2-bit) to 3-bit only on test; 3-bit is also the A4 setting AM was selected on (dev A4q3).
+- **AM's battery skips A4q4 and A4q2** for the same reason: AM faces A0, A1, A2, A3, A4q3, A5raw and A5bon.
+- **Part of the AM battery ran on Colab, not Kaggle.** With 6 h 28 min of Kaggle quota left and no reset before
+  the deadline, AM under A1 and A5bon ran on a free Colab T4 (notebook 08, one GPU) and the rest on Kaggle 2x T4
+  (notebook 07). Same GPU model, seed, configs, batch size and greedy decoding; only the run order across GPUs
+  differs. Colab's image ships its own torch / transformers builds (bitsandbytes, peft and accelerate are pinned
+  as in requirements.txt), so these cells can differ from a Kaggle run in floating-point detail; each manifest
+  records the git sha, config and model revision. Judging also runs on Colab (notebook 06).
 - **Controls run a reduced battery.** AM_rand0, AM_rand1 and AM_all face only A0, A2 and A3 (no A4): enough
   to show whether placing the hardening on L* matters for the weight-level attacks AM targets, not a full
   leaderboard row for each control. Whether L* matters under quantization is therefore not tested on test;
