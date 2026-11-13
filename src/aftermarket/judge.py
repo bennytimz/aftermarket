@@ -297,13 +297,9 @@ def _judge_file(p: Path, out_dir: Path, cfg: dict, guard, wildguard) -> None:
         msg += f" | acc {df['mmlu_correct'].mean():.1%} | unparsed {df['mmlu_pred'].isna().mean():.1%}"
     msg += f" | kw refusal {(df['refusal_label'] == 'refusal').mean():.1%}"
     print(msg, flush=True)
-    if cfg.get("push", {}).get("enabled"):
-        from aftermarket.generate import push_files
+    from aftermarket.generate import try_push
 
-        try:
-            push_files([out_dir / p.name], cfg["push"]["hf_repo"], cfg["push"]["path_in_repo"])
-        except Exception as e:
-            print(f"  PUSH FAILED: {type(e).__name__}: {e}", flush=True)
+    try_push([out_dir / p.name], cfg)  # non-fatal; private repos only
 
 
 if __name__ == "__main__":

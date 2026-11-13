@@ -29,6 +29,8 @@ import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from functools import lru_cache
+
 import yaml
 
 from aftermarket.data import load_split, verify_checksums
@@ -130,21 +132,85 @@ def assign_jobs(jobs: list[Job], n_workers: int, cfg: dict, attacks: dict | None
 
 # ----------------------------------------------------------------------------- HF push (private only)
 
-def ensure_private_repo(repo_id: str) -> None:
+PUSH_DISABLED_ENV = "AFTERMARKET_PUSH_DISABLED"  # set by the runner when the preflight push check fails
+
+
+class PublicRepoError(RuntimeError):
+    """The target repo is public: generations must never go there (PLAN.md §9)."""
+
+
+@lru_cache(maxsize=None)
+def resolve_repo_id(name: str) -> str:
+    """'aftermarket-runs' -> '<whoami name>/aftermarket-runs'; a full 'ns/name' is kept as is.
+
+    The HF namespace comes from the logged-in token (HF usernames can differ in case from GitHub's).
+    """
+    if "/" in name:
+        return name
+    from huggingface_hub import whoami
+
+    return f"{whoami()['name']}/{name}"
+
+
+def ensure_private_repo(repo_id: str) -> str:
+    """Create the dataset repo as private if missing; raise PublicRepoError if it is public. Returns the full id."""
     from huggingface_hub import HfApi
 
+    repo_id = resolve_repo_id(repo_id)
     api = HfApi()
     api.create_repo(repo_id, repo_type="dataset", private=True, exist_ok=True)
     if not api.repo_info(repo_id, repo_type="dataset").private:
-        raise RuntimeError(f"{repo_id} is PUBLIC: refusing to push generations (PLAN.md §9)")
+        raise PublicRepoError(f"{repo_id} is PUBLIC: refusing to push generations (PLAN.md §9)")
+    return repo_id
 
 
-def push_files(paths: list[Path], repo_id: str, path_in_repo: str) -> None:
+def push_files(paths: list[Path], repo_id: str, path_in_repo: str) -> str:
+    """Push files to a PRIVATE dataset repo (privacy re-checked on every push). Raises on any failure."""
     from huggingface_hub import CommitOperationAdd, HfApi
 
-    ensure_private_repo(repo_id)  # re-checked on every push
+    repo_id = ensure_private_repo(repo_id)
     ops = [CommitOperationAdd(path_in_repo=f"{path_in_repo}/{p.name}", path_or_fileobj=str(p)) for p in paths]
     HfApi().create_commit(repo_id, ops, repo_type="dataset", commit_message=f"add {paths[0].stem}")
+    return repo_id
+
+
+def try_push(paths: list[Path], cfg: dict) -> tuple[bool, str | None]:
+    """Non-fatal push: (True, None) on success, else (False, reason) after a clear warning. Files stay local."""
+    push = cfg.get("push", {})
+    if not push.get("enabled"):
+        return False, "push disabled in config"
+    if os.environ.get(PUSH_DISABLED_ENV):
+        return False, os.environ[PUSH_DISABLED_ENV]
+    try:
+        push_files(paths, push["hf_repo"], push["path_in_repo"])
+        return True, None
+    except PublicRepoError as e:
+        reason = str(e)
+    except Exception as e:
+        reason = f"{type(e).__name__}: {e}"
+    print(f"  WARNING push failed for {paths[0].name} (kept locally, pushed=false): {reason}", flush=True)
+    return False, reason
+
+
+def push_pending(cfg: dict, out_dir: Path) -> list[str]:
+    """Push every local result whose manifest says pushed=false. Returns names still unpushed."""
+    left = []
+    for mpath in sorted(Path(out_dir).glob("*.json")):
+        m = json.loads(mpath.read_text(encoding="utf-8"))
+        pq = mpath.with_suffix(".parquet")
+        if m.get("pushed") or not pq.exists():
+            continue
+        m.pop("push_error", None)
+        m["pushed"] = True
+        mpath.write_text(json.dumps(m, indent=1), encoding="utf-8")
+        ok, err = try_push([pq, mpath], cfg)
+        if not ok:
+            m["pushed"], m["push_error"] = False, err
+            mpath.write_text(json.dumps(m, indent=1), encoding="utf-8")
+            left.append(mpath.stem)
+        else:
+            print(f"pushed {mpath.stem}", flush=True)
+    return left
 
 
 # ----------------------------------------------------------------------------- generation (torch)
@@ -263,14 +329,14 @@ def run_job(model, tok, job: Job, cfg: dict, out_dir: Path, attack: dict, attack
         "git_sha": _git_sha(), "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "config": cfg,
     }
     mpath = pq.with_suffix(".json")
+    # the pushed copy says pushed=true; if the push fails the local manifest is rewritten with pushed=false
+    manifest["pushed"] = bool(cfg.get("push", {}).get("enabled")) and not os.environ.get(PUSH_DISABLED_ENV)
     mpath.write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     tmp.replace(pq)  # parquet appears only when complete: skip logic never sees partial files
-    if cfg.get("push", {}).get("enabled"):
-        try:
-            push_files([pq, mpath], cfg["push"]["hf_repo"], cfg["push"]["path_in_repo"])
-            manifest["pushed"] = True
-        except Exception as e:  # keep generating; re-push later
-            print(f"  PUSH FAILED for {job.name}: {type(e).__name__}: {e}", flush=True)
+    ok, err = try_push([pq, mpath], cfg)
+    if not ok:
+        manifest["pushed"], manifest["push_error"] = False, err
+        mpath.write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     return manifest
 
 
@@ -338,8 +404,15 @@ def run_jobs(cfg: dict, config_path: str, final: bool) -> list[Job]:
     print(f"{len(all_jobs)} jobs, {len(todo)} pending")
     if not todo:
         return []
+    push_env = {}
     if cfg.get("push", {}).get("enabled"):
-        ensure_private_repo(cfg["push"]["hf_repo"])
+        try:  # preflight: generation never depends on the push
+            print(f"pushing to private dataset {ensure_private_repo(cfg['push']['hf_repo'])}")
+        except Exception as e:
+            reason = f"preflight failed: {type(e).__name__}: {e}"
+            print(f"WARNING: {reason}\nGenerating anyway; results stay local with pushed=false. "
+                  f"Fix access, then: python -m aftermarket.generate --config {config_path} --push-pending", flush=True)
+            push_env = {PUSH_DISABLED_ENV: reason[:500]}
     gpus = cfg["gpus"]
     plan = assign_jobs(todo, len(gpus), cfg, attacks)
     (out_dir / "logs").mkdir(parents=True, exist_ok=True)
@@ -348,7 +421,7 @@ def run_jobs(cfg: dict, config_path: str, final: bool) -> list[Job]:
         if not js:
             continue
         print(f"GPU {gpu}: {[j.name for j in js]}")
-        env = {**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "PYTHONUNBUFFERED": "1",
+        env = {**os.environ, **push_env, "CUDA_VISIBLE_DEVICES": str(gpu), "PYTHONUNBUFFERED": "1",
                "PYTHONPATH": str(REPO_ROOT / "src") + os.pathsep + os.environ.get("PYTHONPATH", "")}
         cmd = [sys.executable, "-m", "aftermarket.generate", "--config", config_path, "--worker",
                json.dumps([asdict(j) for j in js])] + (["--final"] if final else [])
@@ -370,10 +443,15 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--config", required=True)
     ap.add_argument("--final", action="store_true", help="allow test splits: leaderboard cells or frozen AM only")
     ap.add_argument("--attacks", help="comma-separated subset of the config's attacks to run now (cost ordering)")
+    ap.add_argument("--push-pending", action="store_true", help="only push local results with pushed=false")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     cfg = select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks)
     out_dir = REPO_ROOT / cfg["out_dir"]
+    if args.push_pending:
+        left = push_pending(cfg, out_dir)
+        print(f"still unpushed: {left}")
+        raise SystemExit(1 if left else 0)
     if args.worker:
         jobs = [Job(**d) for d in json.loads(args.worker)]
         check_final([j.split for j in jobs], args.final)
