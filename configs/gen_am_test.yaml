@@ -1,0 +1,18 @@
+# The frozen AM and its controls through the full A0-A5 battery on test (PLAN.md §5-6). --final, and only
+# after aftermarket.defense.select --stage freeze wrote configs/am_frozen.yaml (generate refuses otherwise).
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_am_test.yaml --final --attacks A0,A3,A5raw
+seed: 42
+runs: [AM, AM_rand0, AM_rand1, AM_rand2, AM_all]
+attacks: [A0, A3, A5raw, A4q4, A4q3, A4q2, A5bon, A1, A2]
+splits: [harmful_test, xstest_test, mmlu_test]
+precision: fp16
+batch_size: 16
+max_new_tokens:
+  default: 256
+  mmlu: 8
+gpus: [0, 1]
+out_dir: results/gen
+push:
+  enabled: true
+  hf_repo: aftermarket-runs
+  path_in_repo: gen

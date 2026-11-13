@@ -128,13 +128,21 @@ models:
       Alpaca LoRA (drifted) merged, then safetune.apply_safety_vector_restore (rank 8). Built in fp16.
       Its tokenizer.json is 154 bytes larger than BASE's; the token-ID assert in load.py checks it.
 
+  # Our defense (PLAN.md §6). Placeholders until frozen: aftermarket.defense.select --stage freeze writes
+  # configs/am_frozen.yaml (pinned private-Hub revision, L*, recipe, quant shield), which load_registry merges
+  # in, turning these into active models for the A0-A5 battery (--final). Dev candidates (AMc_*) come from
+  # local defense folders and are never in the leaderboard.
   AM:
     name: Aftermarket-hardened (ours)
     status: planned
-    hf_path: TODO  # published after PLAN.md §6
+    hf_path: TODO  # filled by am_frozen.yaml
     fix_type: combined
     format: lora
     base: BASE
+  AM_rand0: {name: "AM control: random layers (seed 0)", status: planned, format: lora, base: BASE}
+  AM_rand1: {name: "AM control: random layers (seed 1)", status: planned, format: lora, base: BASE}
+  AM_rand2: {name: "AM control: random layers (seed 2)", status: planned, format: lora, base: BASE}
+  AM_all: {name: "AM control: SafeGrad on all layers", status: planned, format: lora, base: BASE}
 
 optional:
   RELAPSE:

@@ -104,6 +104,31 @@ def check_final(splits: list[str], final: bool) -> None:
         raise SystemExit(f"splits {test} are test sets: pass --final (leaderboard cells / frozen AM only; tune on dev splits)")
 
 
+def check_defense_runs(runs: list[str], splits: list[str], registry: dict | None = None) -> None:
+    """AM is frozen before its test run: AM-family runs on test must come from configs/am_frozen.yaml
+    (pinned Hub revision), never from local dev-time folders; dev candidates (AMc_*) never touch test."""
+    from aftermarket.load import load_registry
+
+    test = [s for s in splits if s.endswith("_test")]
+    if not test:
+        return
+    reg = registry or load_registry()
+    for r in runs:
+        if r.startswith("AMc_"):
+            raise SystemExit(f"{r} is a dev-time AM candidate: it never runs on test splits")
+        if r.startswith("AM"):
+            spec = reg["models"].get(r, {})
+            if spec.get("status") != "active" or spec.get("local") or not spec.get("revision"):
+                raise SystemExit(f"{r} is not frozen (configs/am_frozen.yaml with a pinned revision): no test run yet")
+
+
+def select_runs(cfg: dict, runs_arg: str | None) -> dict:
+    """Override cfg["runs"] (e.g. a dev-time AM candidate chosen at run time)."""
+    if not runs_arg:
+        return cfg
+    return {**cfg, "runs": [r.strip() for r in runs_arg.split(",") if r.strip()]}
+
+
 def max_new_tokens(cfg: dict, split: str) -> int:
     m = cfg["max_new_tokens"]
     return m["mmlu"] if split.startswith("mmlu") else m["default"]
@@ -115,11 +140,21 @@ def _job_cost(job: Job, cfg: dict, attacks: dict | None = None) -> float:
     return SPLIT_SIZES.get(job.split, 200) * mult * (max_new_tokens(cfg, job.split) + 32)
 
 
+def group_key(job: Job, attacks: dict | None = None) -> tuple[str, str]:
+    """One model load (+ one training run) per group. Fine-tunes group by the run whose adapter is trained,
+    so RL / RL_noguard share BASE's A1/A2 adapter (identical weights, data and seed)."""
+    if (attacks or {}).get(job.attack_id, {}).get("kind") == "finetune":
+        from aftermarket.attacks.finetune import train_source_run
+
+        return train_source_run(job.run_id), job.attack_id
+    return job.run_id, job.attack_id
+
+
 def assign_jobs(jobs: list[Job], n_workers: int, cfg: dict, attacks: dict | None = None) -> list[list[Job]]:
-    """Group jobs by (run, attack) (one model load + attack each), then longest-first onto the least-loaded worker."""
+    """Group jobs (group_key: one model load + attack each), then longest-first onto the least-loaded worker."""
     groups: dict[tuple[str, str], list[Job]] = {}
     for j in sorted(jobs):
-        groups.setdefault((j.run_id, j.attack_id), []).append(j)
+        groups.setdefault(group_key(j, attacks), []).append(j)
     loads = [0.0] * n_workers
     out: list[list[Job]] = [[] for _ in range(n_workers)]
 
@@ -407,17 +442,19 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
     """Run jobs on this process's GPU: per (run, attack), load + attack once, then every split."""
     import torch
 
-    from aftermarket.load import free_memory
+    from aftermarket.load import free_memory, retarget
 
     attacks = load_attacks()
     torch.manual_seed(cfg["seed"])
     groups: dict[tuple[str, str], list[Job]] = {}
     for j in jobs:
-        groups.setdefault((j.run_id, j.attack_id), []).append(j)
-    for (run_id, attack_id), js in groups.items():
+        groups.setdefault(group_key(j, attacks), []).append(j)
+    for (_, attack_id), js in groups.items():
         js = pending_jobs(js, out_dir)
         if not js:
             continue
+        run_id = js[0].run_id
+        shared = sorted({j.run_id for j in js})
         model = tok = None
         cleanup = None
         try:  # one failing (run, attack) must not stop the others on this GPU
@@ -432,7 +469,13 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
             for job in js:
                 if parquet_path(out_dir, job).exists():
                     continue
-                m = run_job(model, tok, job, cfg, out_dir, attack, info)
+                job_info = info
+                if len(shared) > 1:  # e.g. BASE / RL / RL_noguard on one adapter: only the eval template differs
+                    retarget(model, tok, job.run_id)
+                    job_info = {**info, "adapter_shared_with": shared,
+                                "adapter_note": "template-only fixes share BASE's weights; one adapter trained "
+                                                "on BASE, eval chat template per run"}
+                m = run_job(model, tok, job, cfg, out_dir, attack, job_info)
                 print(f"[{job.name}] {m['n_prompts']} prompts in {m['seconds']}s = {m['prompts_per_sec']} prompts/s, "
                       f"{m['new_tokens_per_sec']} tok/s, bs={m['batch_size_final']}, "
                       f"hit max_new_tokens={m['finish_length_frac']:.0%}", flush=True)
@@ -462,6 +505,7 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
     """Plan, then launch one worker process per GPU (CUDA_VISIBLE_DEVICES) and wait."""
     out_dir = REPO_ROOT / cfg["out_dir"]
     check_final(cfg["splits"], final)
+    check_defense_runs(cfg["runs"], cfg["splits"])
     verify_checksums()
     attacks = load_attacks()
     for a in cfg["attacks"]:
@@ -495,7 +539,7 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
         env = {**os.environ, **push_env, "CUDA_VISIBLE_DEVICES": str(gpu), "PYTHONUNBUFFERED": "1",
                "PYTHONPATH": str(REPO_ROOT / "src") + os.pathsep + os.environ.get("PYTHONPATH", "")}
         cmd = [sys.executable, "-m", "aftermarket.generate", "--config", config_path, "--worker",
-               json.dumps([asdict(j) for j in js])] + (["--final"] if final else [])
+               json.dumps([asdict(j) for j in js]), "--runs", ",".join(cfg["runs"])] + (["--final"] if final else [])
         p = subprocess.Popen(cmd, env=env, cwd=REPO_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         t = threading.Thread(target=_stream, args=(p, f"[gpu{gpu}]", out_dir / "logs" / f"gpu{gpu}.log"), daemon=True)
         t.start()
@@ -514,11 +558,12 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--config", required=True)
     ap.add_argument("--final", action="store_true", help="allow test splits: leaderboard cells or frozen AM only")
     ap.add_argument("--attacks", help="comma-separated subset of the config's attacks to run now (cost ordering)")
+    ap.add_argument("--runs", help="comma-separated runs replacing the config's runs (e.g. an AM candidate)")
     ap.add_argument("--push-pending", action="store_true", help="only push local results with pushed=false")
     ap.add_argument("--no-pull", action="store_true", help="don't download finished results from the Hub first")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
-    cfg = select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks)
+    cfg = select_runs(select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks), args.runs)
     out_dir = REPO_ROOT / cfg["out_dir"]
     if args.push_pending:
         left = push_pending(cfg, out_dir)
@@ -527,6 +572,7 @@ def main(argv: list[str] | None = None) -> None:
     if args.worker:
         jobs = [Job(**d) for d in json.loads(args.worker)]
         check_final([j.split for j in jobs], args.final)
+        check_defense_runs([j.run_id for j in jobs], [j.split for j in jobs])
         run_worker(jobs, cfg, out_dir)
     else:
         if run_jobs(cfg, args.config, args.final, pull=not args.no_pull):

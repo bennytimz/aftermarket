@@ -11,8 +11,10 @@ Per (model run, attack), once:
 Adapters are never pushed: generate.push_files refuses anything but .parquet/.json and anything under
 ADAPTER_ROOT (PLAN.md §9).
 
-Chat template for training: the model's own (native), except RL, whose guard is a prompt-level fix the
-attacker would not train with: RL trains with BASE's template and is evaluated with its guard template.
+Template-only fixes (RL, RL_noguard) have BASE's weights and the attacker trains without the guard, so
+their training run is identical to BASE's (same weights, template, data, seed). They REUSE BASE's adapter:
+the runner groups them with BASE (generate.group_key), trains once, and only the eval chat template differs.
+Each manifest records `adapter_trained_on_run` and `adapter_shared_with`.
 """
 
 from __future__ import annotations
@@ -51,15 +53,24 @@ def config_hash(tc: dict) -> str:
     return hashlib.sha256(json.dumps(tc, sort_keys=True).encode()).hexdigest()[:16]
 
 
-def training_plan(run_id: str, attack: dict, registry: dict | None = None) -> dict:
-    """What gets trained for this run: identical hparams + data for every run; only the chat template differs."""
+def train_source_run(run_id: str, registry: dict | None = None) -> str:
+    """The run whose adapter `run_id` uses: template-only fixes share BASE's weights, so they reuse BASE's."""
     from aftermarket.load import load_registry, resolve_run
 
     reg = registry or load_registry()
     model_id, _ = resolve_run(run_id, reg)
-    fmt = reg["models"][model_id]["format"]
-    return {"model_id": model_id, "hparams": train_config(attack), "data": attack["data"],
-            "train_template": "base" if fmt == "template" else "native"}
+    return "BASE" if reg["models"][model_id]["format"] == "template" else run_id
+
+
+def training_plan(run_id: str, attack: dict, registry: dict | None = None) -> dict:
+    """What gets trained for this run: identical hparams + data for every run (template runs -> BASE's plan)."""
+    from aftermarket.load import load_registry, resolve_run
+
+    reg = registry or load_registry()
+    source = train_source_run(run_id, reg)
+    model_id, _ = resolve_run(source, reg)
+    return {"trained_on_run": source, "model_id": model_id, "hparams": train_config(attack), "data": attack["data"],
+            "train_template": "native"}
 
 
 def adapter_dir(run_id: str, attack_id: str) -> Path:
@@ -162,12 +173,13 @@ def finetune_and_load(run_id: str, attack_id: str, attack: dict, cfg: dict):
     from peft import PeftModel
 
     from aftermarket.ft_data import load_ft
-    from aftermarket.load import finalize_model, get_spec, load_model, resolve_run
+    from aftermarket.load import finalize_model, get_spec, load_model, resolve_run, retarget
 
     plan = training_plan(run_id, attack)
-    model_id, template = resolve_run(run_id)
+    model_id = plan["model_id"]  # weights the adapter is trained on and merged into (BASE for template runs)
+    _, template = resolve_run(run_id)
     tc = plan["hparams"]
-    d = adapter_dir(run_id, attack_id)
+    d = adapter_dir(plan["trained_on_run"], attack_id)
     shutil.rmtree(d, ignore_errors=True)
     d.mkdir(parents=True)
 
@@ -180,12 +192,14 @@ def finetune_and_load(run_id: str, attack_id: str, attack: dict, cfg: dict):
         gc.collect(); torch.cuda.empty_cache()
         print(f"[{run_id}/{attack_id}] trained in {info['train_seconds']}s, loss {info['loss_first10']} -> "
               f"{info['loss_last10']}, peak {info['peak_vram_gb']} GB", flush=True)
-        model, tok = load_model(model_id, precision=cfg["precision"], template=template)
+        model, tok = load_model(model_id, precision=cfg["precision"], template="native")
         model = PeftModel.from_pretrained(model, str(d)).merge_and_unload()
-        model = finalize_model(model, model_id, get_spec(model_id), template, tok)
+        model = finalize_model(model, model_id, get_spec(model_id), "native", tok)
+        retarget(model, tok, run_id)  # eval identity + chat template of the requested run (RL: guard on)
     except BaseException:
         cleanup()
         raise
     info.update({"attack": attack_id, "kind": "finetune", "data": plan["data"], "train_template": plan["train_template"],
+                 "adapter_trained_on_run": plan["trained_on_run"],
                  "train_config": tc, "train_config_hash": config_hash(tc), "adapter_location": "local temp, deleted"})
     return model, tok, info, cleanup

@@ -72,3 +72,11 @@ finetune:
   max_jaccard_vs_splits: 0.5      # char-3gram Jaccard vs EVERY eval/calib prompt, checked exhaustively
   # Harmful response text is never committed (PLAN.md §9): data/ft/ft_a2_spec.json stores row indices +
   # sha256; aftermarket.ft_data rebuilds the text from the pinned dataset at training time and verifies it.
+
+# AM hardening data (PLAN.md §6.2). Build: python -m aftermarket.ft_data --safety-only
+safety_train:
+  out: data/ft/safety_train.jsonl
+  seed: 4343
+  harmful_refusals: 300   # LLM-LAT/harmful-dataset 'chosen' column = refusals; rows disjoint from A2's 100;
+                          # prompts far from every eval/calib prompt and from A2's harmful prompts
+  benign: 300             # Alpaca, not in A1/A2/calib, far from every eval/calib prompt and from A1's prompts

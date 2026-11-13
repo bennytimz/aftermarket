@@ -83,8 +83,28 @@ def test_training_config_identical_across_models_and_attacks():
     assert len(hashes) == 1
     for (r, a), p in plans.items():
         assert p["data"] == {"A1": "ft_a1", "A2": "ft_a2"}[a]
-    # only RL (guard = prompt-level fix) trains with BASE's template; the guard is attached at eval only
-    assert {r for (r, _), p in plans.items() if p["train_template"] == "base"} == {"RL", "RL_noguard"}
+    # template-only fixes (RL, RL_noguard) reuse BASE's adapter: identical plan, guard attached at eval only
+    for a in ("A1", "A2"):
+        assert plans[("RL", a)] == plans[("RL_noguard", a)] == plans[("BASE", a)]
+        assert plans[("RL", a)]["trained_on_run"] == "BASE"
+    assert {p["trained_on_run"] for (r, _), p in plans.items() if r not in ("RL", "RL_noguard")} ==         {"BASE", "SDT", "GC", "IL", "ST", "SP"}
+
+
+def test_rl_runs_grouped_with_base_for_finetune_only():
+    jobs = g.make_jobs({"runs": ["BASE", "RL", "RL_noguard", "SDT"], "attacks": ["A1", "A3"], "splits": ["harmful_dev"]})
+    keys = {(j.run_id, j.attack_id): g.group_key(j, ATTACKS) for j in jobs}
+    assert keys[("RL", "A1")] == keys[("RL_noguard", "A1")] == keys[("BASE", "A1")] == ("BASE", "A1")
+    assert keys[("RL", "A3")] == ("RL", "A3")  # weight attacks still run per run
+    w = g.assign_jobs(jobs, 2, {"max_new_tokens": {"default": 256, "mmlu": 8}}, ATTACKS)
+    a1_workers = {i for i, ws in enumerate(w) for j in ws if j.attack_id == "A1" and j.run_id != "SDT"}
+    assert len(a1_workers) == 1  # BASE/RL/RL_noguard A1 on one GPU: trained once
+
+
+def test_weights_id():
+    from aftermarket.load import weights_id
+
+    assert weights_id("RL") == weights_id("BASE") == "BASE"
+    assert weights_id("SDT") == "SDT"
 
 
 def test_training_config_matches_spec():

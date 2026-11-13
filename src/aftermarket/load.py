@@ -53,9 +53,35 @@ TOKEN_PROBES = [
 
 # ----------------------------------------------------------------------------- config
 
+AM_FROZEN_YAML = REPO_ROOT / "configs" / "am_frozen.yaml"
+
+
 def load_registry(path: str | Path = MODELS_YAML) -> dict:
+    """models.yaml, plus our own defense models when present (PLAN.md §6):
+    configs/am_frozen.yaml (frozen AM + controls, pinned Hub revisions) and local defense folders
+    ($AFTERMARKET_DEFENSE_DIR, dev-time candidates). Extra ids must start with 'AM' and may only fill a
+    'planned' placeholder, never replace a team's model."""
     with open(path, encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        reg = yaml.safe_load(f)
+    if Path(path) == MODELS_YAML:
+        merge_defense_models(reg)
+    return reg
+
+
+def merge_defense_models(reg: dict, frozen_path: Path = AM_FROZEN_YAML, local_root: Path | None = None) -> dict:
+    from aftermarket.defense.store import local_specs
+
+    extra = {}
+    if Path(frozen_path).exists():
+        extra.update(yaml.safe_load(Path(frozen_path).read_text(encoding="utf-8")).get("models", {}))
+    for mid, spec in local_specs(local_root).items():
+        extra.setdefault(mid, spec)  # frozen (pinned Hub) entries win over local folders of the same id
+    for mid, spec in extra.items():
+        cur = reg["models"].get(mid)
+        if not mid.startswith("AM") or (cur is not None and cur.get("status") != "planned"):
+            raise ValueError(f"defense model {mid!r} would replace a non-placeholder model")
+        reg["models"][mid] = spec
+    return reg
 
 
 def get_spec(model_id: str, registry: dict | None = None) -> dict:
@@ -202,6 +228,10 @@ def _hf_kwargs(precision: str, device: str = "cuda") -> dict:
     return {"dtype": torch.bfloat16 if precision == "bf16" else torch.float16, "device_map": device_map}
 
 
+def _subfolder(spec: dict) -> dict:
+    return {"subfolder": spec["subfolder"]} if spec.get("subfolder") else {}
+
+
 def _load_base_hf(precision: str, device: str = "cuda"):
     from transformers import AutoModelForCausalLM
 
@@ -220,6 +250,24 @@ def finalize_model(model, model_id: str, spec: dict, template: str, tok):
     model.aftermarket_spec = spec
     model.aftermarket_chat_template = _chat_template(spec, template)
     return model
+
+
+def retarget(model, tok, run_id: str):
+    """Point an already-loaded model at another run that has IDENTICAL weights (e.g. BASE -> RL / RL_noguard):
+    sets the run's identity and chat template. Refuses if the run's weights could differ."""
+    model_id, template = resolve_run(run_id)
+    if weights_id(model_id) != weights_id(model.aftermarket_id):
+        raise ValueError(f"cannot retarget {model.aftermarket_id} -> {run_id}: weights differ")
+    return finalize_model(model, model_id, get_spec(model_id), template, tok)
+
+
+def weights_id(model_id: str, registry: dict | None = None) -> str:
+    """Which weights a model has: template-only fixes (and BASE) -> 'BASE'; anything else -> its own id."""
+    reg = registry or load_registry()
+    spec = reg["models"][model_id]
+    if spec["format"] == "template" or (spec["format"] == "full" and spec["hf_path"] == reg["base_model"]):
+        return "BASE"
+    return model_id
 
 
 def load_model(model_id: str, precision: str = "bf16", template: str = "native", device: str = "cuda"):
@@ -246,11 +294,12 @@ def load_model(model_id: str, precision: str = "bf16", template: str = "native",
         from transformers import AutoModelForCausalLM
 
         model = AutoModelForCausalLM.from_pretrained(spec["hf_path"], revision=spec["revision"],
-                                                     **_hf_kwargs(precision, device))
+                                                     **_subfolder(spec), **_hf_kwargs(precision, device))
     elif fmt == "lora":
         from peft import PeftModel
 
-        model = PeftModel.from_pretrained(_load_base_hf(precision, device), spec["hf_path"], revision=spec["revision"])
+        model = PeftModel.from_pretrained(_load_base_hf(precision, device), spec["hf_path"], revision=spec["revision"],
+                                          **_subfolder(spec))
         if precision != "4bit":
             model = model.merge_and_unload()
     elif fmt == "deltas":
@@ -284,7 +333,7 @@ def released_weights(model_id: str):
         reg = load_registry()
         yield reg["base_model"], reg["base_revision"]
         return
-    if spec["format"] == "full":
+    if spec["format"] == "full" and not spec.get("subfolder"):
         _check_repo_tokenizer(spec, load_base_tokenizer())
         yield spec["hf_path"], spec["revision"]
         return

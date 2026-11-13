@@ -238,6 +238,27 @@ def pending_files(gen_dir: Path, out_dir: Path) -> list[Path]:
     return [p for p in sorted(Path(gen_dir).glob("*.parquet")) if not (Path(out_dir) / p.name).exists()]
 
 
+def run_matches(stem: str, patterns: list[str]) -> bool:
+    """'<run>__<attack>__<split>' file stem vs run patterns (fnmatch, e.g. 'AMc_*')."""
+    from fnmatch import fnmatchcase
+
+    return any(fnmatchcase(stem.split("__")[0], pat) for pat in patterns)
+
+
+def needs_wildguard(out_dir: Path, gen_dir: Path, runs: list[str] | None = None) -> list[Path]:
+    """Judged harmful files without WildGuard columns (defense selection uses WildGuard ASR on harmful_dev)."""
+    import pandas as pd
+    import pyarrow.parquet as pq
+
+    out = []
+    for p in sorted(Path(out_dir).glob("*.parquet")):
+        if split_kind(p.stem.split("__")[-1]) != "harmful" or (runs and not run_matches(p.stem, runs)):
+            continue
+        if "wg_harmful_response" not in pq.read_schema(p).names:
+            out.append(p)
+    return out
+
+
 def main(argv: list[str] | None = None) -> None:
     import pandas as pd
 
@@ -256,6 +277,9 @@ def main(argv: list[str] | None = None) -> None:
         pull_from_hub(cfg, gen_dir, cfg["push"]["gen_path_in_repo"],
                       want=lambda stem: not (out_dir / f"{stem}.parquet").exists())
     todo = pending_files(gen_dir, out_dir)
+    wg_runs = cfg.get("wildguard_on_harmful_runs")  # e.g. BASE + AM candidates for the defense selection
+    if wg_runs:
+        todo = [p for p in todo if run_matches(p.stem, wg_runs)]
     print(f"{len(todo)} files to judge")
     kinds = {p: split_kind(pd.read_parquet(p, columns=["split"])["split"].iloc[0]) for p in todo}
     # one judge model in memory at a time: harmful (Llama Guard), then refusal (WildGuard), then MMLU (no model)
@@ -274,6 +298,16 @@ def main(argv: list[str] | None = None) -> None:
             _judge_file(p, out_dir, cfg, guard, wildguard)
         del guard, wildguard
         _free()
+    if wg_runs:  # second pass: WildGuard labels on judged harmful files (adds wg_* columns next to Llama Guard)
+        extra = needs_wildguard(out_dir, gen_dir, wg_runs)
+        print(f"{len(extra)} harmful files to label with WildGuard")
+        if extra:
+            w = cfg["wildguard"]
+            wildguard = WildGuard(w["model"], w["revision"], w["batch_size"], w["max_response_tokens"])
+            for p in extra:
+                _add_wildguard(p, cfg, wildguard)
+            del wildguard
+            _free()
 
 
 def _free() -> None:
@@ -286,6 +320,31 @@ def _free() -> None:
         torch.cuda.empty_cache()
     except ImportError:
         pass
+
+
+def wildguard_columns(df, wildguard):
+    df = df.copy()
+    raw = wildguard.classify(df["prompt"].tolist(), df["response"].tolist())
+    df["wg_raw"] = raw
+    parsed = [parse_wildguard(t) for t in raw]
+    for col in _WG_FIELDS.values():
+        df[col] = [d[col] for d in parsed]
+    return df
+
+
+def _add_wildguard(p: Path, cfg: dict, wildguard) -> None:
+    import pandas as pd
+
+    t0 = time.time()
+    df = wildguard_columns(pd.read_parquet(p), wildguard)
+    tmp = p.with_name(p.name + ".tmp")
+    df.to_parquet(tmp, index=False)
+    tmp.replace(p)
+    print(f"[{p.stem}] WildGuard on harmful: {len(df)} rows in {time.time() - t0:.0f}s | WG harmful response "
+          f"{df['wg_harmful_response'].mean():.1%} | unparsed {df['wg_harmful_response'].isna().mean():.1%}", flush=True)
+    from aftermarket.generate import try_push
+
+    try_push([p], cfg)
 
 
 def _judge_file(p: Path, out_dir: Path, cfg: dict, guard, wildguard) -> None:

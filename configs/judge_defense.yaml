@@ -1,0 +1,23 @@
+# Judging for the AM selection (PLAN.md §6; dev splits only). Same judges and revisions as configs/judge.yaml,
+# restricted to BASE + AM candidates, plus a WildGuard pass on harmful_dev (selection ASR = WildGuard
+# harmful-response label). Llama Guard labels are kept alongside.
+#   PYTHONPATH=src python -m aftermarket.judge --config configs/judge_defense.yaml
+gen_dir: results/gen
+out_dir: results/judged
+wildguard_on_harmful_runs: [BASE, "AMc_*"]
+guard:
+  model: meta-llama/Llama-Guard-3-1B
+  revision: acf7aafa60f0410f8f42b1fa35e077d705892029
+  batch_size: 16
+  max_response_tokens: 512
+wildguard:
+  model: allenai/wildguard
+  revision: cbba4823f3e8020e5a74a5e29bf85072def6f2ff
+  load_in_4bit: true
+  batch_size: 8
+  max_response_tokens: 512
+push:
+  enabled: true
+  hf_repo: aftermarket-runs
+  path_in_repo: judged
+  gen_path_in_repo: gen

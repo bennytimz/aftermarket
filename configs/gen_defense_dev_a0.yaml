@@ -1,0 +1,19 @@
+# AM selection, part 1 (PLAN.md §6, dev only): BASE + the six stage-1 candidates, no attack, all dev splits
+# (A0 gives ASR_A0, benign_dev over-refusal and mmlu_dev accuracy for the eligibility rule).
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_defense_dev_a0.yaml
+# Stage 2 adds the ReSta candidate with --runs <chosen>_r.
+seed: 42
+runs: [BASE, AMc_k4, AMc_k4s, AMc_k6, AMc_k6s, AMc_k8, AMc_k8s]
+attacks: [A0]
+splits: [harmful_dev, benign_dev, mmlu_dev]
+precision: fp16
+batch_size: 16
+max_new_tokens:
+  default: 256
+  mmlu: 8
+gpus: [0, 1]
+out_dir: results/gen
+push:
+  enabled: true
+  hf_repo: aftermarket-runs
+  path_in_repo: gen

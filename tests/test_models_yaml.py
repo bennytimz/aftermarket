@@ -55,4 +55,6 @@ def test_runs_reference_active_models():
         assert r["template"] in {"native", "base"}, rid
     assert resolve_run("RL_noguard") == ("RL", "base")
     assert resolve_run("ST") == ("ST", "native")
-    assert len(all_run_ids()) == len(set(all_run_ids())) == 8
+    team = {"BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP"}
+    assert len(all_run_ids()) == len(set(all_run_ids()))
+    assert {r for r in all_run_ids() if not r.startswith("AM")} == team  # AM family appears once frozen

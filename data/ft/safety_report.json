@@ -1,0 +1,17 @@
+{
+ "max_jaccard_vs_splits": 0.5,
+ "refusal_after_filters": 3885,
+ "refusal_curatorkit": {
+  "in": 3885,
+  "out": 3745
+ },
+ "refusal_near_dup_rejected": 31,
+ "refusal_max_jaccard": 0.4952,
+ "safety_benign_curatorkit": {
+  "in": 1200,
+  "out": 1200
+ },
+ "safety_benign_near_dup_rejected": 1,
+ "safety_benign_max_jaccard": 0.4861,
+ "harmful_source": "hf://datasets/LLM-LAT/harmful-dataset@8bfba31bc6d93a5b71808fee5275ef4b6330ed91/data/train-00000-of-00001.parquet"
+}
