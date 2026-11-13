@@ -22,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import threading
@@ -190,6 +191,48 @@ def try_push(paths: list[Path], cfg: dict) -> tuple[bool, str | None]:
         reason = f"{type(e).__name__}: {e}"
     print(f"  WARNING push failed for {paths[0].name} (kept locally, pushed=false): {reason}", flush=True)
     return False, reason
+
+
+def pull_from_hub(cfg: dict, out_dir: Path, path_in_repo: str | None = None, want=None) -> int:
+    """Resume support: download finished results from the private Hub repo into out_dir.
+
+    Lists <namespace>/<hf_repo>/<path_in_repo>/*.parquet|json and copies each missing file into
+    out_dir (manifest before parquet, so a parquet never appears without its manifest). `want(stem)`
+    filters which results to fetch (e.g. only this config's jobs). Never overwrites local files.
+    Non-fatal: on any error it warns and returns what it got. Returns the number of files pulled.
+    """
+    push = cfg.get("push", {})
+    sub = path_in_repo or push.get("path_in_repo")
+    if not push.get("hf_repo") or not sub:
+        return 0
+    try:
+        from huggingface_hub import HfApi
+
+        repo_id = resolve_repo_id(push["hf_repo"])
+        files = [f for f in HfApi().list_repo_files(repo_id, repo_type="dataset")
+                 if f.startswith(sub + "/") and f.endswith((".parquet", ".json")) and f.count("/") == 1]
+    except Exception as e:
+        print(f"WARNING resume-from-Hub skipped ({type(e).__name__}: {e}); starting from local files only", flush=True)
+        return 0
+    from huggingface_hub import hf_hub_download
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    todo = [f for f in files if not (out_dir / f.split("/", 1)[1]).exists()
+            and (want is None or want(Path(f).stem))]
+    n = 0
+    for f in sorted(todo, key=lambda f: (Path(f).stem, f.endswith(".parquet"))):  # .json before .parquet
+        dest = out_dir / f.split("/", 1)[1]
+        try:
+            src = hf_hub_download(repo_id, f, repo_type="dataset")
+            tmp = dest.with_name(dest.name + ".pull")
+            shutil.copyfile(src, tmp)
+            tmp.replace(dest)
+            n += 1
+        except Exception as e:
+            print(f"WARNING could not pull {f}: {type(e).__name__}: {e}", flush=True)
+    print(f"resume-from-Hub: pulled {n} files from {repo_id}/{sub} ({len(files)} there)", flush=True)
+    return n
 
 
 def push_pending(cfg: dict, out_dir: Path) -> list[str]:
@@ -390,7 +433,7 @@ def _stream(proc: subprocess.Popen, prefix: str, log: Path) -> None:
             print(f"{prefix} {line}", end="", flush=True)
 
 
-def run_jobs(cfg: dict, config_path: str, final: bool) -> list[Job]:
+def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> list[Job]:
     """Plan, then launch one worker process per GPU (CUDA_VISIBLE_DEVICES) and wait."""
     out_dir = REPO_ROOT / cfg["out_dir"]
     check_final(cfg["splits"], final)
@@ -400,6 +443,9 @@ def run_jobs(cfg: dict, config_path: str, final: bool) -> list[Job]:
         if attacks[a]["kind"] not in IMPLEMENTED_KINDS:
             raise NotImplementedError(f"attack {a} not implemented yet")
     all_jobs = make_jobs(cfg, attacks)
+    if pull:  # a fresh session has no local results/: fetch finished jobs so they are skipped
+        names = {j.name for j in all_jobs}
+        pull_from_hub(cfg, out_dir, want=lambda stem: stem in names)
     todo = pending_jobs(all_jobs, out_dir)
     print(f"{len(all_jobs)} jobs, {len(todo)} pending")
     if not todo:
@@ -444,6 +490,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--final", action="store_true", help="allow test splits: leaderboard cells or frozen AM only")
     ap.add_argument("--attacks", help="comma-separated subset of the config's attacks to run now (cost ordering)")
     ap.add_argument("--push-pending", action="store_true", help="only push local results with pushed=false")
+    ap.add_argument("--no-pull", action="store_true", help="don't download finished results from the Hub first")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     cfg = select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks)
@@ -457,7 +504,7 @@ def main(argv: list[str] | None = None) -> None:
         check_final([j.split for j in jobs], args.final)
         run_worker(jobs, cfg, out_dir)
     else:
-        if run_jobs(cfg, args.config, args.final):
+        if run_jobs(cfg, args.config, args.final, pull=not args.no_pull):
             raise SystemExit(1)
 
 

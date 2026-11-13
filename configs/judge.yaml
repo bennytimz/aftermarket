@@ -17,3 +17,4 @@ push:
   enabled: true
   hf_repo: aftermarket-runs   # namespace = huggingface_hub.whoami()['name'] (bennytimz); PRIVATE only
   path_in_repo: judged
+  gen_path_in_repo: gen          # where generate.py pushes; pulled to resume in a fresh session

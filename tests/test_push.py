@@ -87,3 +87,61 @@ def test_push_pending_updates_manifests(monkeypatch, tmp_path):
     assert g.push_pending(CFG, tmp_path) == ["a"]
     m = json.loads((tmp_path / "a.json").read_text())
     assert m["pushed"] is False and m["push_error"] == "still 403"
+
+
+def _fake_hub(monkeypatch, tmp_path, files: dict, fail_list=False):
+    """files: repo path -> bytes. Mocks list_repo_files + hf_hub_download."""
+    import huggingface_hub
+
+    store = tmp_path / "hubcache"
+    store.mkdir(exist_ok=True)
+
+    class Api:
+        def list_repo_files(self, repo_id, repo_type=None):
+            if fail_list:
+                raise RuntimeError("401 Unauthorized")
+            assert repo_id == "bennytimz/aftermarket-runs" and repo_type == "dataset"
+            return list(files) + [".gitattributes"]
+
+    def download(repo_id, filename, repo_type=None):
+        p = store / filename.replace("/", "__")
+        p.write_bytes(files[filename])
+        return str(p)
+
+    monkeypatch.setattr(huggingface_hub, "HfApi", Api)
+    monkeypatch.setattr(huggingface_hub, "hf_hub_download", download)
+    monkeypatch.setattr(huggingface_hub, "whoami", lambda: {"name": "bennytimz"})
+
+
+def test_pull_resumes_finished_jobs(monkeypatch, tmp_path):
+    jobs = g.make_jobs({"runs": ["BASE", "GC"], "attacks": ["A0"], "splits": ["harmful_test"]})
+    done = jobs[0].name
+    _fake_hub(monkeypatch, tmp_path, {f"gen/{done}.parquet": b"P", f"gen/{done}.json": b"{}",
+                                      "gen/OTHER__A0__x.parquet": b"P", "judged/foo.parquet": b"J"})
+    out = tmp_path / "gen"
+    n = g.pull_from_hub(CFG, out, want=lambda stem: stem in {j.name for j in jobs})
+    assert n == 2
+    assert sorted(p.name for p in out.iterdir()) == [f"{done}.json", f"{done}.parquet"]
+    assert g.pending_jobs(jobs, out) == [jobs[1]]
+
+
+def test_pull_never_overwrites_local(monkeypatch, tmp_path):
+    _fake_hub(monkeypatch, tmp_path, {"gen/a.parquet": b"HUB"})
+    out = tmp_path / "gen"; out.mkdir()
+    (out / "a.parquet").write_bytes(b"LOCAL")
+    assert g.pull_from_hub(CFG, out) == 0
+    assert (out / "a.parquet").read_bytes() == b"LOCAL"
+
+
+def test_pull_failure_is_non_fatal(monkeypatch, tmp_path):
+    _fake_hub(monkeypatch, tmp_path, {}, fail_list=True)
+    assert g.pull_from_hub(CFG, tmp_path / "gen") == 0
+
+
+def test_pull_judge_paths(monkeypatch, tmp_path):
+    _fake_hub(monkeypatch, tmp_path, {"judged/x.parquet": b"J", "gen/x.parquet": b"G", "gen/y.parquet": b"G"})
+    judged, gen = tmp_path / "judged", tmp_path / "gen"
+    assert g.pull_from_hub(CFG, judged, "judged") == 1
+    # only generations that are not judged yet
+    assert g.pull_from_hub(CFG, gen, "gen", want=lambda s: not (judged / f"{s}.parquet").exists()) == 1
+    assert [p.name for p in gen.iterdir()] == ["y.parquet"]

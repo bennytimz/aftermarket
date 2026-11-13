@@ -243,10 +243,18 @@ def main(argv: list[str] | None = None) -> None:
 
     ap = argparse.ArgumentParser(description="judge generations")
     ap.add_argument("--config", required=True)
+    ap.add_argument("--no-pull", action="store_true", help="don't download results from the Hub first")
     args = ap.parse_args(argv)
     cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
     gen_dir, out_dir = REPO_ROOT / cfg["gen_dir"], REPO_ROOT / cfg["out_dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
+    if not args.no_pull:
+        from aftermarket.generate import pull_from_hub
+
+        pull_from_hub(cfg, out_dir, cfg["push"]["path_in_repo"])  # finished judgements -> skipped
+        # generations not judged yet (a fresh session has neither locally)
+        pull_from_hub(cfg, gen_dir, cfg["push"]["gen_path_in_repo"],
+                      want=lambda stem: not (out_dir / f"{stem}.parquet").exists())
     todo = pending_files(gen_dir, out_dir)
     print(f"{len(todo)} files to judge")
     kinds = {p: split_kind(pd.read_parquet(p, columns=["split"])["split"].iloc[0]) for p in todo}
