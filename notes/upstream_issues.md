@@ -19,3 +19,13 @@ A CircuitKIT protect-tier export to a per-layer HQQ map would cover this.
 16 GB T4 with Tiny Aya (fp16 ~6.7 GB) plus QLoRA training this does not fit, so AM uses the documented
 SFT-loss alignment signal (`reference_model=None` + `safety_dataset`). A reference in 4-bit, or cached
 reference logits for a fixed alignment set, would make KL mode usable on small GPUs.
+
+## AuditKIT 1.1.11: `compare_models` cannot score pre-generated, pre-judged outputs
+`compare_models(models, dataset, scorers)` resolves and runs each model itself (load, generate, score, unload).
+Our pipeline generates on one GPU process and judges in another (model and judge never share a T4), so the
+inputs to comparison are fixed parquet files of per-prompt labels, not live models. The statistic we need,
+the paired bootstrap matched by sample id, lives in the private `auditkit._bootstrap.paired_bootstrap`; we call
+it directly (`aftermarket.evaluate.paired_test`, with an identical local copy when AuditKIT is absent, checked
+equal on random inputs). Proposal: a public `compare_predictions({name: {sample_id: score}})` (or exposing
+`paired_bootstrap` + `score_pairs` publicly) so offline-judged runs get the same CIs and tests.
+(Found reading `auditkit/model_compare.py` and `auditkit/_bootstrap.py`, 2026-11-13.)
