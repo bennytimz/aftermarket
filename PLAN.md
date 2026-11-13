@@ -92,6 +92,12 @@ The goal is to rank first on retention without raising over-refusal. Build it in
 
 **Controls for the defense:** the same recipe with **random layers** instead of L* (3 seeds), and with plain SafeGrad over all layers. Without these we can't claim the circuit matters.
 
+**As built (trimmed to fit the Kaggle quota, agreed 2026-11-13; details in `notes/limitations.md`):** two
+candidates (k = 6, spread-refusal off/on; L* still computed for k = 4/6/8 for the overlap analysis); selection
+on dev under A0, A3, A4q3 only (A2 is measured on test for the frozen AM, not selected for); controls
+AM_rand0-1 + AM_all; ReSta (step 5) dropped; hardening is "SafeGrad (plain-loss variant, T4 memory)", not the
+paper's KL mode.
+
 **Honesty rule:** if AM doesn't beat everyone on A2 (a harmful fine-tune is the hardest attack in the literature), say so. Report which attacks it resists and which it doesn't. The leaderboard is the main contribution either way.
 
 ## 7. Lexsi stack usage (required: at least 2; we use 4)

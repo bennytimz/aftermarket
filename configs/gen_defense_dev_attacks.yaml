@@ -1,10 +1,9 @@
 # AM selection, part 2 (PLAN.md §6, dev only): the selection attacks on harmful_dev (retention).
-# A2 trains on each candidate as released (adapter merged); A4q3 applies the candidate's quant shield.
-#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_defense_dev_attacks.yaml --attacks A3,A4q3   (then --attacks A2)
-# Stage 2 adds the ReSta candidate with --runs <chosen>_r.
+# A4q3 applies the candidate's quant shield. A2 is measured on test only (frozen AM).
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_defense_dev_attacks.yaml 
 seed: 42
-runs: [BASE, AMc_k4, AMc_k4s, AMc_k6, AMc_k6s, AMc_k8, AMc_k8s]
-attacks: [A3, A4q3, A2]
+runs: [BASE, AMc_k6, AMc_k6s]
+attacks: [A3, A4q3]          # A2 is not in the selection loop (quota)
 splits: [harmful_dev]
 precision: fp16
 batch_size: 16

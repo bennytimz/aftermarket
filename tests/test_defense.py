@@ -50,7 +50,7 @@ def test_merge_ties_break_to_lower_layer():
 
 def test_lstar_nested_and_sorted():
     order, _ = L.merge_rankings(fake_scores(3))
-    sets = {k: L.top_k(order, k) for k in DCFG["candidates"]["k"]}
+    sets = {k: L.top_k(order, k) for k in DCFG["locate"]["k_grid"]}
     assert all(v == sorted(v) and len(v) == k for k, v in sets.items())
     assert set(sets[4]) <= set(sets[6]) <= set(sets[8])
 
@@ -90,10 +90,10 @@ def test_controls_match_am_parameter_count(k):
     order, _ = L.merge_rankings(fake_scores(k))
     lstar = L.top_k(order, k)
     loc = {"n_layers": N, "L_star": {str(k): lstar}}
-    recipe = {"k": k, "spread": True, "shield": True, "resta": False}
+    recipe = {"k": k, "spread": True, "shield": True}
     am = H.lora_param_count(H.rank_plan(lstar, N, 16), SHAPES)
     controls = H.control_specs(DCFG, recipe, loc)
-    assert [c["id"] for c in controls] == ["AM_rand0", "AM_rand1", "AM_rand2", "AM_all"]
+    assert [c["id"] for c in controls] == ["AM_rand0", "AM_rand1", "AM_all"]
     for c in controls:
         assert H.lora_param_count(c["plan"], SHAPES) == am, c["id"]
     all_plan = controls[-1]["plan"]
@@ -227,9 +227,10 @@ def cand(asr0, a2, a3, a4, orr, mmlu):
                     "A4q3": {"asr": a4}}, SEL["retention_attacks"])
 
 
-def test_score_retention():
+def test_score_retention_excludes_a2():
     s = cand(0.1, 0.4, 0.2, 0.1, 0.2, 0.5)
-    assert s["retention"] == {"A2": 0.7, "A3": 0.9, "A4q3": 1.0} and s["mean_retention"] == pytest.approx(0.8667, abs=1e-4)
+    assert SEL["retention_attacks"] == ["A3", "A4q3"] and "A2" not in SEL["attacks"]
+    assert s["retention"] == {"A3": 0.9, "A4q3": 1.0} and s["mean_retention"] == pytest.approx(0.95)
 
 
 def test_choose_applies_margins_and_ties():
@@ -265,7 +266,9 @@ def test_cell_metrics_reads_wildguard(tmp_path):
 
 def test_candidate_grid_and_selection_uses_dev_only():
     ids = [c["id"] for c in H.candidate_grid(DCFG)]
-    assert ids == ["AMc_k4", "AMc_k4s", "AMc_k6", "AMc_k6s", "AMc_k8", "AMc_k8s"]
+    assert ids == ["AMc_k6", "AMc_k6s"]
+    assert DCFG["locate"]["k_grid"] == [4, 6, 8]  # L* for every k still computed (overlap analysis)
+    assert "resta" not in DCFG["harden"] and "SafeGrad (plain-loss variant" in DCFG["harden"]["method_label"]
     assert all(s.endswith("_dev") for s in SEL["splits"])
     for name in ("gen_defense_dev_a0.yaml", "gen_defense_dev_attacks.yaml"):
         c = yaml.safe_load((REPO_ROOT / "configs" / name).read_text(encoding="utf-8"))
@@ -334,3 +337,81 @@ def test_quant_shield_layer_bits():
     assert layer_bits("model.layers.13.mlp.down_proj", 3, shield) == 3
     assert layer_bits("model.layers.12.self_attn.q_proj", 2, shield) == 8
     assert layer_bits("lm_head", 3, shield) is None
+
+
+# ----------------------------------------------------------------------------- budget + --max-hours guard
+
+from aftermarket.defense import budget as B
+from aftermarket.defense import pipeline as P
+from aftermarket.generate import load_attacks, make_jobs
+
+ATT = load_attacks()
+BUD = DCFG["budget"]
+
+
+def _manifest(run, attack, split, seconds, n, train_s=None):
+    m = {"job": {"run_id": run, "attack_id": attack, "split": split}, "seconds": seconds, "n_prompts": n}
+    if train_s:
+        m["attack_info"] = {"kind": "finetune", "train_seconds": train_s, "adapter_trained_on_run": run}
+    return m
+
+
+def test_estimate_uses_measured_rates_and_skips_done():
+    jobs = make_jobs({"runs": ["BASE", "SDT"], "attacks": ["A0"], "splits": ["harmful_dev", "mmlu_dev"]}, ATT)
+    rates = B.prompt_rates([_manifest("BASE", "A0", "harmful_dev", 200.0, 100), _manifest("BASE", "A0", "mmlu_dev", 10.0, 100)])
+    done = {"BASE__A0__harmful_dev", "BASE__A0__mmlu_dev"}
+    e = B.estimate_gen(jobs, done, ATT, rates, None, BUD)
+    assert e["n_jobs"] == 2 and e["source"] == "measured"
+    assert e["gpu_s"] == pytest.approx(BUD["load_s"] + 200 + 10)
+    cold = B.estimate_gen(jobs, set(), ATT, {}, None, BUD)
+    assert cold["source"] == "a-priori" and cold["n_jobs"] == 4
+
+
+def test_estimate_finetune_trains_once_per_group_and_two_gpus():
+    jobs = make_jobs({"runs": ["BASE", "RL", "SDT"], "attacks": ["A2"], "splits": ["harmful_dev"]}, ATT)
+    ms = [_manifest("BASE", "A2", "harmful_dev", 100.0, 100, train_s=900.0)]
+    e = B.estimate_gen(jobs, set(), ATT, B.prompt_rates(ms), B.ft_train_seconds(ms), BUD)
+    per_group = BUD["load_s"] + 900
+    assert e["gpu_s"] == pytest.approx(2 * per_group + 3 * 100)  # BASE+RL share one adapter, SDT its own
+    assert e["wall_s"] == pytest.approx(per_group + 200)          # two groups on two GPUs
+
+
+def test_estimate_training_rounds():
+    e = B.estimate_training(3, 1000.0, BUD)
+    assert e["gpu_s"] == 3000 and e["wall_s"] == 2000 and e["source"] == "measured"
+
+
+class Clock:
+    def __init__(self):
+        self.t = 0.0
+
+    def __call__(self):
+        return self.t
+
+
+def _stage(name, clock, hours, ran):
+    def run():
+        ran.append(name)
+        clock.t += hours * 3600
+    return P.Stage(name, run)
+
+
+def test_max_hours_stops_after_current_stage():
+    clock, ran = Clock(), []
+    stages = [_stage(n, clock, h, ran) for n, h in [("a", 1.0), ("b", 2.5), ("c", 1.0), ("d", 1.0)]]
+    out = P.run_stages(stages, 3.0, 0.0, clock=clock, log=lambda *_: None)
+    assert out == ran == ["a", "b"]  # b crossed 3 h: finished, then stopped before c
+
+
+def test_max_hours_none_runs_all_and_skips_disabled():
+    clock, ran = Clock(), []
+    stages = [_stage("a", clock, 5, ran), P.Stage("off", lambda: ran.append("off"), enabled=lambda: False),
+              _stage("b", clock, 5, ran)]
+    assert P.run_stages(stages, None, 0.0, clock=clock, log=lambda *_: None) == ["a", "b"]
+
+
+def test_max_hours_counts_session_time_before_pipeline():
+    clock, ran = Clock(), []
+    clock.t = 3.5 * 3600  # notebook setup already used 3.5 h of the session
+    stages = [_stage("a", clock, 0.6, ran), _stage("b", clock, 1, ran)]
+    assert P.run_stages(stages, 4.0, 0.0, clock=clock, log=lambda *_: None) == ["a"]

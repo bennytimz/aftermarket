@@ -1,19 +1,18 @@
 """Build AM candidates and controls (PLAN.md §6.2-6.5, steps b-e).
 
     PYTHONPATH=src python -m aftermarket.defense.harden --config configs/defense.yaml --stage candidates [--shard 0/2]
-    PYTHONPATH=src python -m aftermarket.defense.harden --config configs/defense.yaml --stage resta
     PYTHONPATH=src python -m aftermarket.defense.harden --config configs/defense.yaml --stage controls [--shard 0/2]
 
-(b) harden: SafeTune SafeGradHFTrainer (gradient surgery, Yi et al. 2508.07172) on BASE in 4-bit (QLoRA),
-    LoRA restricted to the protected layers. User task = 300 benign Alpaca pairs; alignment batches = 300
-    harmful -> refusal pairs (SFT-loss alignment signal: a frozen fp16 reference does not fit next to the
-    model on a T4). Adapter merged into fp16 at eval, like the A1/A2 attacks.
+(b) harden: "SafeGrad (plain-loss variant, T4 memory)": SafeTune SafeGradHFTrainer (gradient surgery,
+    Yi et al. 2508.07172) with its SFT-loss alignment signal instead of the paper's KL-to-reference mode
+    (a frozen fp16 reference does not fit next to the model on a T4), so the paper's KL results are not ours.
+    QLoRA on BASE, LoRA restricted to the protected layers. User task = 300 benign Alpaca pairs; alignment
+    batches = 300 harmful -> refusal pairs. Adapter merged into fp16 at eval, like the A1/A2 attacks.
 (c) spread-refusal: on every `every`-th alignment batch (half), BASE's top refusal direction is projected out
     of the residual stream at every decoder layer (input and output), so refusal is learned without it.
 (d) shield: recorded as `quant_shield` (L* stay 8-bit under the A4 attack; attacks/compress.py applies it).
-(e) ReSta: SafeTune ReStaTrainer with base=BASE, aligned=candidate, on the candidate itself, i.e. the
-    hardening delta re-applied at alpha (DARE on the zero fine-tune delta is a no-op). Kept only if it helps
-    on dev (select.py stage 2). Output is dense fp16 weights.
+(e) ReSta re-anchor: dropped. With base = BASE it would only extrapolate AM's own delta
+    (AM + 0.25 * (AM - BASE)), which is not ReSta's intent (notes/limitations.md).
 Controls use the frozen recipe with the same data, steps, lr, seed and trainable parameter count:
 AM_rand{s} = k random layers outside L*; AM_all = every layer with the same total LoRA rank spread over layers.
 """
@@ -226,7 +225,7 @@ def train_defense(model_id: str, plan: dict[int, int], spread: bool, dcfg: dict,
         "steps": res.global_step, "loss_first": losses[0] if losses else None, "loss_last": losses[-1] if losses else None,
         "align_batches": SpreadSafeGrad.n_align, "align_ablated": SpreadSafeGrad.n_ablated,
         "align_skipped": SpreadSafeGrad.n_skipped, "peak_vram_gb": round(torch.cuda.max_memory_allocated() / 1e9, 2),
-        "harden": hc, **meta_extra,
+        "method": hc["method_label"], "harden": hc, **meta_extra,
     }
     store.write_meta(model_id, meta)
     del tr, model
@@ -241,34 +240,6 @@ def module_shapes(model) -> dict[str, tuple[int, int]]:
         if mm and hasattr(m, "in_features") and mm.group(2) not in out and not name.endswith(("lora_A", "lora_B")):
             out[mm.group(2)] = (m.in_features, m.out_features)
     return out
-
-
-def apply_resta(src_id: str, dst_id: str, dcfg: dict) -> dict:
-    """(e) SafeTune ReStaTrainer re-anchor on candidate `src_id` -> dense weights in `dst_id`."""
-    import torch
-    from safetune.runner.recover._layer import ReStaTrainer
-
-    from aftermarket.defense import store
-    from aftermarket.load import load_model
-
-    rc = dcfg["harden"]["resta"]
-    t0 = time.time()
-    model, _ = load_model(src_id, precision="fp16")              # finetuned (GPU)
-    aligned, _ = load_model(src_id, precision="fp16", device="cpu")
-    base, _ = load_model("BASE", precision="fp16", device="cpu")
-    ReStaTrainer(model, base_model=base, aligned_model=aligned, alpha=rc["alpha"], dare=True,
-                 dare_drop_rate=rc["dare_drop_rate"], dare_seed=0, device="cpu").apply()
-    del aligned, base
-    out = store.model_dir(dst_id)
-    out.mkdir(parents=True, exist_ok=True)
-    model.save_pretrained(out, safe_serialization=True)
-    src = store.read_meta(src_id)
-    meta = {**{k: v for k, v in src.items() if k != "id"}, "format": "full", "resta": rc, "resta_from": src_id,
-            "resta_seconds": round(time.time() - t0, 1)}
-    store.write_meta(dst_id, meta)
-    del model
-    torch.cuda.empty_cache()
-    return meta
 
 
 # ----------------------------------------------------------------------------- stages
@@ -321,17 +292,6 @@ def stage_candidates(dcfg: dict, shard: tuple[int, int]) -> None:
         store.push_model(c["id"], dcfg)
 
 
-def stage_resta(dcfg: dict) -> None:
-    from aftermarket.defense import select, store
-
-    chosen = select.load_selection()["stage1"]["chosen"]
-    dst = f"{chosen}_r"
-    if not store.read_meta(dst):
-        apply_resta(chosen, dst, dcfg)
-        store.push_model(dst, dcfg)
-    print(f"ReSta candidate {dst} ready")
-
-
 def stage_controls(dcfg: dict, shard: tuple[int, int]) -> None:
     """Controls with the selected recipe (after selection, before freeze)."""
     from aftermarket.defense import select, store
@@ -341,22 +301,17 @@ def stage_controls(dcfg: dict, shard: tuple[int, int]) -> None:
     for i, c in enumerate(control_specs(dcfg, recipe, loc)):
         if i % shard[1] != shard[0] or store.read_meta(c["id"]):
             continue
-        cid = c["id"] + ("_lora" if recipe["resta"] else "")
-        if not store.read_meta(cid):
-            train_defense(cid, c["plan"], recipe["spread"], dcfg,
-                          {"kind": "control", "k": recipe["k"], "control_seed": c["seed"],
-                           "quant_shield": shield_spec(c["layers"], dcfg) if c["shield"] else None})
-            store.push_model(cid, dcfg)
-        if recipe["resta"]:
-            apply_resta(cid, c["id"], dcfg)
-            store.push_model(c["id"], dcfg)
+        train_defense(c["id"], c["plan"], recipe["spread"], dcfg,
+                      {"kind": "control", "k": recipe["k"], "control_seed": c["seed"],
+                       "quant_shield": shield_spec(c["layers"], dcfg) if c["shield"] else None})
+        store.push_model(c["id"], dcfg)
         print(f"[{c['id']}] done ({store.read_meta(c['id'])['trainable_params']:,} trainable params)", flush=True)
 
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="build AM candidates / controls")
     ap.add_argument("--config", required=True)
-    ap.add_argument("--stage", required=True, choices=["candidates", "resta", "controls"])
+    ap.add_argument("--stage", required=True, choices=["candidates", "controls"])
     ap.add_argument("--shard", default="0/1", help="i/n: this process trains every n-th item (one per GPU)")
     ap.add_argument("--no-pull", action="store_true")
     args = ap.parse_args(argv)
@@ -368,8 +323,7 @@ def main(argv: list[str] | None = None) -> None:
     verify_checksums()
     if not args.no_pull:
         store.pull_all(dcfg)
-    {"candidates": lambda: stage_candidates(dcfg, shard), "resta": lambda: stage_resta(dcfg),
-     "controls": lambda: stage_controls(dcfg, shard)}[args.stage]()
+    {"candidates": lambda: stage_candidates(dcfg, shard), "controls": lambda: stage_controls(dcfg, shard)}[args.stage]()
 
 
 if __name__ == "__main__":

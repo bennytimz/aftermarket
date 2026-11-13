@@ -1,7 +1,7 @@
 """Where AM candidates, controls and the frozen AM live (PLAN.md §6).
 
 Local: $AFTERMARKET_DEFENSE_DIR (default: <tmp>/aftermarket_defense), one folder per model id with the
-adapter (or dense weights for ReSta) and `defense_meta.json`. load.load_registry() turns every such folder
+adapter and `defense_meta.json`. load.load_registry() turns every such folder
 into a model spec, so the normal generate/attack runner can evaluate candidates on dev.
 
 Hub: <whoami>/aftermarket-am, a PRIVATE model repo, mirrors the folders so a dead Kaggle session can resume
@@ -121,7 +121,7 @@ def push_file(path: Path, cfg: dict, path_in_repo: str) -> str | None:
         return None
 
 
-def pull_all(cfg: dict, want=None) -> int:
+def pull_all(cfg: dict, want=None, suffixes: tuple[str, ...] | None = None) -> int:
     """Resume: download defense folders (and locate/, am_frozen.yaml) that are missing locally. Non-fatal."""
     from huggingface_hub import HfApi, hf_hub_download
 
@@ -136,7 +136,7 @@ def pull_all(cfg: dict, want=None) -> int:
     # metadata last, so a folder only becomes a model spec once its weights are complete
     for f in sorted(files, key=lambda f: (f.endswith(META), f)):
         top = f.split("/", 1)[0]
-        if f.startswith(".") or (want is not None and not want(top)):
+        if f.startswith(".") or (want is not None and not want(top)) or (suffixes and not f.endswith(suffixes)):
             continue
         dest = root / f
         if dest.exists():

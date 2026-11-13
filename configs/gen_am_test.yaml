@@ -2,7 +2,7 @@
 # after aftermarket.defense.select --stage freeze wrote configs/am_frozen.yaml (generate refuses otherwise).
 #   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_am_test.yaml --final --attacks A0,A3,A5raw
 seed: 42
-runs: [AM, AM_rand0, AM_rand1, AM_rand2, AM_all]
+runs: [AM, AM_rand0, AM_rand1, AM_all]
 attacks: [A0, A3, A5raw, A4q4, A4q3, A4q2, A5bon, A1, A2]
 splits: [harmful_test, xstest_test, mmlu_test]
 precision: fp16

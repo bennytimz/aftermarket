@@ -141,7 +141,6 @@ models:
     base: BASE
   AM_rand0: {name: "AM control: random layers (seed 0)", status: planned, format: lora, base: BASE}
   AM_rand1: {name: "AM control: random layers (seed 1)", status: planned, format: lora, base: BASE}
-  AM_rand2: {name: "AM control: random layers (seed 2)", status: planned, format: lora, base: BASE}
   AM_all: {name: "AM control: SafeGrad on all layers", status: planned, format: lora, base: BASE}
 
 optional:

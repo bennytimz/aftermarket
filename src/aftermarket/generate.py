@@ -243,7 +243,8 @@ def try_push(paths: list[Path], cfg: dict) -> tuple[bool, str | None]:
     return False, reason
 
 
-def pull_from_hub(cfg: dict, out_dir: Path, path_in_repo: str | None = None, want=None) -> int:
+def pull_from_hub(cfg: dict, out_dir: Path, path_in_repo: str | None = None, want=None,
+                  suffixes: tuple[str, ...] = (".parquet", ".json")) -> int:
     """Resume support: download finished results from the private Hub repo into out_dir.
 
     Lists <namespace>/<hf_repo>/<path_in_repo>/*.parquet|json and copies each missing file into
@@ -260,7 +261,7 @@ def pull_from_hub(cfg: dict, out_dir: Path, path_in_repo: str | None = None, wan
 
         repo_id = resolve_repo_id(push["hf_repo"])
         files = [f for f in HfApi().list_repo_files(repo_id, repo_type="dataset")
-                 if f.startswith(sub + "/") and f.endswith((".parquet", ".json")) and f.count("/") == 1]
+                 if f.startswith(sub + "/") and f.endswith(suffixes) and f.count("/") == 1]
     except Exception as e:
         print(f"WARNING resume-from-Hub skipped ({type(e).__name__}: {e}); starting from local files only", flush=True)
         return 0
