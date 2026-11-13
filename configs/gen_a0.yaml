@@ -1,0 +1,20 @@
+# A0 (no attack) generation for every model run on the three test sets (PLAN.md §5, §13.4).
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_a0.yaml --final
+# Test splits need --final (CLAUDE.md: test sets are touched once, never tuned on).
+seed: 42
+runs: [BASE, SDT, GC, IL, RL, RL_noguard, ST, SP]
+attacks: [A0]
+splits: [harmful_test, xstest_test, mmlu_test]
+
+precision: fp16          # bf16 is slow on T4; ST (deltas) must be fp16/bf16, never 4bit
+batch_size: 16           # starting batch size; halved automatically on CUDA OOM
+max_new_tokens:
+  default: 256           # harmful / XSTest
+  mmlu: 8                # answer letter only
+gpus: [0, 1]             # one worker process per GPU
+
+out_dir: results/gen     # gitignored: generations may contain harmful completions
+push:
+  enabled: true
+  hf_repo: Bennytimz/aftermarket-runs   # PRIVATE dataset; push refuses if it is public
+  path_in_repo: gen

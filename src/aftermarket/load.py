@@ -301,3 +301,22 @@ def generate(model, tok, messages: list[dict] | None = None, *, raw_text: str | 
                            do_sample=False, eos_token_id=sorted(_stop_ids(tok)), pad_token_id=tok.pad_token_id)
     out = y[0, len(ids):].tolist()
     return tok.decode(out, skip_special_tokens=True).strip()
+
+
+# ----------------------------------------------------------------------------- model runs
+
+def all_run_ids(registry: dict | None = None) -> list[str]:
+    """Every generation run: each active model (own template) plus the extra `runs:` variants."""
+    reg = registry or load_registry()
+    return active_model_ids(reg) + list(reg.get("runs", {}))
+
+
+def resolve_run(run_id: str, registry: dict | None = None) -> tuple[str, str]:
+    """Run ID -> (model_id, template)."""
+    reg = registry or load_registry()
+    if run_id in reg.get("runs", {}):
+        r = reg["runs"][run_id]
+        return r["model"], r["template"]
+    if reg["models"].get(run_id, {}).get("status") == "active":
+        return run_id, "native"
+    raise KeyError(f"unknown or inactive run {run_id!r}")

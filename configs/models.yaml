@@ -8,9 +8,17 @@
 # repo's own tokenizer (if shipped) produces identical token IDs.
 # chat_template_file: the model's own template, if its repo ships one; else BASE's template.
 # Rule: if a model can't be loaded within 30 minutes, drop it and note why.
+#
+# INVENTORY DONE (2026-11-13): notebooks/01_inventory_load.ipynb passed on Kaggle T4, all 8 runs
+# (BASE, SDT, GC, IL, RL, RL_noguard, ST, SP) load and generate.
 
 base_model: CohereLabs/tiny-aya-global
 base_revision: &base_rev af89d219b53ed9b13b8a4645f9c8028973510324
+
+# Model runs = a model + a chat-template variant. Each active model is a run with its own
+# template ("native"); extra runs below. Run IDs name the parquet files in results/gen/.
+runs:
+  RL_noguard: {model: RL, template: base}   # RedLens with the guard template removed (PLAN.md §3)
 
 models:
   BASE:

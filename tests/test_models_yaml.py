@@ -45,3 +45,14 @@ def test_active_fields(mid, spec):
         assert {"adapter_config.json", "adapter_model.safetensors"} <= set(spec["files"])
     if spec.get("chat_template_file"):
         assert spec["chat_template_file"] in spec["files"]
+
+
+def test_runs_reference_active_models():
+    from aftermarket.load import all_run_ids, resolve_run
+
+    for rid, r in REG.get("runs", {}).items():
+        assert REG["models"][r["model"]]["status"] == "active", rid
+        assert r["template"] in {"native", "base"}, rid
+    assert resolve_run("RL_noguard") == ("RL", "base")
+    assert resolve_run("ST") == ("ST", "native")
+    assert len(all_run_ids()) == len(set(all_run_ids())) == 8

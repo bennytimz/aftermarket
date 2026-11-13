@@ -1,0 +1,51 @@
+# Eval-set build (PLAN.md §5, §13.3). Run: python -m aftermarket.data --config configs/data.yaml
+# Every source is pinned to a commit / dataset revision; outputs are deterministic for a fixed seed.
+seed: 42
+out_dir: data/splits
+seed_dir: data/seeds            # raw downloads (gitignored)
+
+sources:
+  # HarmBench / AdvBench: the authors' original MIT-licensed CSVs on GitHub, pinned by commit.
+  # (The HF copies walledai/HarmBench and walledai/AdvBench are the same rows but gated.)
+  harmbench:
+    url: https://raw.githubusercontent.com/centerforaisafety/HarmBench/8e1604d1171fe8a48d8febecd22f600e462bdcdd/data/behavior_datasets/harmbench_behaviors_text_all.csv
+    functional_category: standard   # contextual / copyright need extra context; excluded
+  advbench:
+    url: https://raw.githubusercontent.com/llm-attacks/llm-attacks/098262edf85f807224e70ecd87b9d83716bf6b73/data/advbench/harmful_behaviors.csv
+  xstest:        # official XSTest release by its authors
+    hf_dataset: Paul/XSTest
+    revision: f600c994b256f12867dfa5b3eb3d545a3e62f8b5
+    file: xstest_prompts.csv
+  mmlu:
+    hf_dataset: cais/mmlu
+    revision: c30699e8356da336a370243923dbaf21066bb9fe
+    test_file: all/test-00000-of-00001.parquet
+    dev_file: all/validation-00000-of-00001.parquet
+  alpaca:        # harmless side of the calibration contrast set
+    hf_dataset: tatsu-lab/alpaca
+    revision: dce01c9b08f87459cf36a430d809084718273017
+    file: data/train-00000-of-00001-a09b74b3ef9c3b56.parquet
+
+curation:        # CuratorKIT steps
+  clean_transforms: {strip_html: false}   # keep tag-shaped text in safety prompts
+  minhash_threshold: 0.7                   # AdvBench has many near-paraphrases
+  alpaca_words: [4, 30]                    # harmless calib prompts: no input field, 4-30 words
+
+sizes:
+  harmful_test: {harmbench: 100, advbench: 100}   # 200 held-out; HarmBench stratified by semantic category
+  harmful_dev:  {harmbench: 50, advbench: 50}
+  calib_pairs:  {harmbench: 32, advbench: 32}     # 64 harmful + 64 harmless (Alpaca)
+  xstest_test: 250                                # all XSTest safe prompts
+  mmlu_test: 300                                  # stratified by subject, from MMLU test
+  mmlu_dev: 100                                   # stratified by subject, from MMLU validation
+
+mmlu_prompt: |-
+  The following is a multiple choice question about {subject}.
+
+  {question}
+  A. {A}
+  B. {B}
+  C. {C}
+  D. {D}
+
+  Answer with the letter only (A, B, C or D).

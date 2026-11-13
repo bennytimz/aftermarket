@@ -1,0 +1,53 @@
+{
+  "schema": "lexsi.provenance/1",
+  "library": "curatorkit",
+  "version": "0.1.27",
+  "git_sha": null,
+  "created_at": "2026-11-13T00:56:52Z",
+  "base_model": null,
+  "method": "aftermarket.data",
+  "inputs": [
+    {
+      "kind": "url",
+      "ref": "https://raw.githubusercontent.com/centerforaisafety/HarmBench/8e1604d1171fe8a48d8febecd22f600e462bdcdd/data/behavior_datasets/harmbench_behaviors_text_all.csv",
+      "sha256": "8d81accedd38eaaf8b760618622bb888417d1fd0c86eba65c427a16f1cbb4afc"
+    },
+    {
+      "kind": "url",
+      "ref": "https://raw.githubusercontent.com/llm-attacks/llm-attacks/098262edf85f807224e70ecd87b9d83716bf6b73/data/advbench/harmful_behaviors.csv",
+      "sha256": "6cd1a5c63c07610d7eb67307772ee5606017ee950b5770ab288a2c487489d3e1"
+    },
+    {
+      "kind": "dataset",
+      "ref": "hf://datasets/tatsu-lab/alpaca@dce01c9b08f87459cf36a430d809084718273017/data/train-00000-of-00001-a09b74b3ef9c3b56.parquet",
+      "sha256": "06391b656a06fd3fb9d213160ef2398796c3b7f3dc75ef1e3ced30d461517073"
+    },
+    {
+      "kind": "dataset",
+      "ref": "hf://datasets/Paul/XSTest@f600c994b256f12867dfa5b3eb3d545a3e62f8b5/xstest_prompts.csv",
+      "sha256": "11783fb294ed017473ee53c207d71f2161c7672c8d0b037501e78387f801cb5a"
+    },
+    {
+      "kind": "dataset",
+      "ref": "hf://datasets/cais/mmlu@c30699e8356da336a370243923dbaf21066bb9fe/all/test-00000-of-00001.parquet",
+      "sha256": "74a41822ce7d3def56e1682f958469c04642a5336a5ce912fa375fdb90fb25d7"
+    },
+    {
+      "kind": "dataset",
+      "ref": "hf://datasets/cais/mmlu@c30699e8356da336a370243923dbaf21066bb9fe/all/validation-00000-of-00001.parquet",
+      "sha256": "66cdf0b090ccb657d18d13cd81e31fdc55c3467da9642ffb178653268a97c8ef"
+    }
+  ],
+  "params": {
+    "config_sha256": "e321c52c0d2599785d910c139252e30915052bbedc807a0b91e45bb2acb713bd",
+    "seed": 42,
+    "split_sizes": {
+      "harmful_test": 200,
+      "calib_pairs": 64,
+      "harmful_dev": 100,
+      "xstest_test": 250,
+      "mmlu_test": 300,
+      "mmlu_dev": 100
+    }
+  }
+}

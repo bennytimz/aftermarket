@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- aftermarket ---
+# raw source downloads (re-fetched from pinned URLs by aftermarket.data)
+data/seeds/*
+!data/seeds/.gitkeep
+# model generations may contain harmful completions: never commit (PLAN.md §9); they go to a PRIVATE HF dataset
+results/gen/
+results/**/*.parquet
