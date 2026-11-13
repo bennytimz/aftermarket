@@ -6,7 +6,9 @@
 Stages (each skips finished work, so a re-run resumes):
   locate -> candidates (2, one per T4) -> dev A0 -> dev A3 + A4q3 -> judge (WildGuard) -> select
   -> controls (AM_rand0, AM_rand1, AM_all) -> freeze
-  [--with-battery: the frozen AM family through A0-A5 on test (--final), cheap attacks first, then judge]
+  [--with-battery: the frozen AM family on test (--final), cheap attacks first; AM gets A4 at 3-bit only,
+   controls get A0, A2, A3 (notes/limitations.md). The test generations are judged by notebook 06 on Colab,
+   off the Kaggle quota; --with-test-judge judges them here instead]
 Before running, it prints the estimated quota-hours / GPU-hours per stage (budget.py). After each stage it
 checks the elapsed session time; once it reaches --max-hours it stops cleanly (no stage is interrupted) and
 lists what is left for the next session.
@@ -31,8 +33,8 @@ from aftermarket.data import REPO_ROOT
 
 DEV_A0, DEV_ATT = "configs/gen_defense_dev_a0.yaml", "configs/gen_defense_dev_attacks.yaml"
 BATTERY, CONTROLS = "configs/gen_am_test.yaml", "configs/gen_am_controls_test.yaml"
-# cheap first; controls only face A0, A3, A4q3, A2 (the attacks AM targets)
-BATTERY_STAGES = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3,A4q3"), (BATTERY, "A4q4,A4q3,A4q2"), (BATTERY, "A5bon"),
+# cheap first; AM gets A4 at 3-bit only; controls only face A0, A3, A2 (quota, notes/limitations.md)
+BATTERY_STAGES = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3"), (BATTERY, "A4q3"), (BATTERY, "A5bon"),
                   (BATTERY, "A1"), (BATTERY, "A2"), (CONTROLS, "A2")]
 
 
@@ -101,7 +103,7 @@ def sh_parallel(args_per_gpu: list[list[str]]) -> None:
 
 # ----------------------------------------------------------------------------- stages
 
-def build_stages(config: str, dcfg: dict, with_battery: bool) -> list[Stage]:
+def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool = False) -> list[Stage]:
     from aftermarket.defense import budget, store
     from aftermarket.defense.harden import candidate_grid
     from aftermarket.defense.select import SELECTION, frozen_ids
@@ -178,6 +180,7 @@ def build_stages(config: str, dcfg: dict, with_battery: bool) -> list[Stage]:
             stages.append(Stage(f"test {who} {a}",
                                 (lambda path=path, a=a: sh("aftermarket.generate", "--config", path, "--final", "--attacks", a)),
                                 enabled=AM_FROZEN_YAML.exists, estimate=est_gen(path, a.split(","))))
+    if with_battery and test_judge:
         stages.append(Stage("AM test judge", lambda: sh("aftermarket.judge", "--config", "configs/judge.yaml"),
                             enabled=AM_FROZEN_YAML.exists, estimate=judge_estimate(BATTERY, CONTROLS)))
     return stages
@@ -189,6 +192,8 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--max-hours", type=float, help="stop cleanly after the stage that crosses this session time")
     ap.add_argument("--session-start", type=float, help="epoch seconds the Kaggle session started (default: now)")
     ap.add_argument("--with-battery", action="store_true", help="also run the frozen AM family on test (--final)")
+    ap.add_argument("--with-test-judge", action="store_true",
+                    help="also judge the battery here (default: notebook 06 judges it on Colab, off the Kaggle quota)")
     ap.add_argument("--plan-only", action="store_true", help="print the estimate and exit")
     args = ap.parse_args(argv)
     started = args.session_start or time.time()
@@ -202,7 +207,7 @@ def main(argv: list[str] | None = None) -> None:
     pull_from_hub(gen_cfg, REPO_ROOT / gen_cfg["out_dir"], want=lambda stem: True, suffixes=(".json",))
     store.pull_all(dcfg, want=lambda top: top in ("locate", "selection.json", store.FROZEN_FILE))
     store.pull_all(dcfg, suffixes=(store.META,))
-    stages = build_stages(args.config, dcfg, args.with_battery)
+    stages = build_stages(args.config, dcfg, args.with_battery, args.with_test_judge)
     print("Estimated cost of the work left (Kaggle quota = session wall time):")
     print(budget.fmt_table([(s.name, s.estimate()) for s in stages]))
     if args.max_hours:

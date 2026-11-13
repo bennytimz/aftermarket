@@ -424,8 +424,8 @@ def test_battery_controls_and_xstest_trim():
 
     am = yaml.safe_load((REPO_ROOT / "configs" / "gen_am_test.yaml").read_text(encoding="utf-8"))
     ctl = yaml.safe_load((REPO_ROOT / "configs" / "gen_am_controls_test.yaml").read_text(encoding="utf-8"))
-    assert am["runs"] == ["AM"] and set(am["attacks"]) == {"A0", "A1", "A2", "A3", "A4q4", "A4q3", "A4q2", "A5raw", "A5bon"}
-    assert ctl["runs"] == ["AM_rand0", "AM_rand1", "AM_all"] and set(ctl["attacks"]) == {"A0", "A2", "A3", "A4q3"}
+    assert am["runs"] == ["AM"] and set(am["attacks"]) == {"A0", "A1", "A2", "A3", "A4q3", "A5raw", "A5bon"}
+    assert ctl["runs"] == ["AM_rand0", "AM_rand1", "AM_all"] and set(ctl["attacks"]) == {"A0", "A2", "A3"}
     assert am["splits"] == ctl["splits"]
     for a in ("A4q4", "A4q2", "A5raw"):  # over-refusal is mainly an A0 question
         assert not attack_applies(ATT[a], "xstest_test")
@@ -433,3 +433,12 @@ def test_battery_controls_and_xstest_trim():
         assert attack_applies(ATT[a], "benign_dev")  # dev unchanged
     for a in ("A0", "A1", "A2", "A3", "A4q3"):
         assert attack_applies(ATT[a], "xstest_test")
+
+
+def test_battery_stages_cover_configs_exactly():
+    """Every battery stage runs attacks from its config, and together they cover each config once."""
+    for path in (P.BATTERY, P.CONTROLS):
+        cfg = yaml.safe_load((REPO_ROOT / path).read_text(encoding="utf-8"))
+        staged = [a for p, s in P.BATTERY_STAGES if p == path for a in s.split(",")]
+        assert sorted(staged) == sorted(cfg["attacks"])
+    assert not any(a in ("A4q4", "A4q2") for _, s in P.BATTERY_STAGES for a in s.split(","))

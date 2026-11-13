@@ -1,9 +1,9 @@
 # AM controls on test (PLAN.md §6): only what shows whether the circuit matters on the attacks AM targets
-# (A0, A2, A3, A4q3; same splits as AM). --final, only after the freeze (generate refuses otherwise).
-#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_am_controls_test.yaml --final --attacks A0,A3,A4q3
+# (A0, A2, A3; same splits as AM; no A4, notes/limitations.md). --final, only after the freeze (generate refuses otherwise).
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_am_controls_test.yaml --final --attacks A0,A3
 seed: 42
 runs: [AM_rand0, AM_rand1, AM_all]
-attacks: [A0, A3, A4q3, A2]
+attacks: [A0, A3, A2]
 splits: [harmful_test, xstest_test, mmlu_test]
 precision: fp16
 batch_size: 16

@@ -28,9 +28,17 @@ write-up as written here.
   ships. The A4 rows of AM are reported with this marked.
 
 ## Test battery (quota)
-- **Controls run a reduced battery.** AM faces every attack (A0, A1, A2, A3, A4q4/q3/q2, A5raw, A5bon).
-  AM_rand0, AM_rand1 and AM_all face only A0, A2, A3 and A4q3: enough to show whether placing the
-  hardening on L* matters for the attacks AM targets, not a full leaderboard row for each control.
+- **AM faces A4 at 3-bit only.** AM's battery is A0, A1, A2, A3, A4q3, A5raw and A5bon; A4q4 and A4q2 were
+  dropped for AM (the team models keep their full A4q4/q3/q2 data). 3-bit is the A4 setting AM was selected
+  on (dev A4q3), so the A4 result we can claim is the 3-bit one; we make no claim about AM at 4-bit or 2-bit.
+  In the per-model retention table AM's A4 family is A4q3 alone while the team models average three bit
+  widths, so AM's A4 term is not directly comparable to theirs: compare it with their A4q3 cell. Pairwise
+  retention (AM vs BASE, team model vs AM) uses only attacks both models have, so it is like for like. Taken because the Kaggle GPU quota ran short (about 8.75 h left with no weekly reset before the
+  deadline) and HQQ 3/2-bit generation is several times slower than fp16 A0 (measured in notebook 03 v2).
+- **Controls run a reduced battery.** AM_rand0, AM_rand1 and AM_all face only A0, A2 and A3 (no A4): enough
+  to show whether placing the hardening on L* matters for the weight-level attacks AM targets, not a full
+  leaderboard row for each control. Whether L* matters under quantization is therefore not tested on test;
+  under A4 only AM itself is reported (with its 8-bit shield).
 - **No XSTest under A4q4, A4q2 or A5raw, for every model** (team models and AM alike, so cells stay
   comparable). These cells report harmful-prompt ASR and MMLU only. Over-refusal is mainly an A0 question;
   it is still measured at A0, A1, A2, A3 and A4q3. Taken because the measured-rate estimate of the AM battery

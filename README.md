@@ -249,7 +249,9 @@ python -m aftermarket.space_push --push
 ```
 
 Notebooks `01`–`06` run the same steps on Kaggle and are safe for "Save & Run All": finished work is pulled from
-the private Hub dataset and skipped.
+the private Hub dataset and skipped. Judging (`06_judge.ipynb`) also runs on Google Colab (free T4, one judge
+worker, `HF_TOKEN` in Colab secrets), off the Kaggle GPU quota; re-run it after a disconnect and it resumes from the Hub:
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bennytimz/aftermarket/blob/main/notebooks/06_judge.ipynb)
 
 | Pinned | Revision |
 |---|---|
