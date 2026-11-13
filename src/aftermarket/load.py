@@ -7,14 +7,14 @@ Formats:
   full    HF checkpoint (BASE, SDT, SP)
   lora    PEFT adapter on BASE @ base_revision (GC, IL); merged unless precision="4bit"
   deltas  ScarTissue rank-one patches applied in order to BASE (ST)
-  gguf    llama-cpp-python behind the same `generate` interface (RL)
+  template  BASE weights + the repo's chat template; the fix is template-only (RL)
 
 Rules (CLAUDE.md): the tokenizer is always BASE's at the pinned revision, and every repo
 that ships its own tokenizer must produce identical token IDs (`assert_token_ids_match`).
 Each model's own chat template is used when its repo ships one (`template="native"`);
 `template="base"` swaps in BASE's template (e.g. RL without its guard, attack A5).
 
-torch / transformers / peft / llama_cpp are imported lazily so configs and patch
+torch / transformers / peft are imported lazily so configs and patch
 validation can be unit-tested on a laptop without them.
 """
 
@@ -23,7 +23,6 @@ from __future__ import annotations
 import io
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
 
 import numpy as np
 import yaml
@@ -31,7 +30,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODELS_YAML = REPO_ROOT / "configs" / "models.yaml"
 
-FORMATS = {"full", "lora", "deltas", "gguf"}
+FORMATS = {"full", "lora", "deltas", "template"}
 STATUSES = {"active", "dropped", "planned"}
 PRECISIONS = {"bf16", "fp16", "4bit"}
 
@@ -206,36 +205,10 @@ def _load_base_hf(precision: str):
     return AutoModelForCausalLM.from_pretrained(reg["base_model"], revision=reg["base_revision"], **_hf_kwargs(precision))
 
 
-class GGUFModel:
-    """llama-cpp-python model, driven with token IDs from the pinned BASE tokenizer."""
-
-    def __init__(self, path: str, n_ctx: int = 4096, n_gpu_layers: int = -1):
-        from llama_cpp import Llama
-
-        self.path = path
-        self.llm = Llama(model_path=path, n_ctx=n_ctx, n_gpu_layers=n_gpu_layers, verbose=False)
-
-    def check_tokenizer(self, base_tok) -> None:
-        for text in TOKEN_PROBES:
-            a = base_tok(text, add_special_tokens=False)["input_ids"]
-            b = self.llm.tokenize(text.encode("utf-8"), add_bos=False, special=True)
-            if a != b:
-                raise AssertionError(f"GGUF token IDs differ from BASE on {text!r}\nbase={a}\ngguf={b}")
-
-    def generate_ids(self, input_ids: list[int], max_new_tokens: int, stop_ids: set[int]) -> list[int]:
-        out: list[int] = []
-        self.llm.reset()
-        for tok in self.llm.generate(input_ids, temp=0.0, top_k=1, top_p=1.0, repeat_penalty=1.0, reset=True):
-            if tok in stop_ids or len(out) >= max_new_tokens:
-                break
-            out.append(tok)
-        return out
-
-
 def load_model(model_id: str, precision: str = "bf16", template: str = "native"):
     """Return (model, tokenizer) for `model_id` from configs/models.yaml.
 
-    precision: "bf16" | "fp16" | "4bit" (bnb nf4). Ignored for GGUF (already Q4_K_M).
+    precision: "bf16" | "fp16" | "4bit" (bnb nf4).
     template:  "native" (model's own chat template) | "base" (BASE's template).
     The returned model carries `aftermarket_id`, `aftermarket_spec` and
     `aftermarket_chat_template` attributes used by `generate`.
@@ -249,10 +222,8 @@ def load_model(model_id: str, precision: str = "bf16", template: str = "native")
     _check_repo_tokenizer(spec, tok)
     fmt = spec["format"]
 
-    if fmt == "gguf":
-        path = hf_hub_download(spec["hf_path"], spec["gguf_file"], revision=spec["revision"])
-        model = GGUFModel(path)
-        model.check_tokenizer(tok)
+    if fmt == "template":
+        model = _load_base_hf(precision)
     elif fmt == "full":
         from transformers import AutoModelForCausalLM
 
@@ -273,11 +244,10 @@ def load_model(model_id: str, precision: str = "bf16", template: str = "native")
     else:
         raise ValueError(f"unknown format {fmt!r}")
 
-    if fmt != "gguf":
-        model.eval()
-        emb = model.get_input_embeddings().weight.shape[0]
-        if emb < len(tok):
-            raise AssertionError(f"{model_id}: embedding rows {emb} < BASE vocab {len(tok)}")
+    model.eval()
+    emb = model.get_input_embeddings().weight.shape[0]
+    if emb < len(tok):
+        raise AssertionError(f"{model_id}: embedding rows {emb} < BASE vocab {len(tok)}")
 
     model.aftermarket_id = model_id
     model.aftermarket_spec = spec
@@ -321,17 +291,13 @@ def build_prompt_ids(model, tok, messages: list[dict] | None = None, raw_text: s
 
 def generate(model, tok, messages: list[dict] | None = None, *, raw_text: str | None = None,
              max_new_tokens: int = 256) -> str:
-    """Greedy decode one reply (PLAN.md §5). Same interface for HF and GGUF models."""
-    ids = build_prompt_ids(model, tok, messages, raw_text)
-    stop = _stop_ids(tok)
-    if isinstance(model, GGUFModel):
-        out = model.generate_ids(ids, max_new_tokens, stop)
-    else:
-        import torch
+    """Greedy decode one reply (PLAN.md §5)."""
+    import torch
 
-        x = torch.tensor([ids], device=model.device)
-        with torch.no_grad():
-            y = model.generate(input_ids=x, attention_mask=torch.ones_like(x), max_new_tokens=max_new_tokens,
-                               do_sample=False, eos_token_id=sorted(stop), pad_token_id=tok.pad_token_id)
-        out = y[0, len(ids):].tolist()
+    ids = build_prompt_ids(model, tok, messages, raw_text)
+    x = torch.tensor([ids], device=model.device)
+    with torch.no_grad():
+        y = model.generate(input_ids=x, attention_mask=torch.ones_like(x), max_new_tokens=max_new_tokens,
+                           do_sample=False, eos_token_id=sorted(_stop_ids(tok)), pad_token_id=tok.pad_token_id)
+    out = y[0, len(ids):].tolist()
     return tok.decode(out, skip_special_tokens=True).strip()

@@ -1,0 +1,8 @@
+# Kaggle: only what the image lacks. torch / transformers / peft / accelerate / datasets /
+# huggingface_hub / bitsandbytes / pandas come from Kaggle; the notebook installs these with
+# Kaggle's torch held fixed (constraint file), so nothing replaces its CUDA build.
+curatorkit>=0.1.27
+safetune>=0.1.18
+circuitkit>=0.2.3
+auditkit>=1.1.11
+hqq>=0.2.8

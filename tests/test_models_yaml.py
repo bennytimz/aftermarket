@@ -37,8 +37,8 @@ def test_active_fields(mid, spec):
     assert spec["files"], mid
     if mid != "BASE":
         assert spec.get("base") == "BASE", mid
-    if spec["format"] == "gguf":
-        assert spec["gguf_file"] in spec["files"]
+    if spec["format"] == "template":
+        assert spec.get("chat_template_file"), f"{mid}: template-only fix needs chat_template_file"
     if spec["format"] == "deltas":
         assert spec["delta_files"] and set(spec["delta_files"]) <= set(spec["files"])
     if spec["format"] == "lora":

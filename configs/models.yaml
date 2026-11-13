@@ -72,14 +72,18 @@ models:
     hf_path: AmberNeel/tiny-aya-global-redlens-guard-GGUF
     revision: 1fa534c8bebadd2af00c480b6ecd9d1db762d217
     fix_type: prompt guard in template
-    format: gguf
+    format: template  # BASE weights + this repo's chat template
     base: BASE
     files: [tiny-aya-global-redlens-guard-Q4_K_M.gguf, chat_template_redlens_guard.jinja]
-    gguf_file: tiny-aya-global-redlens-guard-Q4_K_M.gguf
     chat_template_file: chat_template_redlens_guard.jinja
     notes: >-
-      Q4_K_M, weights unchanged from BASE; the guard lives only in the chat template. Test with its
-      template (template="native") and without it (template="base").
+      Loaded as BASE weights (HF, af89d219) + the RedLens guard chat template, not via the GGUF.
+      Their README: "Weights are unchanged; only tokenizer.chat_template and the model name/description
+      metadata differ from the plain Q4_K_M file", so the whole fix is the guard text and Q4_K_M is only
+      packaging. 4-bit is covered for every model by our A4 compression attack, and the HF path keeps RL
+      on the same loader, tokenizer and decoding as the others. Verified 2026-11-13: the
+      tokenizer.chat_template in the GGUF metadata is byte-identical to chat_template_redlens_guard.jinja
+      (4,862 bytes). Runs: template="native" (guard on) and template="base" (guard removed = BASE's template).
 
   ST:
     name: ScarTissue
