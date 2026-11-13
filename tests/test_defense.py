@@ -527,3 +527,90 @@ def test_colab_part_on_one_gpu_is_serial():
     for s in st:
         e = s.estimate()
         assert e["wall_s"] == pytest.approx(e["gpu_s"])  # one T4: wall time = GPU time
+
+
+# ----------------------------------------------------------------------------- notebook 05 Kaggle run (bugs found)
+
+def test_training_kwargs_have_no_warmup_ratio(tmp_path):
+    # transformers v5 removed TrainingArguments(warmup_ratio=...): both harden workers died on it
+    kw = H.training_kwargs(DCFG["harden"], tmp_path, 42)
+    assert "warmup_ratio" not in kw and kw["warmup_steps"] == pytest.approx(DCFG["harden"]["warmup_ratio"])
+    assert isinstance(kw["warmup_steps"], float) and 0 < kw["warmup_steps"] < 1  # float in [0, 1) = ratio in v5
+    with pytest.raises(ValueError):
+        H.training_kwargs({**DCFG["harden"], "warmup_ratio": 1.5}, tmp_path, 42)
+    transformers = pytest.importorskip("transformers")
+    transformers.TrainingArguments(**{**kw, "fp16": False, "use_cpu": True})  # the installed version accepts them
+
+
+def test_stale_candidate_retrained_after_locate_change():
+    assert not H.stale_candidate(None, [1, 2])
+    assert not H.stale_candidate({"layers": [2, 1]}, [1, 2])
+    assert H.stale_candidate({"layers": [5, 8, 9, 10, 11, 25]}, [3, 4, 5, 6, 8, 10])
+
+
+def test_average_ranks_nan_ranks_last():
+    # v1 locate.json: refusal_direction[0] was NaN (embedding position, 0/0 direction) and scrambled the ranks
+    assert L.average_ranks([float("nan"), 1.0, 3.0, 2.0]) == [4.0, 3.0, 1.0, 2.0]
+    assert L.average_ranks([float("nan"), float("inf"), 1.0]) == [2.5, 2.5, 1.0]
+    order, _ = L.merge_rankings({"a": [float("nan"), 3.0, 2.0, 1.0], "b": [0.0, 3.0, 2.0, 1.0]})
+    assert order == [1, 2, 3, 0]
+
+
+def test_refusal_direction_scored_at_layer_outputs():
+    # residual positions: 0 = embeddings, l + 1 = output of decoder layer l (SafeTune's layer l is decoder layer l)
+    resid = [float("nan"), 0.3, 2.4, 4.5, 4.7]  # 4 decoder layers
+    assert L.layer_output_scores(resid, 4) == [0.3, 2.4, 4.5, 4.7]
+    with pytest.raises(ValueError):
+        L.layer_output_scores(resid[:-1], 4)  # layer inputs only (the v1 off-by-one)
+
+
+def test_locate_version_gates_resume():
+    assert L.current({"version": L.VERSION}) and not L.current({"n_layers": 36}) and not L.current(None)
+
+
+def test_defense_judge_only_dev_files(tmp_path):
+    from aftermarket import judge as J
+
+    gen, out = tmp_path / "gen", tmp_path / "judged"
+    gen.mkdir(), out.mkdir()
+    for stem in ("BASE__A0__harmful_dev", "BASE__A3__harmful_test", "AMc_k6__A0__mmlu_dev", "SDT__A0__harmful_dev"):
+        (gen / f"{stem}.parquet").write_bytes(b"")
+    cfg = yaml.safe_load((REPO_ROOT / "configs" / "judge_defense.yaml").read_text(encoding="utf-8"))
+    todo, _ = J.plan(cfg, gen, out)
+    assert sorted(p.stem for p in todo) == ["AMc_k6__A0__mmlu_dev", "BASE__A0__harmful_dev"]
+    assert J.split_allowed("BASE__A0__xstest_test", ["_test"]) and not J.split_allowed("BASE__A0__xstest_test", ["_dev"])
+
+
+def test_failed_stage_stops_pipeline():
+    clock, ran, log = Clock(), [], []
+    stages = [_stage("a", clock, 0.1, ran), _stage("harden", clock, 0.1, ran), _stage("dev", clock, 0.1, ran)]
+    stages[1].check = lambda: "candidates not trained: ['AMc_k6']"
+    assert P.run_stages(stages, None, 0.0, clock=clock, log=log.append) == ["a", "harden"]
+    assert ran == ["a", "harden"] and any("STOPPED" in m and "AMc_k6" in m for m in log)
+
+
+def test_recommit_resumes_from_hub_copies(tmp_path, monkeypatch):
+    """Current locate.json + both candidates (trained on that L*) in the defense dir (as pulled from the private
+    Hub): locate and harden have nothing left. A v1 locate.json or a candidate on an old L* is redone."""
+    from aftermarket.defense import store
+
+    monkeypatch.setenv(store.ENV, str(tmp_path))
+    loc = {"version": L.VERSION, "n_layers": 36, "L_star": {"4": [1, 2, 3, 4], "6": [1, 2, 3, 4, 5, 6],
+                                                             "8": [1, 2, 3, 4, 5, 6, 7, 8]}}
+    (tmp_path / "locate").mkdir()
+    (tmp_path / "locate" / "locate.json").write_text(json.dumps(loc))
+    for c in H.candidate_grid(DCFG):
+        store.write_meta(c["id"], {"layers": loc["L_star"][str(c["k"])], "format": "lora"})
+
+    def todo():
+        st = {s.name: s for s in P.build_stages("configs/defense.yaml", DCFG, with_battery=False)}
+        return st["locate (all k)"].estimate()["n_jobs"], st["harden candidates"].estimate()["n_jobs"], st
+
+    assert todo()[:2] == (0, 0)
+    assert todo()[2]["harden candidates"].check() is None
+    first = H.candidate_grid(DCFG)[0]["id"]
+    store.write_meta(first, {"layers": [9, 9, 9], "format": "lora"})  # trained on an older L*
+    assert todo()[:2] == (0, 1)
+    assert first in todo()[2]["harden candidates"].check()
+    (tmp_path / "locate" / "locate.json").write_text(json.dumps({**loc, "version": 1}))
+    assert todo()[0] == 1

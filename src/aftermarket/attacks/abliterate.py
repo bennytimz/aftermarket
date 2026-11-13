@@ -62,8 +62,9 @@ def project_out_cols(E, d):
 
 # ----------------------------------------------------------------------------- model side (torch)
 
-def last_token_acts(model, tok, prompts: list[str], batch_size: int = 16):
-    """[n, L, D] float32 CPU: input to each decoder layer at the last prompt token (left padded)."""
+def last_token_acts(model, tok, prompts: list[str], batch_size: int = 16, include_final: bool = False):
+    """[n, L, D] float32 CPU: input to each decoder layer at the last prompt token (left padded).
+    include_final: [n, L+1, D], plus the (post-norm) output of the last layer, so entry l+1 is layer l's output."""
     import torch
 
     from aftermarket.load import build_prompt_ids
@@ -76,12 +77,12 @@ def last_token_acts(model, tok, prompts: list[str], batch_size: int = 16):
         x = torch.tensor([[pad] * (L - len(s)) + s for s in ids], device=model.device)
         m = torch.tensor([[0] * (L - len(s)) + [1] * len(s) for s in ids], device=model.device)
         with torch.no_grad():
-            hs = layer_inputs(model, x, m)
+            hs = layer_inputs(model, x, m, include_final)
         out.append(torch.stack(hs, dim=1)[:, :, -1, :].float().cpu())
     return torch.cat(out)
 
 
-def layer_inputs(model, input_ids, attention_mask):
+def layer_inputs(model, input_ids, attention_mask, include_final: bool = False):
     """Hidden states entering each decoder layer (tuple of n_layers [B, T, D]).
 
     logits_to_keep=1: only the last position goes through lm_head. Without it Tiny Aya's 262k-vocab head
@@ -89,8 +90,8 @@ def layer_inputs(model, input_ids, attention_mask):
     """
     hs = model(input_ids=input_ids, attention_mask=attention_mask, output_hidden_states=True,
                logits_to_keep=1).hidden_states
-    # hidden_states[l] = input to layer l for l < n_layers; the last entry is post-norm, so drop it
-    return hs[:-1]
+    # hidden_states[l] = input to layer l for l < n_layers; the last entry is post-norm, so drop it (A3)
+    return hs if include_final else hs[:-1]
 
 
 def write_modules(model, names=("self_attn.o_proj", "mlp.down_proj")):

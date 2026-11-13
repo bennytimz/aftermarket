@@ -8,13 +8,13 @@ base_run: BASE                      # AM hardens BASE (as released)
 locate:                             # (a) protected layers L*
   fit_split: calib_pairs            # 64 harmful/harmless pairs
   select_on: [harmful_dev, benign_dev]
-  methods: [refusal_direction, safetune_neurons, eap_ig]
+  methods: [refusal_direction, safetune_neurons]   # eap_ig dropped: OOM on a T4 (notes/limitations.md)
   refusal_direction: {}             # per-layer Cohen's d of harmful_dev vs benign_dev projections (A3's rule)
   safetune_neurons:                 # safetune.identify_safety_neurons, activation contrast on calib_pairs
     method: activation
     activation_score: tstat
     top_k_per_layer: 16             # layer score = mean |score| of its top-16 neurons
-  eap_ig:                           # circuitkit.discover_circuit, node level, on the calib refusal contrast
+  eap_ig:                           # NOT RUN (not in methods). Kept for the record: circuitkit.discover_circuit
     ig_steps: 3
     num_examples: 64                # GPU; CPU fallback uses cpu_num_examples
     cpu_num_examples: 32
@@ -72,7 +72,7 @@ selection:                          # judged with WildGuard on harmful_dev / ben
 
 budget:                             # a-priori fallbacks for the cost estimate, used only until a timing is measured
   gpus: 2
-  locate_s: 1800                    # GPU part; EAP-IG's CPU fallback can add up to eap_ig.timeout_s
+  locate_s: 900                     # refusal direction + SafeTune neurons, model load included (no EAP-IG)
   train_s: 1500                     # one defense adapter (measured: defense_meta.json train_seconds)
   load_s: 150                       # model load (+ attack prep) per (run, attack) group
   # seconds per 100 prompts. Reported from notebook 02 on Kaggle (A0, bs=16, fp16, 2xT4): ~0.6-0.8 prompts/s

@@ -307,7 +307,15 @@ def plan(cfg: dict, gen_dir: Path, out_dir: Path) -> tuple[list[Path], list[Path
     if cfg.get("only_wildguard_runs") and wg_runs:  # defense config: BASE + AM candidates only
         todo = [p for p in todo if run_matches(p.stem, wg_runs)]
     extra = needs_wildguard(out_dir, gen_dir, wg_runs) if wg_runs else []
+    if cfg.get("only_split_suffixes"):  # defense config: dev splits only (notebook 05 judged BASE test files)
+        keep = lambda p: split_allowed(p.stem, cfg["only_split_suffixes"])
+        todo, extra = [p for p in todo if keep(p)], [p for p in extra if keep(p)]
     return todo, extra
+
+
+def split_allowed(stem: str, suffixes: list[str]) -> bool:
+    """run__attack__split stem: is the split one of the allowed kinds (e.g. '_dev')?"""
+    return stem.rsplit("__", 1)[-1].endswith(tuple(suffixes))
 
 
 def judge_all(cfg: dict, gen_dir: Path, out_dir: Path, i: int = 0, n: int = 1) -> list[str]:

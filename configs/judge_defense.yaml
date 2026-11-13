@@ -6,6 +6,7 @@ gen_dir: results/gen
 out_dir: results/judged
 wildguard_on_harmful_runs: [BASE, "AMc_*"]
 only_wildguard_runs: true      # judge only these runs (the full battery is judged by configs/judge.yaml)
+only_split_suffixes: [_dev]    # and only dev splits: test files are judged by notebook 06 (on Colab)
 guard:
   model: meta-llama/Llama-Guard-3-1B
   revision: acf7aafa60f0410f8f42b1fa35e077d705892029

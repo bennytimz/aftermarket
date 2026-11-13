@@ -205,12 +205,7 @@ def train_defense(model_id: str, plan: dict[int, int], spread: bool, dcfg: dict,
 
     out_dir = store.model_dir(model_id)
     out_dir.mkdir(parents=True, exist_ok=True)
-    args = TrainingArguments(
-        output_dir=str(out_dir / "_trainer"), per_device_train_batch_size=hc["batch_size"],
-        gradient_accumulation_steps=hc["grad_accum"], num_train_epochs=hc["epochs"], learning_rate=hc["lr"],
-        warmup_ratio=hc["warmup_ratio"], lr_scheduler_type="linear", max_grad_norm=hc["max_grad_norm"], fp16=True,
-        logging_steps=10, save_strategy="no", report_to=[], seed=seed, data_seed=seed, remove_unused_columns=False,
-        dataloader_num_workers=0)
+    args = TrainingArguments(**training_kwargs(hc, out_dir / "_trainer", seed))
     tr = SpreadSafeGrad(model=model, args=args, train_dataset=benign, data_collator=collate,
                         safety_dataset=safety_loader, reference_model=None, rho=hc["rho"])
     res = tr.train()
@@ -244,13 +239,34 @@ def module_shapes(model) -> dict[str, tuple[int, int]]:
 
 # ----------------------------------------------------------------------------- stages
 
+def training_kwargs(hc: dict, output_dir: Path, seed: int) -> dict:
+    """TrainingArguments for one defense adapter. transformers v5 removed `warmup_ratio` (Kaggle notebook 05 died
+    on it, transformers 5.20.2): `warmup_steps` takes the ratio when it is a float in [0, 1)."""
+    ratio = float(hc["warmup_ratio"])
+    if not 0 <= ratio < 1:
+        raise ValueError(f"warmup_ratio must be in [0, 1): {ratio}")
+    return dict(output_dir=str(output_dir), per_device_train_batch_size=hc["batch_size"],
+                gradient_accumulation_steps=hc["grad_accum"], num_train_epochs=hc["epochs"], learning_rate=hc["lr"],
+                warmup_steps=ratio, lr_scheduler_type="linear", max_grad_norm=hc["max_grad_norm"], fp16=True,
+                logging_steps=10, save_strategy="no", report_to=[], seed=seed, data_seed=seed,
+                remove_unused_columns=False, dataloader_num_workers=0)
+
+
+def stale_candidate(meta: dict | None, layers: list[int]) -> bool:
+    """A stored candidate trained on another L* (locate was re-run since) must be retrained."""
+    return bool(meta) and sorted(meta.get("layers") or []) != sorted(layers)
+
+
 def _locate() -> dict:
     from aftermarket.defense import store
 
+    from aftermarket.defense.locate import current
+
     p = store.defense_dir() / "locate" / "locate.json"
-    if not p.exists():
-        raise FileNotFoundError("run aftermarket.defense.locate first")
-    return json.loads(p.read_text(encoding="utf-8"))
+    loc = json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+    if not current(loc):
+        raise FileNotFoundError("no current locate.json: run aftermarket.defense.locate first")
+    return loc
 
 
 def shield_spec(layers: list[int] | None, dcfg: dict) -> dict | None:
@@ -280,9 +296,13 @@ def stage_candidates(dcfg: dict, shard: tuple[int, int]) -> None:
 
     loc = _locate()
     for i, c in enumerate(candidate_grid(dcfg)):
-        if i % shard[1] != shard[0] or store.read_meta(c["id"]):
-            continue
         layers = loc["L_star"][str(c["k"])]
+        meta = store.read_meta(c["id"])
+        if stale_candidate(meta, layers):
+            print(f"[{c['id']}] trained on L*={meta['layers']}, current L*={layers}: retraining", flush=True)
+            meta = None
+        if i % shard[1] != shard[0] or meta:
+            continue
         print(f"[{c['id']}] L*={layers} spread={c['spread']}", flush=True)
         meta = train_defense(c["id"], rank_plan(layers, loc["n_layers"], dcfg["harden"]["lora_r"]), c["spread"], dcfg,
                              {"kind": "candidate", "k": c["k"], "quant_shield": shield_spec(layers, dcfg) if c["shield"] else None,

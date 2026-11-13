@@ -166,8 +166,8 @@ Cells below 30% MMLU ("safe because broken"): <!--v:broken_cells-->TBD<!--/v-->.
 Goal: rank first on retention without raising over-refusal. Built on BASE, every choice made on dev prompts, then
 frozen before its single test run (PLAN.md §6, `notebooks/05_defense.ipynb`).
 
-1. **Locate** the protected layers L*: refusal-direction strength per layer, SafeTune safety neurons and
-   CircuitKIT EAP-IG, merged by mean rank.
+1. **Locate** the protected layers L*: refusal-direction strength per layer and SafeTune safety neurons, merged by
+   mean rank (CircuitKIT EAP-IG was planned but ran out of memory on a T4; see Limitations).
 2. **Harden** with SafeTune SafeGrad (plain-loss variant), LoRA restricted to L*.
 3. **Spread the refusal** (candidate): refusal examples trained with the top refusal direction ablated, so the
    model does not depend on a single direction (targets A3).
@@ -198,8 +198,9 @@ T4 memory:
 - **A4 = 3-bit (A4q3) for every model.** The team-model A4 run was stopped early (HQQ is ~6× slower than A0);
   A4q4 exists only for BASE, GC and IL, A4q2 for none on test. Those are extra data, never in retention or rankings.
 - **AM's A1 and A5bon cells ran on a Colab T4** (same seed, configs, decoding), the rest of its battery on Kaggle.
-- **EAP-IG caveats:** first-token logit difference on length-unmatched pairs, and CircuitKIT cannot pin the model
-  revision (filed upstream).
+- **EAP-IG was dropped** (out of memory on the T4 and on CPU); L* comes from two methods, which pick disjoint
+  layers (early refusal-direction layers vs middle-layer safety neurons). That disagreement is real: we checked the
+  layer indexing and fixed an off-by-one in the refusal-direction score.
 - **The compression shield is AM-only by design** (it is part of what AM ships); AM's A4 rows are marked.
 - **No XSTest under A4q4, A4q2 or A5raw** for any model (quota); over-refusal is measured at A0, A1, A2, A3, A4q3.
 - **Judges are models too.** Llama Guard and WildGuard disagree on some responses (§6). The hand-label check is
@@ -275,7 +276,7 @@ The Colab part of the AM battery (A1, A5bon; same frozen-AM check) is `08_batter
 |---|---|
 | [CuratorKIT](https://github.com/Lexsi-Labs/CuratorKIT) | eval sets and attack data: cleaning, MinHash dedup, splits, provenance manifest |
 | [SafeTune](https://github.com/Lexsi-Labs/SafeTune) | BoN augmentations (A5), safety neurons (locate), SafeGrad hardening (AM) |
-| [CircuitKIT](https://github.com/Lexsi-Labs/circuitkit) | EAP-IG discovery of safety layers for AM |
+| [CircuitKIT](https://github.com/Lexsi-Labs/circuitkit) | EAP-IG discovery of safety layers for AM (attempted; out of memory on a T4, dropped) |
 | [AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) | paired-bootstrap significance tests |
 
 Gaps and bugs we hit are written up in [`notes/upstream_issues.md`](notes/upstream_issues.md) for upstream issues.

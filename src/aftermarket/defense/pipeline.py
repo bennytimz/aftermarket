@@ -51,6 +51,9 @@ class Stage:
     name: str
     run: Callable[[], None]
     enabled: Callable[[], bool] = lambda: True
+    # after run(): None if the stage's outputs are there, else why not. A failed stage stops the pipeline, so a
+    # crash (e.g. no candidate trained) doesn't burn quota on stages that can only fail after it.
+    check: Callable[[], str | None] = lambda: None
     estimate: Callable[[], dict] = field(default=lambda: {"gpu_s": 0.0, "wall_s": 0.0, "n_jobs": 0, "source": "-"})
 
 
@@ -69,6 +72,11 @@ def run_stages(stages: list[Stage], max_hours: float | None, started: float, clo
         st.run()
         ran.append(st.name)
         used = (clock() - started) / 3600
+        why = st.check()
+        if why:
+            log(f"== STOPPED: stage '{st.name}' failed after {(clock() - t0) / 3600:.2f} h: {why}. Later stages "
+                f"skipped (they need its output). Fix it, then re-run: finished work is skipped.")
+            break
         log(f"== {st.name} done in {(clock() - t0) / 3600:.2f} h (session {used:.2f} h)")
         if max_hours is not None and used >= max_hours and i + 1 < len(stages):
             left = [s.name for s in stages[i + 1:]]
@@ -227,14 +235,34 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     def pending_models(ids):
         return [i for i in ids if not store.read_meta(i)]
 
-    loc_done = (store.defense_dir() / "locate" / "locate.json").exists()
+    def pending_candidates():  # missing, or trained on an older L* (locate re-run since)
+        from aftermarket.defense.harden import stale_candidate
+
+        loc = json.loads(loc_path.read_text(encoding="utf-8")) if loc_ok() else None
+        L = {c["id"]: loc["L_star"][str(c["k"])] for c in candidate_grid(dcfg)} if loc else {}
+        return [i for i in cand_ids if not store.read_meta(i) or (i in L and stale_candidate(store.read_meta(i), L[i]))]
+
+    def missing(path, sub_dir="gen"):
+        jobs = make_jobs(gen_cfg(path), attacks)
+        gone = [j.name for j in jobs if not (REPO_ROOT / "results" / sub_dir / f"{j.name}.parquet").exists()]
+        return f"{len(gone)} of {len(jobs)} files missing in results/{sub_dir}: {gone[:4]}" if gone else None
+
+    def check_models(ids_fn, what):
+        return lambda: (f"{what} not trained: {ids_fn()} (see the worker tracebacks above)" if ids_fn() else None)
+
+    from aftermarket.defense.locate import current
+
+    loc_path = store.defense_dir() / "locate" / "locate.json"
+    loc_ok = lambda: loc_path.exists() and current(json.loads(loc_path.read_text(encoding="utf-8")))
+    loc_done = loc_ok()
     cand_ids = [c["id"] for c in candidate_grid(dcfg)]
     ctrl_ids = frozen_ids(dcfg)[1:]
 
     def judge_estimate(*paths):
         def est():
+            judged = REPO_ROOT / "results" / "judged"  # parquet here, or its manifest pulled from the Hub
             n = sum(1 for p in paths for j in make_jobs(gen_cfg(p), attacks)
-                    if not (REPO_ROOT / "results" / "judged" / f"{j.name}.parquet").exists())
+                    if not any((judged / f"{j.name}{s}").exists() for s in (".parquet", ".json")))
             return {"gpu_s": n * b["judge_s_per_file"], "wall_s": n * b["judge_s_per_file"], "n_jobs": n,
                     "source": "a-priori"}
         return est
@@ -247,18 +275,23 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
 
     stages = [
         Stage("locate (all k)", lambda: sh("aftermarket.defense.locate", "--config", config),
+              check=lambda: None if loc_ok() else "no current locate.json",
               estimate=lambda: {"gpu_s": 0.0 if loc_done else b["locate_s"], "wall_s": 0.0 if loc_done else b["locate_s"],
                                 "n_jobs": 0 if loc_done else 1, "source": "a-priori"}),
         Stage("harden candidates", lambda: (store.pull_all(dcfg), sh_parallel(shards("candidates"))),
-              estimate=lambda: budget.estimate_training(len(pending_models(cand_ids)), train_s, b)),
-        Stage("dev A0", lambda: sh("aftermarket.generate", "--config", DEV_A0), estimate=est_gen(DEV_A0)),
-        Stage("dev A3 + A4q3", lambda: sh("aftermarket.generate", "--config", DEV_ATT), estimate=est_gen(DEV_ATT)),
+              check=check_models(pending_candidates, "candidates"),
+              estimate=lambda: budget.estimate_training(len(pending_candidates()), train_s, b)),
+        Stage("dev A0", lambda: sh("aftermarket.generate", "--config", DEV_A0), check=lambda: missing(DEV_A0),
+              estimate=est_gen(DEV_A0)),
+        Stage("dev A3 + A4q3", lambda: sh("aftermarket.generate", "--config", DEV_ATT), check=lambda: missing(DEV_ATT),
+              estimate=est_gen(DEV_ATT)),
         Stage("judge (WildGuard)", lambda: sh("aftermarket.judge", "--config", "configs/judge_defense.yaml"),
+              check=lambda: missing(DEV_A0, "judged") or missing(DEV_ATT, "judged"),
               estimate=judge_estimate(DEV_A0, DEV_ATT)),
         Stage("select", lambda: sh("aftermarket.defense.select", "--config", config, "--stage", "1"),
               estimate=lambda: {"gpu_s": 0.0, "wall_s": 120.0, "n_jobs": 1, "source": "a-priori"}),
         Stage("controls", lambda: (store.pull_all(dcfg), sh_parallel(shards("controls"))),
-              enabled=lambda: bool(selection().get("recipe")),
+              enabled=lambda: bool(selection().get("recipe")), check=check_models(lambda: pending_models(ctrl_ids), "controls"),
               estimate=lambda: budget.estimate_training(len(pending_models(ctrl_ids)), train_s, b)),
         Stage("freeze", run_freeze, enabled=lambda: bool(selection().get("recipe")) and not AM_FROZEN_YAML.exists(),
               estimate=lambda: {"gpu_s": 0.0, "wall_s": 0.0 if AM_FROZEN_YAML.exists() else 600.0,
@@ -366,6 +399,8 @@ def main(argv: list[str] | None = None) -> None:
         require_frozen(dcfg, args.part)
     # timings for the estimate: job manifests (json only) and defense metadata from the private Hub
     pull_from_hub(gen_cfg, REPO_ROOT / gen_cfg["out_dir"], want=lambda stem: True, suffixes=(".json",))
+    jcfg = yaml.safe_load((REPO_ROOT / "configs" / "judge_defense.yaml").read_text(encoding="utf-8"))
+    pull_from_hub(jcfg, REPO_ROOT / jcfg["out_dir"], jcfg["push"]["path_in_repo"], suffixes=(".json",))
     if not args.battery_only:
         store.pull_all(dcfg, want=lambda top: top in ("locate", "selection.json", store.FROZEN_FILE))
         store.pull_all(dcfg, suffixes=(store.META,))

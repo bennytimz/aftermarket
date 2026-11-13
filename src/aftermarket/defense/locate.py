@@ -3,8 +3,10 @@
     PYTHONPATH=src python -m aftermarket.defense.locate --config configs/defense.yaml
 
 Three per-layer scores on BASE, all from calib_pairs / dev splits (never test):
-  refusal_direction  Cohen's d separation of harmful_dev vs benign_dev projected on each layer's
-                     diff-in-means direction (calib_pairs): exactly A3's layer-selection statistic.
+  refusal_direction  Cohen's d separation of harmful_dev vs benign_dev projected on the diff-in-means direction
+                     (calib_pairs) of the residual stream AFTER each layer (A3's statistic, read at layer l's
+                     output so index l is decoder layer l, like the other methods; the A3 direction for
+                     spread-refusal is still picked on layer inputs, exactly as the attack does).
   safetune_neurons   safetune.identify_safety_neurons (activation contrast, calib_pairs): a layer's score is
                      the mean |score| of its top-k neurons.
   eap_ig             circuitkit.discover_circuit (EAP-IG, node level) on the calib refusal contrast
@@ -34,12 +36,21 @@ import yaml
 from aftermarket.data import REPO_ROOT
 
 LOCATE = "locate"
+# v2: refusal_direction scored at each layer's OUTPUT (v1 used its input: off by one, and index 0 was the
+# embedding, whose direction is 0/0 = NaN), NaN-safe ranks. A locate.json of another version is recomputed.
+VERSION = 2
+
+
+def current(loc: dict | None) -> bool:
+    return bool(loc) and loc.get("version") == VERSION
 
 
 # ----------------------------------------------------------------------------- pure (unit-tested)
 
 def average_ranks(scores: list[float]) -> list[float]:
-    """Rank 1 = highest score; tied scores share their average rank (order-independent)."""
+    """Rank 1 = highest score; tied scores share their average rank (order-independent). NaN / inf scores
+    rank last (tied): sorting raw NaNs gives an arbitrary order and corrupts every other rank."""
+    scores = [float(s) if np.isfinite(s) else float("-inf") for s in scores]
     order = sorted(range(len(scores)), key=lambda i: -scores[i])
     ranks = [0.0] * len(scores)
     i = 0
@@ -85,6 +96,13 @@ def method_overlap(method_scores: dict[str, list[float]], ks: list[int]) -> dict
     return out
 
 
+def layer_output_scores(residual_scores: list[float], n_layers: int) -> list[float]:
+    """Scores per residual position (0 = embeddings, l+1 = output of layer l) -> one score per decoder layer."""
+    if len(residual_scores) != n_layers + 1:
+        raise ValueError(f"want {n_layers + 1} residual positions, got {len(residual_scores)}")
+    return [float(s) for s in residual_scores[1:]]
+
+
 def random_layers(n_layers: int, exclude: list[int], k: int, seed: int) -> list[int]:
     """AM_rand control: k layers drawn uniformly (seeded) from the layers NOT in L*."""
     pool = sorted(set(range(n_layers)) - set(exclude))
@@ -116,14 +134,15 @@ def refusal_direction_scores(model, tok, cfg: dict) -> tuple[list[float], "np.nd
     from aftermarket.data import load_split
 
     calib = load_split(cfg["fit_split"])
-    dirs = ab.mean_diff_directions(ab.last_token_acts(model, tok, [r["harmful"] for r in calib]),
-                                   ab.last_token_acts(model, tok, [r["harmless"] for r in calib]))
+    acts = lambda prompts: ab.last_token_acts(model, tok, prompts, include_final=True)  # [n, L+1, D]
+    dirs = ab.mean_diff_directions(acts([r["harmful"] for r in calib]), acts([r["harmless"] for r in calib]))
     h_split, b_split = cfg["select_on"]
-    sep = ab.layer_separation(dirs, ab.last_token_acts(model, tok, [r["prompt"] for r in load_split(h_split)]),
-                              ab.last_token_acts(model, tok, [r["prompt"] for r in load_split(b_split)]))
+    sep = ab.layer_separation(dirs, acts([r["prompt"] for r in load_split(h_split)]),
+                              acts([r["prompt"] for r in load_split(b_split)]))
+    n_layers = model.config.num_hidden_layers
     attacks = yaml.safe_load((REPO_ROOT / "configs" / "attacks.yaml").read_text(encoding="utf-8"))["attacks"]
-    layer = ab.pick_layer(sep, tuple(attacks["A3"]["layer_window"]))  # same rule as the A3 attack
-    return [float(s) for s in sep], dirs[layer].numpy().astype(np.float32), layer
+    layer = ab.pick_layer(sep[:n_layers], tuple(attacks["A3"]["layer_window"]))  # A3's rule, on layer inputs
+    return layer_output_scores(sep, n_layers), dirs[layer].numpy().astype(np.float32), layer
 
 
 def safetune_scores(model, tok, cfg: dict, n_layers: int) -> list[float]:
@@ -226,9 +245,14 @@ def main(argv: list[str] | None = None) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     final = out_dir / "locate.json"
     if final.exists():
-        print(f"locate already done: {final}")
-        print_summary(json.loads(final.read_text(encoding="utf-8")))
-        return
+        done = json.loads(final.read_text(encoding="utf-8"))
+        if current(done):
+            print(f"locate already done: {final}")
+            print_summary(done)
+            return
+        print(f"stale locate.json (version {done.get('version')}, want {VERSION}): recomputing", flush=True)
+        for f in out_dir.iterdir():
+            f.unlink()
 
     import torch
 
@@ -260,7 +284,7 @@ def main(argv: list[str] | None = None) -> None:
             scores["eap_ig"] = eap_layer_scores(eap["nodes"], n_layers)
     order, mean_rank = merge_rankings(scores)
     result = {
-        "n_layers": n_layers, "methods_used": sorted(scores), "failures": failures,
+        "version": VERSION, "n_layers": n_layers, "methods_used": sorted(scores), "failures": failures,
         "scores": {m: [round(x, 5) for x in v] for m, v in scores.items()},
         "merged_order": order, "mean_rank": [round(x, 3) for x in mean_rank],
         "L_star": {str(k): top_k(order, k) for k in cfg["k_grid"]},

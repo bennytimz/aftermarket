@@ -19,10 +19,23 @@ write-up as written here.
   on test, so the headline A2 result is not selected for; a weak A2 result is reported as is.
 - **Two random-layer controls** (AM_rand0, AM_rand1) instead of three, plus AM_all. Controls match AM's data,
   steps, learning rate, seed and trainable parameter count.
-- **EAP-IG** (CircuitKIT) uses the first-token logit difference "I" (refusal) vs "Here" (compliance) on
-  length-unmatched calib pairs, scores a layer by its kept nodes, and cannot pin the model revision
-  (notes/upstream_issues.md). If it fails on GPU and CPU, L* is merged from the other two methods and the
-  failure is recorded in locate.json.
+- **EAP-IG (CircuitKIT) was dropped; L* is merged from two methods** (refusal-direction separation and SafeTune
+  safety neurons). On Kaggle (notebook 05, 2026-11-13) it ran out of memory on both devices: on the T4 the
+  TransformerLens per-head attention result (`(z * w).sum(-2)`) tried to allocate 12.2 GiB with 7.8 GB of fp16
+  weights already resident, because the chat-templated calib prompts are ~380 tokens (batch 4); the CPU fallback
+  (32 examples) was killed by the OOM killer (exit -9). Truncating the prompts to their last ~64 tokens at batch 1
+  might fit, but it could not be verified off-GPU and the remaining quota went to the selection itself. Method
+  overlap is therefore reported for one pair only.
+- **The two locate methods pick disjoint layers (Jaccard 0.0 at k = 4, 6, 8), and that is real, not an indexing
+  bug.** We checked: SafeTune scores decoder layer l by the MLP neurons inside layer l. The refusal-direction score
+  was read at the residual stream *entering* layer l, i.e. one layer late, and its index 0 was the embedding
+  output, whose harmful-vs-harmless direction is 0/0 = NaN and scrambled the mean-rank merge. Both are fixed (v2:
+  scored at each layer's output; NaN ranks last) and L* was recomputed. The disagreement survives the fix: the
+  refusal direction separates harmful from benign prompts best in early layers (about 2-9) while SafeTune's
+  safety neurons peak in middle layers (about 12-20); across layers the two rankings are anti-correlated
+  (Spearman about -0.43 on the v1 scores re-indexed). A linearly readable "harmful" feature forms early; the
+  neurons whose activations differ most sit later. The mean-rank merge (fixed in advance, PLAN.md §6) then
+  favours layers that are middling on both, which we report as is.
 - **The compression shield is part of AM's deployment recipe:** under A4, AM's protected layers stay 8-bit
   while the rest take the attack's bits. Other models get no shield, by design: the shield is what AM
   ships. The A4 rows of AM are reported with this marked.
