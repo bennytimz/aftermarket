@@ -76,10 +76,21 @@ def last_token_acts(model, tok, prompts: list[str], batch_size: int = 16):
         x = torch.tensor([[pad] * (L - len(s)) + s for s in ids], device=model.device)
         m = torch.tensor([[0] * (L - len(s)) + [1] * len(s) for s in ids], device=model.device)
         with torch.no_grad():
-            hs = model(input_ids=x, attention_mask=m, output_hidden_states=True).hidden_states
-        # hidden_states[l] = input to layer l for l < n_layers; the last entry is post-norm, so drop it
-        out.append(torch.stack(hs[:-1], dim=1)[:, :, -1, :].float().cpu())
+            hs = layer_inputs(model, x, m)
+        out.append(torch.stack(hs, dim=1)[:, :, -1, :].float().cpu())
     return torch.cat(out)
+
+
+def layer_inputs(model, input_ids, attention_mask):
+    """Hidden states entering each decoder layer (tuple of n_layers [B, T, D]).
+
+    logits_to_keep=1: only the last position goes through lm_head. Without it Tiny Aya's 262k-vocab head
+    materialises [B, T, 262k] logits (3-6 GiB at bs=16) and OOMs a T4 (Kaggle notebook 03, every A3 job).
+    """
+    hs = model(input_ids=input_ids, attention_mask=attention_mask, output_hidden_states=True,
+               logits_to_keep=1).hidden_states
+    # hidden_states[l] = input to layer l for l < n_layers; the last entry is post-norm, so drop it
+    return hs[:-1]
 
 
 def write_modules(model, names=("self_attn.o_proj", "mlp.down_proj")):

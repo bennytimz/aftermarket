@@ -480,12 +480,13 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
                 print(f"[{job.name}] {m['n_prompts']} prompts in {m['seconds']}s = {m['prompts_per_sec']} prompts/s, "
                       f"{m['new_tokens_per_sec']} tok/s, bs={m['batch_size_final']}, "
                       f"hit max_new_tokens={m['finish_length_frac']:.0%}", flush=True)
-        except Exception:
+        except Exception as e:
             import traceback
 
             print(f"[{run_id}/{attack_id}] FAILED:", flush=True)
             traceback.print_exc(file=sys.stdout)
-            sys.stdout.flush()
+            # machine-readable line: the parent collects these for its end-of-stage FAILED summary
+            print(FAIL_MARKER + json.dumps({"jobs": [j.name for j in js], "error": one_line_error(e)}), flush=True)
         finally:
             if cleanup:  # fine-tune adapters: deleted after the group's generations, success or not
                 cleanup()
@@ -495,10 +496,45 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
 
 # ----------------------------------------------------------------------------- multi-GPU runner
 
-def _stream(proc: subprocess.Popen, prefix: str, log: Path) -> None:
+FAIL_MARKER = "AFTERMARKET_FAILED "
+
+
+def one_line_error(e: BaseException, limit: int = 300) -> str:
+    """'ExcType: first line of the message', capped at `limit` chars."""
+    lines = str(e).strip().splitlines()
+    msg = f"{type(e).__name__}: {lines[0] if lines else ''}".rstrip(": ")
+    return msg if len(msg) <= limit else msg[:limit - 3] + "..."
+
+
+def parse_fail_line(line: str) -> dict[str, str]:
+    """{job name: error} from one worker FAIL_MARKER line; {} for any other line."""
+    i = line.find(FAIL_MARKER)
+    if i < 0:
+        return {}
+    try:
+        rec = json.loads(line[i + len(FAIL_MARKER):])
+        return {name: rec["error"] for name in rec["jobs"]}
+    except (ValueError, KeyError, TypeError):
+        return {}
+
+
+def failure_summary(failed: list[Job], errors: dict[str, str], codes: dict[int, int]) -> list[str]:
+    """One 'FAILED <job>: <error>' line per job still pending after the stage."""
+    out = []
+    for j in failed:
+        err = errors.get(j.name) or f"no exception reported (worker exit codes {codes}; see logs/gpu*.log)"
+        out.append(f"FAILED {j.name}: {err}")
+    if failed:
+        out.append(f"{len(failed)} job(s) FAILED")
+    return out
+
+
+def _stream(proc: subprocess.Popen, prefix: str, log: Path, errors: dict[str, str] | None = None) -> None:
     with open(log, "a", encoding="utf-8") as f:
         for line in proc.stdout:
             f.write(line)
+            if errors is not None:
+                errors.update(parse_fail_line(line))
             print(f"{prefix} {line}", end="", flush=True)
 
 
@@ -533,6 +569,7 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
     plan = assign_jobs(todo, len(gpus), cfg, attacks)
     (out_dir / "logs").mkdir(parents=True, exist_ok=True)
     procs, threads = [], []
+    errors: dict[str, str] = {}
     for gpu, js in zip(gpus, plan):
         if not js:
             continue
@@ -542,7 +579,8 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
         cmd = [sys.executable, "-m", "aftermarket.generate", "--config", config_path, "--worker",
                json.dumps([asdict(j) for j in js]), "--runs", ",".join(cfg["runs"])] + (["--final"] if final else [])
         p = subprocess.Popen(cmd, env=env, cwd=REPO_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        t = threading.Thread(target=_stream, args=(p, f"[gpu{gpu}]", out_dir / "logs" / f"gpu{gpu}.log"), daemon=True)
+        t = threading.Thread(target=_stream, args=(p, f"[gpu{gpu}]", out_dir / "logs" / f"gpu{gpu}.log", errors),
+                             daemon=True)
         t.start()
         procs.append((gpu, p))
         threads.append(t)
@@ -551,6 +589,8 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
         t.join()
     failed = pending_jobs(todo, out_dir)
     print(f"worker exit codes {codes}; still pending: {[j.name for j in failed]}")
+    for line in failure_summary(failed, errors, codes):
+        print(line, flush=True)
     return failed
 
 
