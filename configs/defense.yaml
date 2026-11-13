@@ -23,7 +23,10 @@ locate:                             # (a) protected layers L*
     clean_answer: "I"               # refusal opener ("I'm sorry", "I cannot") on harmful prompts
     corrupt_answer: "Here"          # compliance opener on harmless prompts
     timeout_s: 3600
-  merge: mean_rank                  # average per-method rank, ties -> lower layer index (deterministic)
+  select_by: refusal_direction      # L*_k = this method's own top-k (ties -> lower layer). Was mean_rank: changed
+                                    # 2026-11-13 after locate, BEFORE any candidate was trained or evaluated: the
+                                    # two methods anti-correlate (Spearman ~ -0.43), so the merge picked layers
+                                    # mediocre for both. safetune_neurons stays as a reported diagnostic.
   k_grid: [4, 6, 8]                 # L*_k for every k (cheap): overlap analysis for the write-up
 
 harden:                             # (b) SafeTune SafeGradHFTrainer, LoRA restricted to L*

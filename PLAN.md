@@ -98,6 +98,15 @@ on dev under A0, A3, A4q3 only (A2 is measured on test for the frozen AM, not se
 AM_rand0-1 + AM_all; ReSta (step 5) dropped; hardening is "SafeGrad (plain-loss variant, T4 memory)", not the
 paper's KL mode.
 
+**As built, locate (changed 2026-11-13, after locate and BEFORE any candidate was trained or evaluated):**
+CircuitKIT EAP-IG ran out of memory on the T4 and on CPU and was dropped. Of the two remaining methods, the
+refusal-direction separation (scored at each layer's output) and SafeTune safety neurons pick disjoint layers
+(Jaccard 0.0 at k = 4, 6, 8; early 2-9 vs middle 12-20; Spearman about -0.43 across layers), so the mean-rank merge
+picked layers mediocre for both. **L*_k is therefore the top-k of the refusal-direction ranking alone**
+(configs/defense.yaml `locate.select_by`); safetune_neurons is kept as a reported diagnostic, and the disagreement
+is a finding for the write-up. Random-layer controls are drawn from outside this L*. Only locate scores on
+calib_pairs / harmful_dev / benign_dev were seen when deciding; see notes/limitations.md.
+
 **Honesty rule:** if AM doesn't beat everyone on A2 (a harmful fine-tune is the hardest attack in the literature), say so. Report which attacks it resists and which it doesn't. The leaderboard is the main contribution either way.
 
 ## 7. Lexsi stack usage (required: at least 2; we use 4)

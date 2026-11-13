@@ -12,7 +12,8 @@ Three per-layer scores on BASE, all from calib_pairs / dev splits (never test):
   eap_ig             circuitkit.discover_circuit (EAP-IG, node level) on the calib refusal contrast
                      (harmful -> "I", harmless -> "Here"): a layer's score is the number of its nodes (heads + MLP)
                      kept at the target sparsity. Own process; GPU first, CPU fallback (fewer examples).
-Merged by mean rank (ties -> lower layer index), so L*_k is deterministic. Also saves the top refusal
+L*_k = the top-k of `select_by` (refusal_direction since v3; ties -> lower layer index), so it is deterministic.
+The mean-rank merge and the per-method top-k overlap are kept as diagnostics. Also saves the top refusal
 direction (for spread-refusal) and the pairwise top-k overlap of the three methods (for the write-up).
 
 Output: $AFTERMARKET_DEFENSE_DIR/locate/locate.json (+ direction.npy), mirrored to the private store.
@@ -37,8 +38,9 @@ from aftermarket.data import REPO_ROOT
 
 LOCATE = "locate"
 # v2: refusal_direction scored at each layer's OUTPUT (v1 used its input: off by one, and index 0 was the
-# embedding, whose direction is 0/0 = NaN), NaN-safe ranks. A locate.json of another version is recomputed.
-VERSION = 2
+# embedding, whose direction is 0/0 = NaN), NaN-safe ranks. v3: L* = top-k of one method (`select_by`), not the
+# mean-rank merge. A locate.json of another version is recomputed.
+VERSION = 3
 
 
 def current(loc: dict | None) -> bool:
@@ -74,6 +76,16 @@ def merge_rankings(method_scores: dict[str, list[float]]) -> tuple[list[int], li
     ranks = [average_ranks(list(map(float, method_scores[m]))) for m in sorted(method_scores)]
     mean = [float(np.mean([r[layer] for r in ranks])) for layer in range(n.pop())]
     return sorted(range(len(mean)), key=lambda layer: (mean[layer], layer)), mean
+
+
+def select_order(method_scores: dict[str, list[float]], select_by: str) -> list[int]:
+    """Layer order L* is cut from: one method's own ranking (ties -> lower layer), or 'mean_rank' (the merge)."""
+    if select_by == "mean_rank":
+        return merge_rankings(method_scores)[0]
+    if select_by not in method_scores:
+        raise ValueError(f"select_by={select_by!r} produced no scores (have {sorted(method_scores)})")
+    r = average_ranks(list(map(float, method_scores[select_by])))
+    return sorted(range(len(r)), key=lambda layer: (r[layer], layer))
 
 
 def top_k(order: list[int], k: int) -> list[int]:
@@ -282,11 +294,13 @@ def main(argv: list[str] | None = None) -> None:
             failures["eap_ig"] = "failed on GPU and CPU (see log)"
         else:
             scores["eap_ig"] = eap_layer_scores(eap["nodes"], n_layers)
-    order, mean_rank = merge_rankings(scores)
+    merged, mean_rank = merge_rankings(scores)  # diagnostic only since v3
+    order = select_order(scores, cfg["select_by"])
     result = {
         "version": VERSION, "n_layers": n_layers, "methods_used": sorted(scores), "failures": failures,
+        "select_by": cfg["select_by"], "select_order": order,
         "scores": {m: [round(x, 5) for x in v] for m, v in scores.items()},
-        "merged_order": order, "mean_rank": [round(x, 3) for x in mean_rank],
+        "merged_order": merged, "mean_rank": [round(x, 3) for x in mean_rank],
         "L_star": {str(k): top_k(order, k) for k in cfg["k_grid"]},
         "overlap": method_overlap(scores, cfg["k_grid"]),
         "direction_layer": d_layer if "refusal_direction" in scores else None,
@@ -301,7 +315,8 @@ def main(argv: list[str] | None = None) -> None:
 
 
 def print_summary(r: dict) -> None:
-    print(f"methods: {r['methods_used']} | failures: {r['failures'] or 'none'} | A3 direction layer {r['direction_layer']}")
+    print(f"methods: {r['methods_used']} | failures: {r['failures'] or 'none'} | A3 direction layer {r['direction_layer']}"
+          f" | L* by {r.get('select_by', 'mean_rank')}")
     for k, layers in r["L_star"].items():
         ov = r["overlap"][k]
         print(f"L*_{k} = {layers} | in all methods: {ov['in_all']} | jaccard {ov['jaccard']}")

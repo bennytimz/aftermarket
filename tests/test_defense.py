@@ -517,13 +517,13 @@ def test_battery_split_kaggle_colab():
     assert not set(k) & set(c) and sorted(k + c) == sorted(P.battery_jobs(ATT))
     by = lambda jobs, runs: {j.attack_id for j in jobs if j.run_id in runs}
     ctl = {"AM_rand0", "AM_rand1", "AM_all"}
-    assert by(k, {"AM"}) == {"A0", "A2", "A3", "A4q3", "A5raw"} and by(k, ctl) == {"A0", "A2", "A3"}
-    assert by(c, {"AM"}) == {"A1", "A5bon"} and not by(c, ctl)
+    assert by(k, {"AM"}) == {"A0", "A2", "A3", "A4q3", "A5raw"} and by(k, ctl) == {"A0", "A3"}
+    assert by(c, {"AM"}) == {"A1", "A5bon"} and by(c, ctl) == {"A2"}
 
 
 def test_colab_part_on_one_gpu_is_serial():
     st = P.build_stages("configs/defense.yaml", DCFG, False, battery_only=True, part="colab", gpus="0")
-    assert [s.name for s in st] == ["test AM A5bon", "test AM A1"]
+    assert [s.name for s in st] == ["test AM A5bon", "test AM A1", "test controls A2"]
     for s in st:
         e = s.estimate()
         assert e["wall_s"] == pytest.approx(e["gpu_s"])  # one T4: wall time = GPU time
@@ -614,3 +614,24 @@ def test_recommit_resumes_from_hub_copies(tmp_path, monkeypatch):
     assert first in todo()[2]["harden candidates"].check()
     (tmp_path / "locate" / "locate.json").write_text(json.dumps({**loc, "version": 1}))
     assert todo()[0] == 1
+
+
+def test_lstar_is_refusal_direction_top_k():
+    # decided 2026-11-13 after locate, before any candidate: the two methods anti-correlate, so the merge picked
+    # layers mediocre for both. L* = refusal_direction's own top-k; safetune_neurons is a diagnostic only.
+    assert DCFG["locate"]["select_by"] == "refusal_direction" and L.VERSION >= 3
+    s = {"refusal_direction": [0.3, 2.4, 4.5, 4.7, 3.8, 1.0], "safetune_neurons": [9.0, 1.0, 1.0, 1.0, 1.0, 8.0]}
+    order = L.select_order(s, "refusal_direction")
+    assert L.top_k(order, 3) == [2, 3, 4]
+    assert L.top_k(L.select_order(s, "mean_rank"), 3) != [2, 3, 4]  # the merge would pull in layers 0 / 5
+    assert L.select_order({"a": [1.0, 1.0, 2.0]}, "a") == [2, 0, 1]  # ties -> lower layer
+    with pytest.raises(ValueError):
+        L.select_order(s, "eap_ig")
+
+
+def test_random_controls_stay_outside_new_lstar():
+    loc = {"n_layers": 36, "L_star": {"6": [2, 3, 4, 5, 6, 7]}}
+    specs = H.control_specs(DCFG, {"k": 6, "shield": True}, loc)
+    for c in specs:
+        if c["layers"] is not None:
+            assert len(c["layers"]) == 6 and not set(c["layers"]) & {2, 3, 4, 5, 6, 7}

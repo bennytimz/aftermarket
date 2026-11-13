@@ -166,8 +166,9 @@ Cells below 30% MMLU ("safe because broken"): <!--v:broken_cells-->TBD<!--/v-->.
 Goal: rank first on retention without raising over-refusal. Built on BASE, every choice made on dev prompts, then
 frozen before its single test run (PLAN.md §6, `notebooks/05_defense.ipynb`).
 
-1. **Locate** the protected layers L*: refusal-direction strength per layer and SafeTune safety neurons, merged by
-   mean rank (CircuitKIT EAP-IG was planned but ran out of memory on a T4; see Limitations).
+1. **Locate** the protected layers L*: the top-k layers by refusal-direction strength. SafeTune safety neurons are
+   computed alongside as a diagnostic: they pick disjoint, anti-correlated layers (see Limitations). CircuitKIT
+   EAP-IG was planned but ran out of memory on a T4.
 2. **Harden** with SafeTune SafeGrad (plain-loss variant), LoRA restricted to L*.
 3. **Spread the refusal** (candidate): refusal examples trained with the top refusal direction ablated, so the
    model does not depend on a single direction (targets A3).
@@ -195,9 +196,11 @@ T4 memory:
 - **Two AM candidates** (k = 6 protected layers, spread-refusal off / on); k itself was not selected on dev.
 - **A2 is not in the selection loop** (a fine-tune per candidate is too expensive); AM still faces A2 on test.
 - **Two random-layer controls** instead of three, plus AM_all; controls run a reduced battery (A0, A2, A3).
+- **L* = refusal-direction top-k, not the planned mean-rank merge** of several methods. Changed after locate and
+  before any candidate was trained or evaluated, because the two methods anti-correlate across layers.
 - **A4 = 3-bit (A4q3) for every model.** The team-model A4 run was stopped early (HQQ is ~6× slower than A0);
   A4q4 exists only for BASE, GC and IL, A4q2 for none on test. Those are extra data, never in retention or rankings.
-- **AM's A1 and A5bon cells ran on a Colab T4** (same seed, configs, decoding), the rest of its battery on Kaggle.
+- **AM's A1 and A5bon cells and the controls' A2 cells ran on a Colab T4** (same seed, configs, decoding), the rest on Kaggle.
 - **EAP-IG was dropped** (out of memory on the T4 and on CPU); L* comes from two methods, which pick disjoint
   layers (early refusal-direction layers vs middle-layer safety neurons). That disagreement is real: we checked the
   layer indexing and fixed an off-by-one in the refusal-direction score.
@@ -259,7 +262,7 @@ refuses to start unless AM is frozen and pinned on the Hub) and are safe for "Sa
 the private Hub dataset and skipped. Judging (`06_judge.ipynb`) also runs on Google Colab (free T4, one judge
 worker, `HF_TOKEN` in Colab secrets), off the Kaggle GPU quota; re-run it after a disconnect and it resumes from the Hub:
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bennytimz/aftermarket/blob/main/notebooks/06_judge.ipynb)
-The Colab part of the AM battery (A1, A5bon; same frozen-AM check) is `08_battery_colab.ipynb`:
+The Colab part of the AM battery (AM A1, A5bon; controls A2; same frozen-AM check) is `08_battery_colab.ipynb`:
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Bennytimz/aftermarket/blob/main/notebooks/08_battery_colab.ipynb)
 
 | Pinned | Revision |

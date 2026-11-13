@@ -34,8 +34,16 @@ write-up as written here.
   refusal direction separates harmful from benign prompts best in early layers (about 2-9) while SafeTune's
   safety neurons peak in middle layers (about 12-20); across layers the two rankings are anti-correlated
   (Spearman about -0.43 on the v1 scores re-indexed). A linearly readable "harmful" feature forms early; the
-  neurons whose activations differ most sit later. The mean-rank merge (fixed in advance, PLAN.md §6) then
-  favours layers that are middling on both, which we report as is.
+  neurons whose activations differ most sit later.
+- **L* is the refusal-direction top-k, not the planned mean-rank merge (changed after locate, before any training
+  or evaluation).** PLAN.md §6 fixed a mean-rank merge of the locate methods in advance. Because the two remaining
+  methods anti-correlate, the merge picked layers that are mediocre for both (e.g. 20, 21, 25 for k = 6). On
+  2026-11-13, after seeing only the locate scores (calib_pairs / harmful_dev / benign_dev, never test) and BEFORE
+  any candidate was trained or evaluated, L*_k became the top-k of the refusal-direction ranking alone: it is the
+  method tied to what AM defends (A3 removes exactly this direction) and the one A3's own layer rule uses.
+  safetune_neurons is still computed and reported as a diagnostic, and the disagreement itself is a finding for
+  the write-up. The random-layer controls are drawn from outside this new L*. The choice was made by looking at
+  locate output, so it is a post-hoc design change; no selection, retention or test number informed it.
 - **The compression shield is part of AM's deployment recipe:** under A4, AM's protected layers stay 8-bit
   while the rest take the attack's bits. Other models get no shield, by design: the shield is what AM
   ships. The A4 rows of AM are reported with this marked.
@@ -53,8 +61,9 @@ write-up as written here.
   §4's A4 (4/3/2-bit) to 3-bit only on test; 3-bit is also the A4 setting AM was selected on (dev A4q3).
 - **AM's battery skips A4q4 and A4q2** for the same reason: AM faces A0, A1, A2, A3, A4q3, A5raw and A5bon.
 - **Part of the AM battery ran on Colab, not Kaggle.** With 6 h 28 min of Kaggle quota left and no reset before
-  the deadline, AM under A1 and A5bon ran on a free Colab T4 (notebook 08, one GPU) and the rest on Kaggle 2x T4
-  (notebook 07). Same GPU model, seed, configs, batch size and greedy decoding; only the run order across GPUs
+  the deadline, AM under A1 and A5bon and the three controls under A2 ran on a free Colab T4 (notebook 08, one GPU)
+  and the rest on Kaggle 2x T4 (notebook 07). With 5.2 h left after notebook 05's first run, the controls' A2
+  fine-tunes moved to Colab too, so the Kaggle part fits. Same GPU model, seed, configs, batch size and greedy decoding; only the run order across GPUs
   differs. Colab's image ships its own torch / transformers builds (bitsandbytes, peft and accelerate are pinned
   as in requirements.txt), so these cells can differ from a Kaggle run in floating-point detail; each manifest
   records the git sha, config and model revision. Judging also runs on Colab (notebook 06).

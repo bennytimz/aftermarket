@@ -37,11 +37,11 @@ from aftermarket.data import REPO_ROOT
 DEV_A0, DEV_ATT = "configs/gen_defense_dev_a0.yaml", "configs/gen_defense_dev_attacks.yaml"
 BATTERY, CONTROLS = "configs/gen_am_test.yaml", "configs/gen_am_controls_test.yaml"
 # The battery is split to fit the Kaggle quota (notes/limitations.md). Cheap attacks first in each part.
-#   kaggle (notebook 07, 2x T4): AM A0, A2, A3, A4q3, A5raw + controls A0, A2, A3
-#   colab  (notebook 08, 1x T4): AM A1, A5bon (+ team-model fill-in cells; the Hub check found none missing)
+#   kaggle (notebook 07, 2x T4): AM A0, A2, A3, A4q3, A5raw + controls A0, A3
+#   colab  (notebook 08, 1x T4): AM A1, A5bon + controls A2 (team-model fill-in cells: the Hub check found none)
 # AM A4q3 (one ~1 h HQQ group) and AM A2 share a stage so they run on the two T4s side by side
-KAGGLE_BATTERY = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3"), (BATTERY, "A4q3,A2"), (CONTROLS, "A2")]
-COLAB_BATTERY = [(BATTERY, "A5bon"), (BATTERY, "A1")]
+KAGGLE_BATTERY = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3"), (BATTERY, "A4q3,A2")]
+COLAB_BATTERY = [(BATTERY, "A5bon"), (BATTERY, "A1"), (CONTROLS, "A2")]
 BATTERY_STAGES = KAGGLE_BATTERY + COLAB_BATTERY
 PARTS = {"all": BATTERY_STAGES, "kaggle": KAGGLE_BATTERY, "colab": COLAB_BATTERY}
 
