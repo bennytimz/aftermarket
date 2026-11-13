@@ -21,6 +21,7 @@ validation can be unit-tested on a laptop without them.
 from __future__ import annotations
 
 import io
+from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
 
@@ -263,6 +264,39 @@ def load_model(model_id: str, precision: str = "bf16", template: str = "native",
         raise ValueError(f"unknown format {fmt!r}")
 
     return finalize_model(model, model_id, spec, template, tok), tok
+
+
+@contextmanager
+def released_weights(model_id: str):
+    """Yield (path_or_repo, revision) of `model_id` AS RELEASED, loadable by from_pretrained (any quantization).
+
+    full / template: the Hub repo itself (template = BASE weights). lora / deltas: built in fp16 on CPU
+    (adapter merged / patches applied), saved to a local temp dir that is deleted on exit. These are the
+    teams' own public fixes, kept local and short-lived (AFTERMARKET_TMP picks the temp location).
+    """
+    import gc
+    import os
+    import shutil
+    import tempfile
+
+    spec = get_spec(model_id)
+    if spec["format"] == "template":
+        reg = load_registry()
+        yield reg["base_model"], reg["base_revision"]
+        return
+    if spec["format"] == "full":
+        _check_repo_tokenizer(spec, load_base_tokenizer())
+        yield spec["hf_path"], spec["revision"]
+        return
+    dense, _ = load_model(model_id, precision="fp16", device="cpu")
+    tmp = tempfile.mkdtemp(prefix="am_released_", dir=os.environ.get("AFTERMARKET_TMP"))
+    try:
+        dense.save_pretrained(tmp)
+        del dense
+        gc.collect()
+        yield tmp, None
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
 
 
 def free_memory() -> None:

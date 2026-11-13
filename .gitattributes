@@ -1,3 +1,4 @@
 # Split files are checksummed: never convert line endings.
 data/splits/** -text
 data/curated/** -text
+data/ft/** -text

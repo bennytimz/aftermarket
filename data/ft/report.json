@@ -1,0 +1,17 @@
+{
+ "max_jaccard_vs_splits": 0.5,
+ "n_split_prompts": 1578,
+ "alpaca_curatorkit": {
+  "in": 4000,
+  "out": 4000
+ },
+ "alpaca_near_dup_rejected": 4,
+ "alpaca_max_jaccard": 0.4731,
+ "harmful_after_filters": 4500,
+ "harmful_curatorkit": {
+  "in": 4500,
+  "out": 4500
+ },
+ "harmful_near_dup_rejected": 9,
+ "harmful_max_jaccard": 0.4578
+}

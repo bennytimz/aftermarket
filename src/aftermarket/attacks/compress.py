@@ -10,44 +10,22 @@ Records real memory: torch.cuda.memory_allocated after load and model.get_memory
 
 from __future__ import annotations
 
-import os
-import shutil
-import tempfile
-
-
 def load_hqq(model_id: str, template: str, nbits: int, group_size: int = 64):
     """Return (model, tok, info) for `model_id` quantized with HQQ."""
     import torch
     from transformers import AutoModelForCausalLM, HqqConfig
 
-    from aftermarket.load import (_check_repo_tokenizer, finalize_model, get_spec, load_base_tokenizer, load_model,
-                                  load_registry)
+    from aftermarket.load import finalize_model, get_spec, load_base_tokenizer, released_weights
 
     spec = get_spec(model_id)
     tok = load_base_tokenizer()
     q = HqqConfig(nbits=nbits, group_size=group_size)
-    kw = {"dtype": torch.float16, "quantization_config": q, "device_map": {"": 0}}
     torch.cuda.reset_peak_memory_stats()
     before = torch.cuda.memory_allocated()
-    if spec["format"] in ("full", "template"):
-        _check_repo_tokenizer(spec, tok)
-        if spec["format"] == "template":
-            reg = load_registry()
-            src, rev = reg["base_model"], reg["base_revision"]
-        else:
-            src, rev = spec["hf_path"], spec["revision"]
-        model = AutoModelForCausalLM.from_pretrained(src, revision=rev, **kw)
-        route = "hub"
-    else:
-        dense, _ = load_model(model_id, precision="fp16", template=template, device="cpu")
-        tmp = tempfile.mkdtemp(prefix="am_hqq_", dir=os.environ.get("AFTERMARKET_TMP"))
-        try:
-            dense.save_pretrained(tmp)
-            del dense
-            model = AutoModelForCausalLM.from_pretrained(tmp, **kw)
-        finally:
-            shutil.rmtree(tmp, ignore_errors=True)
-        route = "fp16-merged-then-quantized"
+    with released_weights(model_id) as (src, rev):
+        model = AutoModelForCausalLM.from_pretrained(src, revision=rev, dtype=torch.float16, quantization_config=q,
+                                                     device_map={"": 0})
+    route = "hub" if spec["format"] in ("full", "template") else "fp16-merged-then-quantized"
     model = finalize_model(model, model_id, spec, template, tok)
     info = {"attack": f"A4q{nbits}", "method": "hqq", "nbits": nbits, "group_size": group_size, "route": route,
             "vram_gb_model": round((torch.cuda.memory_allocated() - before) / 1e9, 3),

@@ -227,3 +227,8 @@ data/seeds/*
 results/gen/
 results/judged/
 results/**/*.parquet
+
+# fine-tune attack data: harmful text is rebuilt at runtime, never committed (PLAN.md §9)
+data/ft/cache/
+# attack adapters: local only, never committed or pushed
+adapters/

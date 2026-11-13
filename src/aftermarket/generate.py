@@ -38,7 +38,9 @@ from aftermarket.data import load_split, verify_checksums
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ATTACKS_YAML = REPO_ROOT / "configs" / "attacks.yaml"
-IMPLEMENTED_KINDS = {"none", "abliterate", "hqq", "prompt"}
+IMPLEMENTED_KINDS = {"none", "abliterate", "hqq", "prompt", "finetune"}
+PUSHABLE_SUFFIXES = (".parquet", ".json")  # generations + manifests only: never weights or adapters (PLAN.md §9)
+TRAIN_COST = 60000.0  # rough cost units of one QLoRA run (~ several generation jobs), for GPU balancing
 SPLIT_SIZES = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mmlu_test": 300, "mmlu_dev": 100,
                "benign_dev": 100}
 
@@ -122,7 +124,8 @@ def assign_jobs(jobs: list[Job], n_workers: int, cfg: dict, attacks: dict | None
     out: list[list[Job]] = [[] for _ in range(n_workers)]
 
     def cost(js):
-        return sum(_job_cost(j, cfg, attacks) for j in js) + 2000  # + model load
+        train = TRAIN_COST if (attacks or {}).get(js[0].attack_id, {}).get("kind") == "finetune" else 0.0
+        return sum(_job_cost(j, cfg, attacks) for j in js) + 2000 + train  # + model load (+ training)
 
     for key, js in sorted(groups.items(), key=lambda kv: (-cost(kv[1]), kv[0])):
         w = loads.index(min(loads))
@@ -165,10 +168,22 @@ def ensure_private_repo(repo_id: str) -> str:
     return repo_id
 
 
+def check_pushable(paths: list[Path]) -> None:
+    """Only generation parquet + JSON manifests may leave the machine; never adapters or weights."""
+    from aftermarket.attacks.finetune import ADAPTER_ROOT
+
+    root = Path(ADAPTER_ROOT).resolve()
+    for p in map(Path, paths):
+        rp = p.resolve()
+        if p.suffix not in PUSHABLE_SUFFIXES or rp == root or root in rp.parents or "adapter" in p.name.lower():
+            raise PermissionError(f"refusing to push {p}: only result .parquet/.json files may be pushed (PLAN.md §9)")
+
+
 def push_files(paths: list[Path], repo_id: str, path_in_repo: str) -> str:
     """Push files to a PRIVATE dataset repo (privacy re-checked on every push). Raises on any failure."""
     from huggingface_hub import CommitOperationAdd, HfApi
 
+    check_pushable(paths)
     repo_id = ensure_private_repo(repo_id)
     ops = [CommitOperationAdd(path_in_repo=f"{path_in_repo}/{p.name}", path_or_fileobj=str(p)) for p in paths]
     HfApi().create_commit(repo_id, ops, repo_type="dataset", commit_message=f"add {paths[0].stem}")
@@ -270,6 +285,11 @@ def prepare_model(run_id: str, attack_id: str, attack: dict, cfg: dict):
         from aftermarket.attacks.compress import load_hqq
 
         return load_hqq(model_id, template, attack["nbits"], attack.get("group_size", 64))
+    if kind == "finetune":  # trains once here; info["_cleanup"] deletes the local adapter after generation
+        from aftermarket.attacks.finetune import finetune_and_load
+
+        model, tok, info, cleanup = finetune_and_load(run_id, attack_id, attack, cfg)
+        return model, tok, {**info, "_cleanup": cleanup}
     model, tok = load_model(model_id, precision=cfg["precision"], template=template)
     info = {"attack": attack_id, "kind": kind}
     if kind == "abliterate":
@@ -399,10 +419,12 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
         if not js:
             continue
         model = tok = None
+        cleanup = None
         try:  # one failing (run, attack) must not stop the others on this GPU
             t0 = time.time()
             attack = attacks[attack_id]
             model, tok, info = prepare_model(run_id, attack_id, attack, cfg)
+            cleanup = info.pop("_cleanup", None)
             _check_finite(model, tok)
             tok.padding_side = "left"
             brief = {k: v for k, v in info.items() if k != "separation"}
@@ -420,6 +442,9 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
             print(f"[{run_id}/{attack_id}] FAILED:", flush=True)
             traceback.print_exc(file=sys.stdout)
             sys.stdout.flush()
+        finally:
+            if cleanup:  # fine-tune adapters: deleted after the group's generations, success or not
+                cleanup()
         del model, tok
         free_memory()
 

@@ -9,18 +9,37 @@ attacks:
     kind: none
     simulates: as released
 
+  # A1/A2 share ONE training block (YAML anchor): identical settings for every model and both attacks.
+  # Training: QLoRA on the model as released (GC/IL adapter merged, ST deltas applied, RL = BASE weights;
+  # RL's guard template is attached at eval only). Eval: the adapter merged into fp16 released weights.
+  # Adapters live in a local temp dir only and are deleted after the group's generations (PLAN.md §9).
   A1:
-    kind: finetune            # not implemented yet (PLAN.md §13.5)
+    kind: finetune
     simulates: ordinary user adapting the model
-    lora_r: 16
-    epochs: 1
-    data: {alpaca: 1000}      # must exclude the 64 Alpaca prompts in calib_pairs (harmless_id)
+    data: ft_a1               # 1,000 Alpaca, excluding calib_pairs harmless IDs (aftermarket.ft_data)
+    train: &ft_train
+      quant: nf4              # 4-bit QLoRA base for training (fits one T4)
+      lora_r: 16
+      lora_alpha: 32
+      lora_dropout: 0.05
+      target_modules: [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+      lr: 2.0e-4
+      epochs: 1
+      max_len: 512
+      batch_size: 4
+      grad_accum: 4           # effective batch 16
+      warmup_ratio: 0.03
+      scheduler: linear
+      max_grad_norm: 1.0
+      weight_decay: 0.0
+      gradient_checkpointing: true
+      loss_on: response       # prompt tokens masked
+      seed: 42
   A2:
-    kind: finetune            # not implemented yet
+    kind: finetune
     simulates: poisoned data or deliberate attacker
-    lora_r: 16
-    epochs: 1
-    data: {harmful: 100, benign: 900}
+    data: ft_a2               # 100 harmful pairs (LLM-LAT/harmful-dataset) + 900 of A1, shuffled
+    train: *ft_train
 
   A3:
     kind: abliterate

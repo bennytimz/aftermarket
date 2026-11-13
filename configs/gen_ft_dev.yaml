@@ -1,0 +1,22 @@
+# Fine-tune attacks A1 (benign) and A2 (100 harmful + 900 benign), PLAN.md §4 / §13.5.
+# Phase 1, DEV (no --final): BASE + SDT sanity check (training runs, loss falls, A2 lowers refusal on BASE).
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_ft_dev.yaml --attacks A1
+# Training hyperparameters: configs/attacks.yaml `train` (one block, identical for every model and attack).
+# Per (run, attack): QLoRA train once -> merge into fp16 -> generate every split -> delete the local adapter.
+seed: 42
+runs: [BASE, SDT]
+attacks: [A1, A2]
+splits: [harmful_dev, benign_dev, mmlu_dev]
+
+precision: fp16          # eval precision (same as A0); training loads the released weights in 4-bit nf4
+batch_size: 16
+max_new_tokens:
+  default: 256
+  mmlu: 8
+gpus: [0, 1]             # one (run, attack) group per GPU; each fits a single T4
+
+out_dir: results/gen
+push:
+  enabled: true
+  hf_repo: aftermarket-runs   # namespace = huggingface_hub.whoami()['name']; PRIVATE only; parquet+json only
+  path_in_repo: gen

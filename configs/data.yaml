@@ -54,3 +54,21 @@ mmlu_prompt: |-
   D. {D}
 
   Answer with the letter only (A, B, C or D).
+
+# Fine-tuning attack data (PLAN.md §4 A1/A2). Build: python -m aftermarket.ft_data --config configs/data.yaml
+finetune:
+  out_dir: data/ft
+  seed: 4242                      # own RNG stream: the eval splits above are unaffected
+  a1_alpaca: 1000                 # A1 benign: Alpaca (sources.alpaca), excluding the calib_pairs harmless IDs
+  a2: {harmful: 100, benign: 900} # A2 = 100 harmful pairs + the first 900 A1 examples (same mix as SDT's threat model)
+  harmful_source:                 # instruction -> compliant harmful response pairs
+    hf_dataset: LLM-LAT/harmful-dataset
+    revision: 8bfba31bc6d93a5b71808fee5275ef4b6330ed91
+    file: data/train-00000-of-00001.parquet
+    prompt_col: prompt
+    response_col: rejected        # 'rejected' = the compliant (harmful) answer; 'chosen' is the refusal
+  min_response_words: 30          # drop stub answers
+  max_chars: 2000                 # prompt + response, so most examples fit max_len 512 tokens
+  max_jaccard_vs_splits: 0.5      # char-3gram Jaccard vs EVERY eval/calib prompt, checked exhaustively
+  # Harmful response text is never committed (PLAN.md §9): data/ft/ft_a2_spec.json stores row indices +
+  # sha256; aftermarket.ft_data rebuilds the text from the pinned dataset at training time and verifies it.
