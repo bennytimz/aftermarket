@@ -1,6 +1,7 @@
 # A0 (no attack) generation for every model run on the three test sets (PLAN.md §5, §13.4).
 #   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_a0.yaml --final
-# Test splits need --final (CLAUDE.md: test sets are touched once, never tuned on).
+# Leaderboard cells (others' models x fixed attacks) run on test with --final: no choices are made from them
+# (CLAUDE.md test-set rule). All tuning uses dev splits only.
 seed: 42
 runs: [BASE, SDT, GC, IL, RL, RL_noguard, ST, SP]
 attacks: [A0]

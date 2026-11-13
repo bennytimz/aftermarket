@@ -21,6 +21,10 @@ sources:
     revision: c30699e8356da336a370243923dbaf21066bb9fe
     test_file: all/test-00000-of-00001.parquet
     dev_file: all/validation-00000-of-00001.parquet
+  orbench:       # OR-Bench-Hard-1K: benign but refusal-prone prompts (over-refusal dev set)
+    hf_dataset: bench-llm/or-bench
+    revision: e36d8b80e81837c8a8f264bbb2a49f1b32c7e272
+    file: or-bench-hard-1k.csv
   alpaca:        # harmless side of the calibration contrast set
     hf_dataset: tatsu-lab/alpaca
     revision: dce01c9b08f87459cf36a430d809084718273017
@@ -38,6 +42,7 @@ sizes:
   xstest_test: 250                                # all XSTest safe prompts
   mmlu_test: 300                                  # stratified by subject, from MMLU test
   mmlu_dev: 100                                   # stratified by subject, from MMLU validation
+  benign_dev: 100                                 # OR-Bench-Hard-1K, stratified by category; deduped vs all splits
 
 mmlu_prompt: |-
   The following is a multiple choice question about {subject}.

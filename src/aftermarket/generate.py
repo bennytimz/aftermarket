@@ -60,10 +60,14 @@ def pending_jobs(jobs: list[Job], out_dir: Path) -> list[Job]:
 
 
 def check_final(splits: list[str], final: bool) -> None:
-    """Test splits are only generated with --final (CLAUDE.md)."""
+    """Test splits are only generated with --final (CLAUDE.md test-set rule).
+
+    Allowed: leaderboard cells (fixed attacks on others' models) and frozen AM. Never use test results to
+    make a choice; tuning uses *_dev / calib_pairs only.
+    """
     test = [s for s in splits if s.endswith("_test")]
     if test and not final:
-        raise SystemExit(f"splits {test} are test sets: rerun with --final (touched once, never tuned on)")
+        raise SystemExit(f"splits {test} are test sets: pass --final (leaderboard cells / frozen AM only; tune on dev splits)")
 
 
 def max_new_tokens(cfg: dict, split: str) -> int:
@@ -72,7 +76,7 @@ def max_new_tokens(cfg: dict, split: str) -> int:
 
 
 def _job_cost(job: Job, cfg: dict) -> float:
-    n = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mmlu_test": 300, "mmlu_dev": 100}.get(job.split, 200)
+    n = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mmlu_test": 300, "mmlu_dev": 100, "benign_dev": 100}.get(job.split, 200)
     return n * (max_new_tokens(cfg, job.split) + 32)
 
 
@@ -304,7 +308,7 @@ def run_jobs(cfg: dict, config_path: str, final: bool) -> list[Job]:
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description="batched greedy generation")
     ap.add_argument("--config", required=True)
-    ap.add_argument("--final", action="store_true", help="allow test splits (touched once)")
+    ap.add_argument("--final", action="store_true", help="allow test splits: leaderboard cells or frozen AM only")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     cfg = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))

@@ -8,7 +8,7 @@ from aftermarket.data import (ALL_SPLITS, SPLITS_DIR, load_split, norm_text, rea
                               sha256_file, stratified_take, verify_checksums)
 
 SIZES = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mmlu_test": 300, "mmlu_dev": 100,
-         "calib_pairs": 64}
+         "benign_dev": 100, "calib_pairs": 64}
 S = {name: read_jsonl(SPLITS_DIR / f"{name}.jsonl") for name in ALL_SPLITS}
 
 
@@ -75,3 +75,22 @@ def test_stratified_take_deterministic_and_proportional():
     t2, _ = stratified_take(items, 20, "c", random.Random(0))
     assert t1 == t2 and len(r1) == 180
     assert sum(x["c"] == "a" for x in t1) == 5
+
+
+def test_benign_dev_disjoint_from_everything():
+    bd = {norm_text(r["prompt"]) for r in S["benign_dev"]}
+    assert all(r["source"] == "orbench" for r in S["benign_dev"])
+    for name in ["harmful_test", "harmful_dev", "xstest_test", "mmlu_test", "mmlu_dev"]:
+        assert not bd & {norm_text(r["prompt"]) for r in S[name]}, name
+    assert not bd & {norm_text(r[f]) for r in S["calib_pairs"] for f in ("harmful", "harmless")}
+
+
+def _jaccard(a, b):
+    ga = {a.lower()[i:i + 3] for i in range(len(a) - 2)}
+    gb = {b.lower()[i:i + 3] for i in range(len(b) - 2)}
+    return len(ga & gb) / len(ga | gb)
+
+
+def test_benign_dev_not_near_duplicate_of_xstest():
+    worst = max(_jaccard(a["prompt"], b["prompt"]) for a in S["benign_dev"] for b in S["xstest_test"])
+    assert worst < 0.7

@@ -1,9 +1,12 @@
 {
-  "pipeline_config_hash": "e321c52c0d2599785d910c139252e30915052bbedc807a0b91e45bb2acb713bd",
-  "run_timestamp": "2026-11-13T00:56:52.803736Z",
+  "pipeline_config_hash": "63a6baca75d0934715bde6a1372130abe4c6e372345b401ac32d792e8162a297",
+  "run_timestamp": "2026-11-13T01:02:33.784864Z",
   "source_files": [
     {
       "path": "hf://datasets/Paul/XSTest@f600c994b256f12867dfa5b3eb3d545a3e62f8b5/xstest_prompts.csv"
+    },
+    {
+      "path": "hf://datasets/bench-llm/or-bench@e36d8b80e81837c8a8f264bbb2a49f1b32c7e272/or-bench-hard-1k.csv"
     },
     {
       "path": "hf://datasets/cais/mmlu@c30699e8356da336a370243923dbaf21066bb9fe/all/test-00000-of-00001.parquet"
@@ -71,6 +74,26 @@
       "input_count": 1531,
       "output_count": 1528,
       "rejected_count": 0
+    },
+    "orbench/TextCleaner": {
+      "input_count": 1319,
+      "output_count": 1319,
+      "rejected_count": 0
+    },
+    "orbench/ExactDeduplicator": {
+      "input_count": 1319,
+      "output_count": 1319,
+      "rejected_count": 0
+    },
+    "orbench/MinHashDeduplicator": {
+      "input_count": 1319,
+      "output_count": 1311,
+      "rejected_count": 0
+    },
+    "orbench/CrossSplitMinHash": {
+      "input_count": 1311,
+      "output_count": 1311,
+      "rejected_count": 0
     }
   },
   "rejected_breakdown": {},
@@ -85,7 +108,7 @@
     "total_completion_tokens": 0,
     "total_tokens": 0
   },
-  "wall_clock_seconds": 80.123,
+  "wall_clock_seconds": 79.678,
   "tool_versions": {
     "curatorkit": "0.1.27",
     "python": "3.13.15"
@@ -98,7 +121,7 @@
     "library": "curatorkit",
     "version": "0.1.27",
     "git_sha": null,
-    "created_at": "2026-11-13T00:56:52Z",
+    "created_at": "2026-11-13T01:02:33Z",
     "base_model": null,
     "method": "aftermarket.data",
     "inputs": [
@@ -131,10 +154,15 @@
         "kind": "dataset",
         "ref": "hf://datasets/cais/mmlu@c30699e8356da336a370243923dbaf21066bb9fe/all/validation-00000-of-00001.parquet",
         "sha256": "66cdf0b090ccb657d18d13cd81e31fdc55c3467da9642ffb178653268a97c8ef"
+      },
+      {
+        "kind": "dataset",
+        "ref": "hf://datasets/bench-llm/or-bench@e36d8b80e81837c8a8f264bbb2a49f1b32c7e272/or-bench-hard-1k.csv",
+        "sha256": "a6e2f1166416efe5901f3bb05c47dc92ab3aca3acfe143693d38b8057d841e6d"
       }
     ],
     "params": {
-      "config_sha256": "e321c52c0d2599785d910c139252e30915052bbedc807a0b91e45bb2acb713bd",
+      "config_sha256": "63a6baca75d0934715bde6a1372130abe4c6e372345b401ac32d792e8162a297",
       "seed": 42,
       "split_sizes": {
         "harmful_test": 200,
@@ -142,7 +170,8 @@
         "harmful_dev": 100,
         "xstest_test": 250,
         "mmlu_test": 300,
-        "mmlu_dev": 100
+        "mmlu_dev": 100,
+        "benign_dev": 100
       }
     }
   }

@@ -68,6 +68,7 @@ Same seed, same hyperparameters and same data for every model. Attack weights ar
 | **Retention score** ↑ | — | 1 − (ASR after attack − ASR at A0), averaged over A1–A5 |
 | Size / speed | — | GB, tokens/sec |
 
+- **Test-set rule:** test splits (`*_test`) run only with `--final`. Leaderboard cells (others' models × fixed attacks) may run on test with `--final`, because no choices are made from them. Every choice (attack hyperparameters, the AM recipe, protected layers L*, thresholds) is made only from dev splits (`harmful_dev`, `benign_dev`, `mmlu_dev`, `calib_pairs`). AM is frozen before its test run.
 - **Generate first, judge later:** save outputs to parquet, then judge in a separate process so model and judge never share VRAM.
 - Greedy decoding, max 256 new tokens, each model's official chat template (except in A5).
 - **Stats:** AuditKIT `compare_models()` bootstrap 95% CIs, with pairwise tests against BASE and against AM.
@@ -147,7 +148,7 @@ aftermarket/
 | **Fri PM** | Cheap attacks: A3 abliteration, A4 4/3/2-bit, A5 prompt-level. Generate outputs | Outputs saved |
 | **Fri night** | Queue A1 + A2 LoRA fine-tunes on Kaggle (about 10–15 min each per model). Start CircuitKIT discovery on CPU | Attack adapters saved privately |
 | **Sat Nov 14 AM** | Generate A1/A2 outputs. Build AM v1 on dev + random-layer controls | AM v1 ready |
-| **Sat PM** | Run the full battery on AM and controls. **Freeze, then run the test split once** | All parquet done |
+| **Sat PM** | Run the full battery on AM and controls. **Freeze AM (all choices from dev), then run its test split once** | All parquet done |
 | **Sat night** | Judge everything, AuditKIT stats, 100 hand labels, figures | Leaderboard final |
 | **Sun Nov 15** | README write-up, abstract, HF collections (models: AM + controls; datasets: eval sets, verdicts, logs), HF Space leaderboard, upstream issues, disclosure issues. **Submit by Sunday evening** | Confirmation received |
 | Mon Nov 16 AM | Buffer: fix links, resubmit if needed (only the latest submission counts) | |
@@ -177,7 +178,9 @@ aftermarket/
 - Python 3.12, pinned requirements. Base: CohereLabs/tiny-aya-global @ af89d219b53ed9b13b8a4645f9c8028973510324.
 - Kaggle 2xT4 / Colab T4 only: never assume >16 GB per GPU. Model and judge run in separate processes.
 - Every run: --config yaml, output to results/<run_id>/ with manifest (git sha, config, seed, time). Push parquet to HF after each run.
-- Same seed, hyperparameters and data for every model x attack cell. Never tune on data/splits/test; it's touched once with --final.
+- Same seed, hyperparameters and data for every model x attack cell.
+- Test splits (`*_test`) run only with --final. Leaderboard cells (others' models x fixed attacks) may run on test with --final: no choices are made from them.
+- Every choice (attack hyperparameters, the AM defense recipe, protected layers L*, thresholds) is made only from the dev splits (`*_dev`, `calib_pairs`), never from test results. AM is frozen before its test run.
 - Never push attack-tuned weights or unredacted harmful completions anywhere public.
 - Pin the HF tokenizer (Kaggle's Tiny Aya copy differs) and assert token IDs match.
 - When a Lexsi API is unclear, read its source in site-packages. Log real gaps/bugs in notes/upstream_issues.md.

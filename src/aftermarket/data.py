@@ -10,6 +10,7 @@ Splits written:
   harmful_test (200)  harmful_dev (100)   HarmBench standard + AdvBench, one deduped pool
   xstest_test  (250)                      XSTest safe prompts (no dev: XSTest has only 250)
   mmlu_test    (300)  mmlu_dev   (100)    MMLU test / validation, stratified by subject
+  benign_dev   (100)                      OR-Bench-Hard-1K, for over-refusal tuning on dev (XSTest is test-only)
   calib_pairs  (64)                       {harmful, harmless} pairs for abliteration (A3) and locate (§6.1)
 
 Every generation split row has: id, split, source, category, prompt (+ answer for MMLU).
@@ -30,7 +31,7 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SPLITS_DIR = REPO_ROOT / "data" / "splits"
 CHECKSUMS_FILE = "checksums.txt"
-GEN_SPLITS = ["harmful_test", "harmful_dev", "xstest_test", "mmlu_test", "mmlu_dev"]
+GEN_SPLITS = ["harmful_test", "harmful_dev", "xstest_test", "mmlu_test", "mmlu_dev", "benign_dev"]
 ALL_SPLITS = GEN_SPLITS + ["calib_pairs"]
 
 
@@ -268,6 +269,31 @@ def build(cfg: dict, cfg_hash: str) -> dict[str, list[dict]]:
         out[split] = taken
         all_samples += [s for s in ms if s.id in {t["id"] for t in taken}]
         inputs.append({"kind": "dataset", "ref": uri, "sha256": sha256_file(path)})
+
+    # --- benign_dev: OR-Bench-Hard-1K, built last so earlier splits are unaffected.
+    # One MinHash pass over [every prompt already in a split] + [OR-Bench]: earlier items win, so any
+    # OR-Bench prompt that near-duplicates XSTest (or anything else) is dropped.
+    from curatorkit.normalizers.dedup import MinHashDeduplicator
+
+    ob_path, ob_uri = _hf_file(src["orbench"], src["orbench"]["file"])
+    ob = pd.read_csv(ob_path)
+    ob_rows = [{"id": f"orbench:{i:04d}", "source": "orbench", "category": r.category, "prompt": r.prompt}
+               for i, r in enumerate(ob.itertuples())]
+    ob_samples = _curate(_samples(ob_rows, ob_uri, ob_path), cur, "orbench", counts)
+    existing = [{"id": f"existing:{k}", "prompt": t} for k, t in enumerate(sorted(
+        {r["prompt"] for sp in GEN_SPLITS if sp in out for r in out[sp]}
+        | {r[f] for r in out["calib_pairs"] for f in ("harmful", "harmless")}))]
+    from curatorkit.schema import DataSample
+
+    ref = [DataSample(id=e["id"], source_uri="splits", instruction=e["prompt"], task_type="prompt_only") for e in existing]
+    n_in = len(ob_samples)
+    kept = MinHashDeduplicator(threshold=cur["minhash_threshold"]).run(ref + ob_samples)
+    taken_texts = {norm_text(e["prompt"]) for e in existing}
+    ob_samples = [x for x in kept if x.id.startswith("orbench:") and norm_text(x.instruction) not in taken_texts]
+    counts["orbench/CrossSplitMinHash"] = {"input_count": n_in, "output_count": len(ob_samples), "rejected_count": 0}
+    out["benign_dev"], _ = stratified_take(_rows(ob_samples), sizes["benign_dev"], "category", rng)
+    all_samples += [x for x in ob_samples if x.id in {r["id"] for r in out["benign_dev"]}]
+    inputs.append({"kind": "dataset", "ref": ob_uri, "sha256": sha256_file(ob_path)})
 
     for split in GEN_SPLITS:
         out[split] = [{**r, "split": split} for r in out[split]]
