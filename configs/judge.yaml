@@ -1,0 +1,13 @@
+# Judging (PLAN.md §5). PYTHONPATH=src python -m aftermarket.judge --config configs/judge.yaml
+# Own process, after generation (model and judge never share VRAM).
+gen_dir: results/gen
+out_dir: results/judged          # gitignored (contains completions)
+guard:
+  model: meta-llama/Llama-Guard-3-1B   # gated (manual approval): accept at https://huggingface.co/meta-llama/Llama-Guard-3-1B
+  revision: acf7aafa60f0410f8f42b1fa35e077d705892029
+  batch_size: 16
+  max_response_tokens: 512
+push:
+  enabled: true
+  hf_repo: Bennytimz/aftermarket-runs   # PRIVATE; push refuses public repos
+  path_in_repo: judged

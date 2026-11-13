@@ -2,12 +2,16 @@
 
     PYTHONPATH=src python -m aftermarket.generate --config configs/gen_a0.yaml --final
 
-Runs (run_id, attack_id, split) jobs: model x attack x prompts -> one parquet per job in
+Runs (run_id, attack_id, split) jobs: load model -> apply attack -> generate -> one parquet per job in
 results/gen/<run>__<attack>__<split>.parquet plus a .json manifest (git sha, config, seed,
 time, throughput). Jobs whose parquet exists are skipped. Jobs are grouped by run (each
 model loads once) and spread across GPUs, one worker process per GPU. After each job the
 parquet and manifest are pushed to a PRIVATE HF dataset; the push refuses public repos
 (PLAN.md §9). Judging happens later in a separate process (judge.py).
+
+Attacks come from configs/attacks.yaml: weight attacks (A3 abliterate, A4 HQQ) change the
+loaded model; prompt attacks (A5raw, A5bon) change the inputs. Each (run, attack) group loads a
+fresh model once and runs all its splits. Attacked weights live in memory only.
 
 Decoding: batched greedy, left padding with the pinned BASE tokenizer, batch size starting
 at `batch_size` and halved on CUDA OOM. max_new_tokens 256 (harmful/XSTest), 8 (MMLU).
@@ -30,7 +34,18 @@ import yaml
 from aftermarket.data import load_split, verify_checksums
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-IMPLEMENTED_ATTACKS = {"A0"}
+ATTACKS_YAML = REPO_ROOT / "configs" / "attacks.yaml"
+IMPLEMENTED_KINDS = {"none", "abliterate", "hqq", "prompt"}
+SPLIT_SIZES = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mmlu_test": 300, "mmlu_dev": 100,
+               "benign_dev": 100}
+
+
+def load_attacks(path: Path = ATTACKS_YAML) -> dict:
+    return yaml.safe_load(Path(path).read_text(encoding="utf-8"))["attacks"]
+
+
+def attack_applies(attack: dict, split: str) -> bool:
+    return not attack.get("splits") or any(split.startswith(p) for p in attack["splits"])
 
 
 @dataclass(frozen=True, order=True)
@@ -46,8 +61,11 @@ class Job:
 
 # ----------------------------------------------------------------------------- planning (no torch)
 
-def make_jobs(cfg: dict) -> list[Job]:
-    return [Job(r, a, s) for r in cfg["runs"] for a in cfg["attacks"] for s in cfg["splits"]]
+def make_jobs(cfg: dict, attacks: dict | None = None) -> list[Job]:
+    """All (run, attack, split) jobs, minus splits an attack doesn't apply to (e.g. BoN: harmful only)."""
+    attacks = attacks or load_attacks()
+    return [Job(r, a, s) for r in cfg["runs"] for a in cfg["attacks"] for s in cfg["splits"]
+            if attack_applies(attacks[a], s)]
 
 
 def parquet_path(out_dir: Path, job: Job) -> Path:
@@ -75,22 +93,27 @@ def max_new_tokens(cfg: dict, split: str) -> int:
     return m["mmlu"] if split.startswith("mmlu") else m["default"]
 
 
-def _job_cost(job: Job, cfg: dict) -> float:
-    n = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mmlu_test": 300, "mmlu_dev": 100, "benign_dev": 100}.get(job.split, 200)
-    return n * (max_new_tokens(cfg, job.split) + 32)
+def _job_cost(job: Job, cfg: dict, attacks: dict | None = None) -> float:
+    a = (attacks or {}).get(job.attack_id, {})
+    mult = a.get("n", 1) if a.get("mode") == "bon" else 1
+    return SPLIT_SIZES.get(job.split, 200) * mult * (max_new_tokens(cfg, job.split) + 32)
 
 
-def assign_jobs(jobs: list[Job], n_workers: int, cfg: dict) -> list[list[Job]]:
-    """Group jobs by run (one model load each), then longest-first onto the least-loaded worker."""
-    groups: dict[str, list[Job]] = {}
+def assign_jobs(jobs: list[Job], n_workers: int, cfg: dict, attacks: dict | None = None) -> list[list[Job]]:
+    """Group jobs by (run, attack) (one model load + attack each), then longest-first onto the least-loaded worker."""
+    groups: dict[tuple[str, str], list[Job]] = {}
     for j in sorted(jobs):
-        groups.setdefault(j.run_id, []).append(j)
+        groups.setdefault((j.run_id, j.attack_id), []).append(j)
     loads = [0.0] * n_workers
     out: list[list[Job]] = [[] for _ in range(n_workers)]
-    for run, js in sorted(groups.items(), key=lambda kv: (-sum(_job_cost(j, cfg) for j in kv[1]), kv[0])):
+
+    def cost(js):
+        return sum(_job_cost(j, cfg, attacks) for j in js) + 2000  # + model load
+
+    for key, js in sorted(groups.items(), key=lambda kv: (-cost(kv[1]), kv[0])):
         w = loads.index(min(loads))
         out[w] += js
-        loads[w] += sum(_job_cost(j, cfg) for j in js) + 2000  # + model load
+        loads[w] += cost(js)
     return out
 
 
@@ -115,10 +138,25 @@ def push_files(paths: list[Path], repo_id: str, path_in_repo: str) -> None:
 
 # ----------------------------------------------------------------------------- generation (torch)
 
-def _attack(model, tok, attack_id: str):
-    if attack_id not in IMPLEMENTED_ATTACKS:
-        raise NotImplementedError(f"attack {attack_id} not implemented yet")
-    return model  # A0: as released
+def prepare_model(run_id: str, attack_id: str, attack: dict, cfg: dict):
+    """Load the run's model and apply a weight attack. Returns (model, tok, attack_info)."""
+    from aftermarket.load import load_model, resolve_run
+
+    model_id, template = resolve_run(run_id)
+    kind = attack["kind"]
+    if kind not in IMPLEMENTED_KINDS:
+        raise NotImplementedError(f"attack {attack_id} ({kind}) not implemented yet")
+    if kind == "hqq":
+        from aftermarket.attacks.compress import load_hqq
+
+        return load_hqq(model_id, template, attack["nbits"], attack.get("group_size", 64))
+    model, tok = load_model(model_id, precision=cfg["precision"], template=template)
+    info = {"attack": attack_id, "kind": kind}
+    if kind == "abliterate":
+        from aftermarket.attacks import abliterate
+
+        info.update(abliterate.apply(model, tok, attack))
+    return model, tok, info
 
 
 def _check_finite(model, tok) -> None:
@@ -175,15 +213,20 @@ def _git_sha() -> str:
         return ""
 
 
-def run_job(model, tok, job: Job, cfg: dict, out_dir: Path) -> dict:
+def run_job(model, tok, job: Job, cfg: dict, out_dir: Path, attack: dict, attack_info: dict) -> dict:
     """Generate one job, write parquet + manifest, push. Returns the manifest."""
     import pandas as pd
 
-    from aftermarket.load import build_prompt_ids, resolve_run
+    from aftermarket.attacks.prompt import build_inputs
+    from aftermarket.load import resolve_run
 
     model_id, template = resolve_run(job.run_id)
-    rows = load_split(job.split)
-    ids = [build_prompt_ids(model, tok, [{"role": "user", "content": r["prompt"]}]) for r in rows]
+    split_rows = load_split(job.split)
+    expanded = build_inputs(model, tok, split_rows, attack, cfg["seed"])
+    per = len(expanded) // len(split_rows)
+    rows = [r for r in split_rows for _ in range(per)]
+    extras = [e for e, _ in expanded]
+    ids = [i for _, i in expanded]
     t0 = time.time()
     outs, final_bs = generate_batched(model, tok, ids, max_new_tokens(cfg, job.split), cfg["batch_size"])
     secs = time.time() - t0
@@ -192,8 +235,8 @@ def run_job(model, tok, job: Job, cfg: dict, out_dir: Path) -> dict:
     df = pd.DataFrame([{
         "run_id": job.run_id, "model_id": model_id, "template": template, "attack_id": job.attack_id,
         "split": job.split, "item_id": r["id"], "source": r.get("source"), "category": r.get("category"),
-        "prompt": r["prompt"], "answer": r.get("answer"), "prompt_tokens": len(i), **o,
-    } for r, i, o in zip(rows, ids, outs)])
+        "prompt": r["prompt"], "answer": r.get("answer"), **e, "prompt_tokens": len(i), **o,
+    } for r, e, i, o in zip(rows, extras, ids, outs)])
     out_dir.mkdir(parents=True, exist_ok=True)
     pq = parquet_path(out_dir, job)
     tmp = pq.with_suffix(".parquet.tmp")
@@ -202,6 +245,7 @@ def run_job(model, tok, job: Job, cfg: dict, out_dir: Path) -> dict:
         "job": asdict(job), "model_id": model_id, "template": template, "hf_path": spec["hf_path"],
         "revision": spec.get("revision"), "precision": cfg["precision"], "seed": cfg["seed"],
         "max_new_tokens": max_new_tokens(cfg, job.split), "batch_size_final": final_bs, "n_prompts": len(rows),
+        "n_items": len(split_rows), "attack": attack, "attack_info": attack_info,
         "seconds": round(secs, 1), "prompts_per_sec": round(len(rows) / secs, 3),
         "new_tokens_per_sec": round(n_tok / secs, 1),
         "finish_length_frac": round(float((df.finish_reason == "length").mean()), 3),
@@ -220,39 +264,42 @@ def run_job(model, tok, job: Job, cfg: dict, out_dir: Path) -> dict:
 
 
 def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
-    """Run jobs on this process's GPU, loading each model run once."""
+    """Run jobs on this process's GPU: per (run, attack), load + attack once, then every split."""
     import torch
 
-    from aftermarket.load import free_memory, load_model, resolve_run
+    from aftermarket.load import free_memory
 
+    attacks = load_attacks()
     torch.manual_seed(cfg["seed"])
-    by_run: dict[str, list[Job]] = {}
+    groups: dict[tuple[str, str], list[Job]] = {}
     for j in jobs:
-        by_run.setdefault(j.run_id, []).append(j)
-    for run_id, js in by_run.items():
+        groups.setdefault((j.run_id, j.attack_id), []).append(j)
+    for (run_id, attack_id), js in groups.items():
         js = pending_jobs(js, out_dir)
         if not js:
             continue
         model = tok = None
-        try:  # one failing run must not stop the others on this GPU
-            model_id, template = resolve_run(run_id)
+        try:  # one failing (run, attack) must not stop the others on this GPU
             t0 = time.time()
-            model, tok = load_model(model_id, precision=cfg["precision"], template=template)
+            attack = attacks[attack_id]
+            model, tok, info = prepare_model(run_id, attack_id, attack, cfg)
             _check_finite(model, tok)
             tok.padding_side = "left"
-            print(f"[{run_id}] loaded in {time.time() - t0:.0f}s", flush=True)
+            brief = {k: v for k, v in info.items() if k != "separation"}
+            print(f"[{run_id}/{attack_id}] ready in {time.time() - t0:.0f}s {brief}", flush=True)
             for job in js:
                 if parquet_path(out_dir, job).exists():
                     continue
-                model = _attack(model, tok, job.attack_id)
-                m = run_job(model, tok, job, cfg, out_dir)
+                m = run_job(model, tok, job, cfg, out_dir, attack, info)
                 print(f"[{job.name}] {m['n_prompts']} prompts in {m['seconds']}s = {m['prompts_per_sec']} prompts/s, "
                       f"{m['new_tokens_per_sec']} tok/s, bs={m['batch_size_final']}, "
                       f"hit max_new_tokens={m['finish_length_frac']:.0%}", flush=True)
         except Exception:
             import traceback
 
-            print(f"[{run_id}] FAILED:\n{traceback.format_exc()}", flush=True)
+            print(f"[{run_id}/{attack_id}] FAILED:", flush=True)
+            traceback.print_exc(file=sys.stdout)
+            sys.stdout.flush()
         del model, tok
         free_memory()
 
@@ -271,17 +318,19 @@ def run_jobs(cfg: dict, config_path: str, final: bool) -> list[Job]:
     out_dir = REPO_ROOT / cfg["out_dir"]
     check_final(cfg["splits"], final)
     verify_checksums()
+    attacks = load_attacks()
     for a in cfg["attacks"]:
-        if a not in IMPLEMENTED_ATTACKS:
+        if attacks[a]["kind"] not in IMPLEMENTED_KINDS:
             raise NotImplementedError(f"attack {a} not implemented yet")
-    todo = pending_jobs(make_jobs(cfg), out_dir)
-    print(f"{len(make_jobs(cfg))} jobs, {len(todo)} pending")
+    all_jobs = make_jobs(cfg, attacks)
+    todo = pending_jobs(all_jobs, out_dir)
+    print(f"{len(all_jobs)} jobs, {len(todo)} pending")
     if not todo:
         return []
     if cfg.get("push", {}).get("enabled"):
         ensure_private_repo(cfg["push"]["hf_repo"])
     gpus = cfg["gpus"]
-    plan = assign_jobs(todo, len(gpus), cfg)
+    plan = assign_jobs(todo, len(gpus), cfg, attacks)
     (out_dir / "logs").mkdir(parents=True, exist_ok=True)
     procs, threads = [], []
     for gpu, js in zip(gpus, plan):

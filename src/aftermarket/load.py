@@ -184,32 +184,49 @@ def apply_patches(model, patches: list[dict]) -> int:
 
 # ----------------------------------------------------------------------------- HF loading
 
-def _hf_kwargs(precision: str) -> dict:
+def _hf_kwargs(precision: str, device: str = "cuda") -> dict:
     import torch
 
     if precision not in PRECISIONS:
         raise ValueError(f"precision must be one of {PRECISIONS}")
+    device_map = {"": 0} if device == "cuda" else {"": "cpu"}
     if precision == "4bit":
+        if device != "cuda":
+            raise ValueError("4bit loading needs a GPU")
         from transformers import BitsAndBytesConfig
 
         q = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
                                bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
-        return {"quantization_config": q, "device_map": {"": 0}}
-    return {"dtype": torch.bfloat16 if precision == "bf16" else torch.float16, "device_map": {"": 0}}
+        return {"quantization_config": q, "device_map": device_map}
+    return {"dtype": torch.bfloat16 if precision == "bf16" else torch.float16, "device_map": device_map}
 
 
-def _load_base_hf(precision: str):
+def _load_base_hf(precision: str, device: str = "cuda"):
     from transformers import AutoModelForCausalLM
 
     reg = load_registry()
-    return AutoModelForCausalLM.from_pretrained(reg["base_model"], revision=reg["base_revision"], **_hf_kwargs(precision))
+    return AutoModelForCausalLM.from_pretrained(reg["base_model"], revision=reg["base_revision"],
+                                                **_hf_kwargs(precision, device))
 
 
-def load_model(model_id: str, precision: str = "bf16", template: str = "native"):
+def finalize_model(model, model_id: str, spec: dict, template: str, tok):
+    """eval(), vocab check, and the aftermarket_* attributes `generate` relies on."""
+    model.eval()
+    emb = model.get_input_embeddings().weight.shape[0]
+    if emb < len(tok):
+        raise AssertionError(f"{model_id}: embedding rows {emb} < BASE vocab {len(tok)}")
+    model.aftermarket_id = model_id
+    model.aftermarket_spec = spec
+    model.aftermarket_chat_template = _chat_template(spec, template)
+    return model
+
+
+def load_model(model_id: str, precision: str = "bf16", template: str = "native", device: str = "cuda"):
     """Return (model, tokenizer) for `model_id` from configs/models.yaml.
 
     precision: "bf16" | "fp16" | "4bit" (bnb nf4).
     template:  "native" (model's own chat template) | "base" (BASE's template).
+    device:    "cuda" (GPU 0 of this process) | "cpu" (e.g. to build fp16 weights before HQQ).
     The returned model carries `aftermarket_id`, `aftermarket_spec` and
     `aftermarket_chat_template` attributes used by `generate`.
     """
@@ -223,36 +240,29 @@ def load_model(model_id: str, precision: str = "bf16", template: str = "native")
     fmt = spec["format"]
 
     if fmt == "template":
-        model = _load_base_hf(precision)
+        model = _load_base_hf(precision, device)
     elif fmt == "full":
         from transformers import AutoModelForCausalLM
 
-        model = AutoModelForCausalLM.from_pretrained(spec["hf_path"], revision=spec["revision"], **_hf_kwargs(precision))
+        model = AutoModelForCausalLM.from_pretrained(spec["hf_path"], revision=spec["revision"],
+                                                     **_hf_kwargs(precision, device))
     elif fmt == "lora":
         from peft import PeftModel
 
-        model = PeftModel.from_pretrained(_load_base_hf(precision), spec["hf_path"], revision=spec["revision"])
+        model = PeftModel.from_pretrained(_load_base_hf(precision, device), spec["hf_path"], revision=spec["revision"])
         if precision != "4bit":
             model = model.merge_and_unload()
     elif fmt == "deltas":
         if precision == "4bit":
             raise ValueError("deltas must be applied to dense weights: load with bf16/fp16")
-        model = _load_base_hf(precision)
+        model = _load_base_hf(precision, device)
         patches = [load_patch(Path(hf_hub_download(spec["hf_path"], f, revision=spec["revision"])).read_bytes())
                    for f in spec["delta_files"]]
         apply_patches(model, patches)
     else:
         raise ValueError(f"unknown format {fmt!r}")
 
-    model.eval()
-    emb = model.get_input_embeddings().weight.shape[0]
-    if emb < len(tok):
-        raise AssertionError(f"{model_id}: embedding rows {emb} < BASE vocab {len(tok)}")
-
-    model.aftermarket_id = model_id
-    model.aftermarket_spec = spec
-    model.aftermarket_chat_template = _chat_template(spec, template)
-    return model, tok
+    return finalize_model(model, model_id, spec, template, tok), tok
 
 
 def free_memory() -> None:

@@ -1,0 +1,21 @@
+# Cheap attacks (no training): A3 abliteration, A4 HQQ 4/3/2-bit, A5 prompt-level (PLAN.md §4).
+# Phase 1, DEV sanity check (no --final). Choices may be made from these results.
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_cheap_dev.yaml
+# Attack hyperparameters: configs/attacks.yaml (identical for every model).
+seed: 42
+runs: [BASE, SDT, GC, IL, RL, RL_noguard, ST, SP]
+attacks: [A3, A4q4, A4q3, A4q2, A5raw, A5bon]   # A5bon runs on harmful splits only
+splits: [harmful_dev, benign_dev, mmlu_dev]
+
+precision: fp16          # A3 / A5; A4 loads with HQQ (fp16 compute)
+batch_size: 16
+max_new_tokens:
+  default: 256
+  mmlu: 8
+gpus: [0, 1]
+
+out_dir: results/gen
+push:
+  enabled: true
+  hf_repo: Bennytimz/aftermarket-runs
+  path_in_repo: gen
