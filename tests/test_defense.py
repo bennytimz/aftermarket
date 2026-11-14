@@ -523,6 +523,34 @@ def test_battery_split_kaggle_colab_a3():
     assert by(a3, {"AM"}) == {"A3"} and by(a3, ctl) == {"A3"}
 
 
+@pytest.mark.parametrize("part,gpus", [("colab", "0"), ("a3", "0"), ("kaggle", None), ("kaggle", "0,1")])
+def test_battery_worker_command_is_all_str(monkeypatch, part, gpus):
+    # notebook 08 (Colab, --gpus 0) crashed in _fork_exec: "expected str ... not list". build_stages rebound `gpus`
+    # to the judge-shard list, so argv got ["--gpus", ["0"]]; Kaggle (07, no --gpus) had ["--gpus", ["0", "1"]].
+    calls = []
+    monkeypatch.setattr(P.subprocess, "run", lambda cmd, env, cwd: calls.append((cmd, env)) or
+                        type("R", (), {"returncode": 0})())
+    for s in P.build_stages("configs/defense.yaml", DCFG, False, battery_only=True, part=part, gpus=gpus):
+        s.run()
+    assert len(calls) == len(P.PARTS[part])
+    for cmd, env in calls:
+        assert all(isinstance(a, str) for a in cmd), cmd
+        assert all(isinstance(k, str) and isinstance(v, str) for k, v in env.items())
+        assert cmd[1:4] == ["-m", "aftermarket.generate", "--config"] and "--final" in cmd
+        if gpus:
+            assert cmd[cmd.index("--gpus") + 1] == gpus
+        else:
+            assert "--gpus" not in cmd  # Kaggle: the configs' two GPUs
+
+
+def test_check_cmd_rejects_lists():
+    P._check_cmd(["python", "-m", "x"], {"A": "1"})
+    with pytest.raises(TypeError, match="non-str"):
+        P._check_cmd(["python", "--gpus", ["0"]], {})
+    with pytest.raises(TypeError, match="CUDA_VISIBLE_DEVICES"):
+        P._check_cmd(["python"], {"CUDA_VISIBLE_DEVICES": [0]})
+
+
 def test_colab_part_on_one_gpu_is_serial():
     st = P.build_stages("configs/defense.yaml", DCFG, False, battery_only=True, part="colab", gpus="0")
     assert [s.name for s in st] == ["test AM A5bon", "test AM A1", "test controls A2"]

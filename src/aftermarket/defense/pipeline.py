@@ -173,8 +173,22 @@ def _env(**extra) -> dict:
     return {**os.environ, "PYTHONPATH": str(REPO_ROOT / "src"), "PYTHONUNBUFFERED": "1", **extra}
 
 
+def battery_command(path: str, attacks: str, gpus: str | None) -> list[str]:
+    """`python -m` args of one battery stage: generate on test (--final), with the --gpus override if given."""
+    return ["aftermarket.generate", "--config", path, "--final", "--attacks", attacks] + (["--gpus", gpus] if gpus else [])
+
+
+def _check_cmd(cmd: list, env: dict) -> None:
+    """Every argv item and env value must be a str (a list here crashed notebook 08 inside _fork_exec)."""
+    bad = [repr(a) for a in cmd if not isinstance(a, str)] + [f"{k}={v!r}" for k, v in env.items() if not isinstance(v, str)]
+    if bad:
+        raise TypeError(f"non-str subprocess argv/env items: {bad}")
+
+
 def sh(*args: str) -> int:
-    r = subprocess.run([sys.executable, "-m", *args], env=_env(), cwd=REPO_ROOT)
+    cmd, env = [sys.executable, "-m", *args], _env()
+    _check_cmd(cmd, env)
+    r = subprocess.run(cmd, env=env, cwd=REPO_ROOT)
     if r.returncode:
         print(f"   (exit {r.returncode}: {' '.join(args[:2])}; continuing, later stages check their inputs)", flush=True)
     return r.returncode
@@ -187,7 +201,9 @@ def sh_parallel(args_per_gpu: list[list[str]]) -> None:
     logs.mkdir(parents=True, exist_ok=True)
     procs = []
     for gpu, args in enumerate(args_per_gpu):
-        p = subprocess.Popen([sys.executable, "-m", *args], env=_env(CUDA_VISIBLE_DEVICES=str(gpu)), cwd=REPO_ROOT,
+        cmd, env = [sys.executable, "-m", *args], _env(CUDA_VISIBLE_DEVICES=str(gpu))
+        _check_cmd(cmd, env)
+        p = subprocess.Popen(cmd, env=env, cwd=REPO_ROOT,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         t = threading.Thread(target=_stream, args=(p, f"[gpu{gpu}]", logs / f"{args[0].split('.')[-1]}_gpu{gpu}.log"),
                              daemon=True)
@@ -218,9 +234,9 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     metas = [m for m in (store.read_meta(p.name) for p in store.defense_dir().glob("AM*")) if m]
     train_s = sorted(m["train_seconds"] for m in metas if m.get("train_seconds"))
     train_s = train_s[len(train_s) // 2] if train_s else None
-    gpus = [str(g) for g in range(b["gpus"])]
+    n_shards = b["gpus"]  # NOT named `gpus`: that is the --gpus string, passed on to the battery's generate
     shards = lambda stage: [["aftermarket.defense.harden", "--config", config, "--stage", stage,
-                             "--shard", f"{i}/{len(gpus)}", "--no-pull"] for i in range(len(gpus))]
+                             "--shard", f"{i}/{n_shards}", "--no-pull"] for i in range(n_shards)]
 
     def gen_cfg(path, attacks_subset=None):
         c = yaml.safe_load((REPO_ROOT / path).read_text(encoding="utf-8"))
@@ -302,12 +318,9 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     if battery_only:
         stages, with_battery = [], True
     if with_battery:
-        gpu_arg = ["--gpus", gpus] if gpus else []
         for path, a in PARTS[part]:
             who = "AM" if path == BATTERY else "controls"
-            stages.append(Stage(f"test {who} {a}",
-                                (lambda path=path, a=a: sh("aftermarket.generate", "--config", path, "--final", "--attacks", a,
-                                                            *gpu_arg)),
+            stages.append(Stage(f"test {who} {a}", (lambda path=path, a=a: sh(*battery_command(path, a, gpus))),
                                 enabled=AM_FROZEN_YAML.exists, estimate=est_gen(path, a.split(","))))
     if with_battery and test_judge:
         stages.append(Stage("AM test judge", lambda: sh("aftermarket.judge", "--config", "configs/judge.yaml"),
