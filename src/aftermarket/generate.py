@@ -13,6 +13,10 @@ Attacks come from configs/attacks.yaml: weight attacks (A3 abliterate, A4 HQQ) c
 loaded model; prompt attacks (A5raw, A5bon) change the inputs. Each (run, attack) group loads a
 fresh model once and runs all its splits. Attacked weights live in memory only.
 
+Sharing a job list between sessions (Colab + Kaggle at once): --claim writes a Hub lock per job before it starts
+and skips jobs done or locked (< 2 h) elsewhere (claims.py); --max-hours / --session-start start no job after the
+session clock passes the limit.
+
 Decoding: batched greedy, left padding with the pinned BASE tokenizer, batch size starting
 at `batch_size` and halved on CUDA OOM. max_new_tokens 256 (harmful/XSTest), 8 (MMLU).
 """
@@ -439,14 +443,31 @@ def run_job(model, tok, job: Job, cfg: dict, out_dir: Path, attack: dict, attack
     return manifest
 
 
-def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
-    """Run jobs on this process's GPU: per (run, attack), load + attack once, then every split."""
+def out_of_time(deadline: float | None, now: float | None = None) -> bool:
+    """True once the session clock has passed `deadline` (epoch s; None = no limit): start no new job."""
+    return deadline is not None and (time.time() if now is None else now) >= deadline
+
+
+def run_worker(jobs: list[Job], cfg: dict, out_dir: Path, use_claims: bool = False,
+               deadline: float | None = None) -> None:
+    """Run jobs on this process's GPU: per (run, attack), load + attack once, then every split.
+
+    use_claims: claim each job on the Hub first (claims.py), so another session (Colab / Kaggle) never runs it
+    too; jobs done or locked elsewhere are skipped. deadline: no job starts after it (--max-hours)."""
     import torch
 
     from aftermarket.load import free_memory, retarget
 
     attacks = load_attacks()
     torch.manual_seed(cfg["seed"])
+    hub = sub = owner = None
+    if use_claims:
+        from aftermarket import claims
+
+        hub, sub = claims.hub_for(cfg)
+        owner = claims.session_id()
+        if hub is None:
+            print(f"WARNING claims off ({sub}): nothing is shared with other sessions", flush=True)
     groups: dict[tuple[str, str], list[Job]] = {}
     for j in jobs:
         groups.setdefault(group_key(j, attacks), []).append(j)
@@ -454,6 +475,15 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
         js = pending_jobs(js, out_dir)
         if not js:
             continue
+        if out_of_time(deadline):
+            print(f"--max-hours reached: not starting {[j.name for j in js]}", flush=True)
+            continue
+        claimed: set[str] = set()
+        if hub is not None:
+            claimed = set(claims.claim(hub, sub, [j.name for j in js], owner))
+            js = [j for j in js if j.name in claimed]
+            if not js:
+                continue
         run_id = js[0].run_id
         shared = sorted({j.run_id for j in js})
         model = tok = None
@@ -469,6 +499,11 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
             print(f"[{run_id}/{attack_id}] ready in {time.time() - t0:.0f}s {brief}", flush=True)
             for job in js:
                 if parquet_path(out_dir, job).exists():
+                    continue
+                if out_of_time(deadline):
+                    print(f"--max-hours reached: not starting {job.name}", flush=True)
+                    break
+                if hub is not None and job.name not in claims.claim(hub, sub, [job.name], owner):  # refresh
                     continue
                 job_info = info
                 if len(shared) > 1:  # e.g. BASE / RL / RL_noguard on one adapter: only the eval template differs
@@ -490,6 +525,8 @@ def run_worker(jobs: list[Job], cfg: dict, out_dir: Path) -> None:
         finally:
             if cleanup:  # fine-tune adapters: deleted after the group's generations, success or not
                 cleanup()
+            if hub is not None and claimed:  # done, failed or out of time: others may take what is left
+                claims.release(hub, sub, sorted(claimed), owner)
         del model, tok
         free_memory()
 
@@ -538,7 +575,8 @@ def _stream(proc: subprocess.Popen, prefix: str, log: Path, errors: dict[str, st
             print(f"{prefix} {line}", end="", flush=True)
 
 
-def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> list[Job]:
+def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True, use_claims: bool = False,
+             deadline: float | None = None) -> list[Job]:
     """Plan, then launch one worker process per GPU (CUDA_VISIBLE_DEVICES) and wait."""
     out_dir = REPO_ROOT / cfg["out_dir"]
     check_final(cfg["splits"], final)
@@ -556,6 +594,13 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
     print(f"{len(all_jobs)} jobs, {len(todo)} pending")
     if not todo:
         return []
+    if out_of_time(deadline):
+        print("--max-hours reached: starting nothing", flush=True)
+        return todo
+    if use_claims:
+        from aftermarket.claims import session_id
+
+        print(f"claiming jobs on the Hub as {session_id()} (locks older than 2 h are taken over)", flush=True)
     push_env = {}
     if cfg.get("push", {}).get("enabled"):
         try:  # preflight: generation never depends on the push
@@ -577,7 +622,7 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
         env = {**os.environ, **push_env, "CUDA_VISIBLE_DEVICES": str(gpu), "PYTHONUNBUFFERED": "1",
                "PYTHONPATH": str(REPO_ROOT / "src") + os.pathsep + os.environ.get("PYTHONPATH", "")}
         cmd = [sys.executable, "-m", "aftermarket.generate", "--config", config_path, "--worker",
-               json.dumps([asdict(j) for j in js]), "--runs", ",".join(cfg["runs"])] + (["--final"] if final else [])
+               json.dumps([asdict(j) for j in js]), "--runs", ",".join(cfg["runs"])] + (["--final"] if final else [])             + (["--claim"] if use_claims else []) + (["--deadline", repr(deadline)] if deadline is not None else [])
         p = subprocess.Popen(cmd, env=env, cwd=REPO_ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
         t = threading.Thread(target=_stream, args=(p, f"[gpu{gpu}]", out_dir / "logs" / f"gpu{gpu}.log", errors),
                              daemon=True)
@@ -589,6 +634,11 @@ def run_jobs(cfg: dict, config_path: str, final: bool, pull: bool = True) -> lis
         t.join()
     failed = pending_jobs(todo, out_dir)
     print(f"worker exit codes {codes}; still pending: {[j.name for j in failed]}")
+    if use_claims or deadline is not None:  # skipped on purpose (claimed elsewhere / out of time): not failures
+        print(f"not finished here (done or locked by another session, out of time, or failed): {len(failed)}")
+        for line in failure_summary([j for j in failed if j.name in errors], errors, codes):
+            print(line, flush=True)
+        return failed
     for line in failure_summary(failed, errors, codes):
         print(line, flush=True)
     return failed
@@ -603,7 +653,12 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--push-pending", action="store_true", help="only push local results with pushed=false")
     ap.add_argument("--no-pull", action="store_true", help="don't download finished results from the Hub first")
     ap.add_argument("--gpus", help="comma-separated GPU ids replacing the config's (e.g. 0 on a one-T4 Colab)")
+    ap.add_argument("--claim", action="store_true",
+                    help="claim each job on the Hub before starting it; skip jobs done or locked (< 2 h) elsewhere")
+    ap.add_argument("--max-hours", type=float, help="start no job once the session has run this long")
+    ap.add_argument("--session-start", type=float, help="epoch seconds the session started (default: now)")
     ap.add_argument("--worker", help=argparse.SUPPRESS)
+    ap.add_argument("--deadline", type=float, help=argparse.SUPPRESS)
     args = ap.parse_args(argv)
     cfg = select_runs(select_attacks(yaml.safe_load(Path(args.config).read_text(encoding="utf-8")), args.attacks), args.runs)
     if args.gpus:
@@ -617,9 +672,13 @@ def main(argv: list[str] | None = None) -> None:
         jobs = [Job(**d) for d in json.loads(args.worker)]
         check_final([j.split for j in jobs], args.final)
         check_defense_runs([j.run_id for j in jobs], [j.split for j in jobs])
-        run_worker(jobs, cfg, out_dir)
+        run_worker(jobs, cfg, out_dir, use_claims=args.claim, deadline=args.deadline)
     else:
-        if run_jobs(cfg, args.config, args.final, pull=not args.no_pull):
+        deadline = None
+        if args.max_hours is not None:
+            deadline = (args.session_start or time.time()) + args.max_hours * 3600
+        left = run_jobs(cfg, args.config, args.final, pull=not args.no_pull, use_claims=args.claim, deadline=deadline)
+        if left and not (args.claim or deadline is not None):
             raise SystemExit(1)
 
 
