@@ -48,6 +48,42 @@ write-up as written here.
   while the rest take the attack's bits. Other models get no shield, by design: the shield is what AM
   ships. The A4 rows of AM are reported with this marked.
 
+- **AM_all has no compression shield; AM, AM_rand0 and AM_rand1 do** (each keeps its own 6 trained layers at
+  8-bit under A4). Shielding "all layers" would just be an 8-bit model, so AM_all ships without one. Any A4
+  comparison of placement must therefore be AM vs AM_rand, never AM vs AM_all, which would mix up layer choice
+  with the shield. (In the current battery the controls face no A4 at all; see "Controls run a reduced battery".)
+  AM_all also matches AM's trainable parameters by rank (rank 3 on 24 layers, 2 on 12) with lora_alpha fixed at 4,
+  so its LoRA scale is 1.33 on rank-3 layers and 2.0 on rank-2 layers (AM: 2.0).
+
+## A3 (abliteration): v1 layer selection was broken, re-run with causal selection
+- **What was wrong.** A3 v1 took the diff-in-means direction at the layer with the largest Cohen's d separation of
+  harmful_dev vs benign_dev projections (within 20-80% depth). The weight edit was correct (o_proj, down_proj and
+  the tied embeddings orthogonalised, fp16 weights used at generation, same chat template for calibration and
+  generation, projection residual ~1e-4 = fp16 rounding). But on Tiny Aya the separation peaks at layers 3-4 and
+  falls with depth, so **every model got the window floor, layer 7**. That direction encodes harmful *content*, not
+  refusal: removing it changed nothing. On harmful_test, A0 -> A3 keyword refusal was 0.82 -> 0.78 (BASE),
+  1.00 -> 1.00 (GC), 0.78 -> 0.77 (IL), 0.42 -> 0.50 (RL), 0.82 -> 0.78 (RL_noguard), 0.52 -> 0.51 (SDT),
+  0.83 -> 0.79 (SP), 0.32 -> 0.38 (ST); judged ASR BASE 0.09 -> 0.09 (Llama Guard) / 0.09 -> 0.07 (WildGuard),
+  GC 0.01 -> 0.01 / 0.00 -> 0.00. The 20-80% window was not the cause (the metric, not the window, chose the floor).
+- **Fix (v2, Arditi et al. 2024, App. C).** For each layer in the window, ablate its direction everywhere (forward
+  hooks, verified equal to the weight edit on Cohere2) and measure keyword refusal of 32-token greedy replies on the
+  first 32 harmful_dev prompts; drop layers whose ablation moves the benign_dev next-token distribution by KL > 0.1;
+  lowest refusal wins (ties: higher separation). Simplifications vs the paper: the last post-template token only
+  (not every post-instruction position), keyword refusal instead of refusal-token log-odds, no induce-refusal
+  filter. Selection uses dev prompts only; the dev A3 cells share 32 prompts with selection (slightly optimistic on
+  dev; test cells are clean). v1 results were moved to `archive/A3_v1/` on the private runs dataset, never mixed in.
+- **If A3 v2 is still weak** (best layer's refusal near the no-ablation rate), that is a finding about Tiny Aya,
+  reported as such.
+- **What this means for the frozen AM.** AM's selection used v1 A3 retention on dev, but the choice did not depend
+  on it: AMc_k6 was ineligible on over-refusal (0.46 vs BASE 0.38 + 3 pts) whatever its A3 score, so AMc_k6s was
+  the only eligible candidate. AM's spread-refusal step, however, ablated the v1 direction (locate's layer-7
+  direction, same rule) during training, so spread-refusal targeted a direction that turned out not to mediate
+  refusal. AM stays frozen as is (no re-hardening after the fact); its test A3 cells use v2, like every other model,
+  and the write-up states that spread-refusal was trained against the v1 direction. The two AMc_* dev A3 cells are
+  kept as the record of what selection saw.
+- **Where it ran.** All A3 cells (team models on test and dev, AM and controls on test) were re-run on a free Colab
+  T4 (notebook 09), off the Kaggle quota.
+
 ## Test battery (quota)
 - **A4 is reported at 3-bit (A4q3) for every model.** Notebook 03 v2 (team models x A3/A4 on test) was stopped
   after 6.3 h because HQQ generation is about 6x slower than fp16 A0 (measured: ~7.1 s vs ~1.2 s per harmful

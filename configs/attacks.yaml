@@ -46,8 +46,18 @@ attacks:
     simulates: refusal removed on purpose, no training
     direction: diff_in_means           # harmful - harmless mean, last prompt token, residual stream (resid_pre)
     fit_split: calib_pairs             # 64 harmful + 64 harmless
-    select_on: [harmful_dev, benign_dev]   # layer with the largest separation (Cohen's d of projections)
+    select_on: [harmful_dev, benign_dev]   # dev prompts for layer selection (separation is logged as a diagnostic)
     layer_window: [0.2, 0.8]           # candidate layers as a fraction of depth (Arditi et al.; early layers are token-level)
+    select_by: bypass                  # Arditi et al. App. C: the candidate whose ablation removes the most refusals.
+                                       # v1 used `separation` (max Cohen's d): always the window floor on Tiny Aya,
+                                       # no effect on refusal (notes/limitations.md); archived, never mixed in.
+    select:
+      n_harmful: 32                    # first 32 of harmful_dev: refusal rate under ablation (keyword heuristic)
+      n_benign: 32                     # first 32 of benign_dev: KL of the first reply token, ablated vs not
+      max_new_tokens: 32               # refusals show in the first tokens
+      kl_max: 0.1                      # Arditi et al.'s filter: the ablation must leave harmless prompts alone
+      stride: 1                        # every layer in the window (22 on Tiny Aya, ~3 min on a T4)
+      batch_size: 16
     write_matrices: [self_attn.o_proj, mlp.down_proj, embed_tokens]
     per_model: true                    # each model's own direction from its own activations
 

@@ -9,7 +9,7 @@ Stages (each skips finished work, so a re-run resumes):
   [--with-battery: the frozen AM family on test (--final), cheap attacks first; AM gets A4 at 3-bit only,
    controls get A0, A2, A3 (notes/limitations.md). The test generations are judged by notebook 06 on Colab,
    off the Kaggle quota; --with-test-judge judges them here instead]
-  [--battery-only --part kaggle|colab: one part of the battery alone (notebook 07 / 08); refuses to start unless configs/am_frozen.yaml is
+  [--battery-only --part kaggle|colab|a3: one part of the battery alone (notebook 07 / 08 / 09); refuses to start unless configs/am_frozen.yaml is
    pinned on the Hub (frozen_problems); --summary-only prints the per-cell battery status (battery_summary)]
 Before running, it prints the estimated quota-hours / GPU-hours per stage (budget.py). After each stage it
 checks the elapsed session time; once it reaches --max-hours it stops cleanly (no stage is interrupted) and
@@ -37,13 +37,15 @@ from aftermarket.data import REPO_ROOT
 DEV_A0, DEV_ATT = "configs/gen_defense_dev_a0.yaml", "configs/gen_defense_dev_attacks.yaml"
 BATTERY, CONTROLS = "configs/gen_am_test.yaml", "configs/gen_am_controls_test.yaml"
 # The battery is split to fit the Kaggle quota (notes/limitations.md). Cheap attacks first in each part.
-#   kaggle (notebook 07, 2x T4): AM A0, A2, A3, A4q3, A5raw + controls A0, A3
+#   kaggle (notebook 07, 2x T4): AM A0, A2, A4q3, A5raw + controls A0
 #   colab  (notebook 08, 1x T4): AM A1, A5bon + controls A2 (team-model fill-in cells: the Hub check found none)
+#   a3     (notebook 09, 1x T4): AM + controls A3, with the A3 re-run of every other model (v2 layer selection)
 # AM A4q3 (one ~1 h HQQ group) and AM A2 share a stage so they run on the two T4s side by side
-KAGGLE_BATTERY = [(BATTERY, "A0,A3,A5raw"), (CONTROLS, "A0,A3"), (BATTERY, "A4q3,A2")]
+KAGGLE_BATTERY = [(BATTERY, "A0,A5raw"), (CONTROLS, "A0"), (BATTERY, "A4q3,A2")]
 COLAB_BATTERY = [(BATTERY, "A5bon"), (BATTERY, "A1"), (CONTROLS, "A2")]
-BATTERY_STAGES = KAGGLE_BATTERY + COLAB_BATTERY
-PARTS = {"all": BATTERY_STAGES, "kaggle": KAGGLE_BATTERY, "colab": COLAB_BATTERY}
+A3_BATTERY = [(BATTERY, "A3"), (CONTROLS, "A3")]
+BATTERY_STAGES = KAGGLE_BATTERY + COLAB_BATTERY + A3_BATTERY
+PARTS = {"all": BATTERY_STAGES, "kaggle": KAGGLE_BATTERY, "colab": COLAB_BATTERY, "a3": A3_BATTERY}
 
 
 @dataclass
@@ -379,7 +381,7 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--plan-only", action="store_true", help="print the estimate and exit")
     ap.add_argument("--summary-only", action="store_true", help="print the AM battery status and exit")
     ap.add_argument("--part", choices=sorted(PARTS), default="all",
-                    help="battery part: kaggle (notebook 07), colab (notebook 08) or all")
+                    help="battery part: kaggle (notebook 07), colab (notebook 08), a3 (notebook 09) or all")
     ap.add_argument("--gpus", help="comma-separated GPUs for the battery (default: the configs'; Colab: 0)")
     args = ap.parse_args(argv)
     started = args.session_start or time.time()
