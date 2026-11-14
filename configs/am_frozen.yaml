@@ -1,0 +1,182 @@
+# Written by aftermarket.defense.select --stage freeze. Do not edit by hand.
+frozen_at_utc: '2026-11-14T00:28:31Z'
+git_sha: 5ed6f75fd9706e796236a5a0ef58feabf6e71080
+recipe:
+  k: 6
+  spread: true
+  shield: true
+  source: AMc_k6s
+  method: SafeGrad (plain-loss variant, T4 memory)
+L_star:
+- 2
+- 3
+- 4
+- 5
+- 6
+- 7
+locate_methods:
+- refusal_direction
+- safetune_neurons
+selection:
+  chosen: AMc_k6s
+  attacks:
+  - A0
+  - A3
+  - A4q3
+  not_in_selection: A2 (measured on test only)
+store:
+  repo: bennytimz/aftermarket-am
+  revision: d11af3a38f4023a023fa09e90bbbde46bd4728a3
+  private: true
+rule: chosen on dev only (configs/defense.yaml selection); frozen before any test
+  run
+models:
+  AM:
+    name: Aftermarket-hardened (ours)
+    status: active
+    hf_path: bennytimz/aftermarket-am
+    subfolder: AM
+    revision: d11af3a38f4023a023fa09e90bbbde46bd4728a3
+    fix_type: AM defense (ours)
+    format: lora
+    base: BASE
+    files:
+    - README.md
+    - adapter_config.json
+    - adapter_model.safetensors
+    - defense_meta.json
+    quant_shield:
+      bits: 8
+      group_size: 64
+      layers:
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+    layers:
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    trainable_params: 5038080
+  AM_rand0:
+    name: AM control AM_rand0
+    status: active
+    hf_path: bennytimz/aftermarket-am
+    subfolder: AM_rand0
+    revision: d11af3a38f4023a023fa09e90bbbde46bd4728a3
+    fix_type: AM defense (ours)
+    format: lora
+    base: BASE
+    files:
+    - README.md
+    - adapter_config.json
+    - adapter_model.safetensors
+    - defense_meta.json
+    quant_shield:
+      bits: 8
+      group_size: 64
+      layers:
+      - 1
+      - 14
+      - 18
+      - 19
+      - 30
+      - 33
+    layers:
+    - 1
+    - 14
+    - 18
+    - 19
+    - 30
+    - 33
+    trainable_params: 5038080
+  AM_rand1:
+    name: AM control AM_rand1
+    status: active
+    hf_path: bennytimz/aftermarket-am
+    subfolder: AM_rand1
+    revision: d11af3a38f4023a023fa09e90bbbde46bd4728a3
+    fix_type: AM defense (ours)
+    format: lora
+    base: BASE
+    files:
+    - README.md
+    - adapter_config.json
+    - adapter_model.safetensors
+    - defense_meta.json
+    quant_shield:
+      bits: 8
+      group_size: 64
+      layers:
+      - 8
+      - 10
+      - 24
+      - 30
+      - 31
+      - 33
+    layers:
+    - 8
+    - 10
+    - 24
+    - 30
+    - 31
+    - 33
+    trainable_params: 5038080
+  AM_all:
+    name: AM control AM_all
+    status: active
+    hf_path: bennytimz/aftermarket-am
+    subfolder: AM_all
+    revision: d11af3a38f4023a023fa09e90bbbde46bd4728a3
+    fix_type: AM defense (ours)
+    format: lora
+    base: BASE
+    files:
+    - README.md
+    - adapter_config.json
+    - adapter_model.safetensors
+    - defense_meta.json
+    quant_shield: null
+    layers:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    - 22
+    - 23
+    - 24
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    trainable_params: 5038080
