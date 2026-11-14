@@ -94,8 +94,9 @@ def test_run_end_to_end(tmp_path):
         assert {f"{stem}.png", f"{stem}.svg"} <= names
     assert all((tmp_path / "fig" / n).stat().st_size > 1000 for n in names)
     readme = (tmp_path / "README.md").read_text(encoding="utf-8")
-    assert "AMc_k6" not in readme  # dev candidates never reach the leaderboard
-    assert "<!--v:n_models-->3<!--/v-->" in readme and "_Pending" not in readme.split("## 7. Results")[1]
+    blocks = "".join(m.group(3) for m in report.BLOCK_RE.finditer(readme))
+    assert blocks and "AMc_" not in blocks  # dev candidates never reach a generated table (prose may name them)
+    assert "<!--v:n_models-->3<!--/v-->" in readme and "_Pending" not in readme.split("## 8. Results")[1]
     assert "SECRET" not in readme and not any("SECRET" in p.read_text(encoding="utf-8")
                                               for p in (tmp_path / "tab").glob("*.*"))
     for name in ["cells", "cell_ci", "pairwise", "retention", "retention_pairwise", "agreement"]:
