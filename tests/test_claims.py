@@ -124,3 +124,20 @@ def test_a3_parts_job_counts_and_command():
     assert all(isinstance(a, str) for a in cmd)
     assert cmd[cmd.index("--gpus") + 1] == "0,1" and "--final" in cmd and "--claim" in cmd
     assert "--final" not in a3_rerun.generate_command("configs/gen_cheap_dev.yaml", False, None, None, 1.0)
+
+
+def test_auto_runs_only_parts_with_pending_jobs():
+    states = {j.name: "done" for j in a3_rerun.part_jobs("all")}
+    assert a3_rerun.pending_parts(states) == []
+    am = a3_rerun.part_jobs("am")
+    states[am[0].name] = "pending"
+    assert a3_rerun.pending_parts(states) == ["am"]
+    dev = a3_rerun.part_jobs("dev")
+    states[dev[0].name] = "elsewhere (colab-x, since t)"  # locked elsewhere is not pending
+    assert a3_rerun.pending_parts(states) == ["am"]
+    states[dev[1].name] = "pending"
+    assert a3_rerun.pending_parts(states) == ["dev", "am"]
+    assert a3_rerun.parts_of("auto") == a3_rerun.ORDER
+    assert a3_rerun.classify("x", {"x"}, {"x": {}}) == "done"
+    assert a3_rerun.classify("y", set(), {"y": {"owner": "k"}}).startswith("elsewhere")
+    assert a3_rerun.classify("z", set(), {}) == "pending"

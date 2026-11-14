@@ -173,9 +173,16 @@ def _env(**extra) -> dict:
     return {**os.environ, "PYTHONPATH": str(REPO_ROOT / "src"), "PYTHONUNBUFFERED": "1", **extra}
 
 
-def battery_command(path: str, attacks: str, gpus: str | None) -> list[str]:
-    """`python -m` args of one battery stage: generate on test (--final), with the --gpus override if given."""
-    return ["aftermarket.generate", "--config", path, "--final", "--attacks", attacks] + (["--gpus", gpus] if gpus else [])
+def battery_command(path: str, attacks: str, gpus: str | None, max_hours: float | None = None,
+                    started: float | None = None) -> list[str]:
+    """`python -m` args of one battery stage: generate on test (--final), with the --gpus override if given.
+    Jobs are claimed on the Hub (--claim), so Kaggle and Colab can run the same part at once without double work,
+    and with --max-hours no job starts after the session clock runs out (not only between stages)."""
+    cmd = ["aftermarket.generate", "--config", path, "--final", "--attacks", attacks, "--claim"]
+    cmd += ["--gpus", gpus] if gpus else []
+    if max_hours is not None:
+        cmd += ["--max-hours", repr(max_hours), "--session-start", repr(started or time.time())]
+    return cmd
 
 
 def _check_cmd(cmd: list, env: dict) -> None:
@@ -217,7 +224,8 @@ def sh_parallel(args_per_gpu: list[list[str]]) -> None:
 # ----------------------------------------------------------------------------- stages
 
 def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool = False,
-                 battery_only: bool = False, part: str = "all", gpus: str | None = None) -> list[Stage]:
+                 battery_only: bool = False, part: str = "all", gpus: str | None = None,
+                 max_hours: float | None = None, started: float | None = None) -> list[Stage]:
     """`part` picks the battery stages (PARTS); `gpus` (e.g. "0" on Colab) overrides the configs' GPUs for the
     battery and the estimate."""
     from aftermarket.defense import budget, store
@@ -320,7 +328,7 @@ def build_stages(config: str, dcfg: dict, with_battery: bool, test_judge: bool =
     if with_battery:
         for path, a in PARTS[part]:
             who = "AM" if path == BATTERY else "controls"
-            stages.append(Stage(f"test {who} {a}", (lambda path=path, a=a: sh(*battery_command(path, a, gpus))),
+            stages.append(Stage(f"test {who} {a}", (lambda path=path, a=a: sh(*battery_command(path, a, gpus, max_hours, started))),
                                 enabled=AM_FROZEN_YAML.exists, estimate=est_gen(path, a.split(","))))
     if with_battery and test_judge:
         stages.append(Stage("AM test judge", lambda: sh("aftermarket.judge", "--config", "configs/judge.yaml"),
@@ -420,15 +428,19 @@ def main(argv: list[str] | None = None) -> None:
         store.pull_all(dcfg, want=lambda top: top in ("locate", "selection.json", store.FROZEN_FILE))
         store.pull_all(dcfg, suffixes=(store.META,))
     stages = build_stages(args.config, dcfg, args.with_battery, args.with_test_judge, args.battery_only,
-                          args.part, args.gpus)
-    print("Estimated cost of the work left (Colab, one T4: no Kaggle quota):" if args.battery_only and args.part == "colab"
-          else "Estimated cost of the work left (Kaggle quota = session wall time):")
+                          args.part, args.gpus, args.max_hours, started)
+    one_gpu = args.gpus is not None and "," not in args.gpus
+    print(f"Estimated cost of the work left ({'one GPU' if one_gpu else 'Kaggle quota = session wall time'}):")
     print(budget.fmt_table([(s.name, s.estimate()) for s in stages]))
     if args.max_hours:
         print(f"--max-hours {args.max_hours}: stops after the stage that crosses it "
               f"(session so far {(time.time() - started) / 3600:.2f} h)")
     if args.plan_only:
         return
+    if args.with_battery or args.battery_only:
+        from aftermarket import claims
+
+        print(f"claiming battery jobs on the Hub as {claims.session_id()}")  # one owner id for every stage
     run_stages(stages, args.max_hours, started)
 
 

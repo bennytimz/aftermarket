@@ -241,3 +241,24 @@ def test_judge_load_failure_fails_only_that_kind(tmp_path, monkeypatch, capsys):
         errs.update(parse_fail_line(line))
     # one line per failure: the message is cut at its first line
     assert errs == {"BASE__A0__harmful_test": "loading guard: OSError: You are trying to access a gated repo."}
+
+
+def test_stale_judgement_rejudges_redone_cells(tmp_path):
+    import json
+
+    from aftermarket.judge import stale_judgement
+
+    gen, out = tmp_path / "gen", tmp_path / "judged"
+    gen.mkdir(); out.mkdir()
+    for stem in ("old", "new", "legacy", "fresh", "nomani"):
+        (gen / f"{stem}.parquet").write_bytes(b"")
+        (out / f"{stem}.parquet").write_bytes(b"")
+    t1, t2 = "2026-11-01T00:00:00Z", "2026-11-10T00:00:00Z"
+    w = lambda d, stem, m: (d / f"{stem}.json").write_text(json.dumps(m))
+    w(gen, "old", {"time_utc": t2}); w(out, "old", {"time_utc": t2, "gen_time_utc": t1})       # cell redone
+    w(gen, "new", {"time_utc": t1}); w(out, "new", {"time_utc": t2, "gen_time_utc": t1})       # up to date
+    w(gen, "legacy", {"time_utc": t2}); w(out, "legacy", {"time_utc": t1})                    # judged before gen
+    w(gen, "fresh", {"time_utc": t1}); w(out, "fresh", {"time_utc": t2})                      # judged after gen
+    w(out, "nomani", {"time_utc": t1})                                                         # no gen manifest
+    assert [s for s in ("old", "new", "legacy", "fresh", "nomani") if stale_judgement(gen, out, s)] == ["old", "legacy"]
+    assert [p.stem for p in pending_files(gen, out)] == ["legacy", "old"]

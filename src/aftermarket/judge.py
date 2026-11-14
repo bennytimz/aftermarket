@@ -248,7 +248,33 @@ def judge_frame(df, guard: LlamaGuard | None = None, wildguard: WildGuard | None
 
 
 def pending_files(gen_dir: Path, out_dir: Path) -> list[Path]:
-    return [p for p in sorted(Path(gen_dir).glob("*.parquet")) if not (Path(out_dir) / p.name).exists()]
+    """Generations with no judged file, or whose judged file predates the generation (cell re-run since)."""
+    return [p for p in sorted(Path(gen_dir).glob("*.parquet"))
+            if not (Path(out_dir) / p.name).exists() or stale_judgement(gen_dir, out_dir, p.stem)]
+
+
+def _read_json(p: Path) -> dict | None:
+    try:
+        return json.loads(p.read_text(encoding="utf-8")) if p.exists() else None
+    except (OSError, ValueError):
+        return None
+
+
+def gen_time(gen_dir: Path, stem: str) -> str | None:
+    """time_utc of the generation's manifest (ISO 8601 UTC, so strings compare in time order)."""
+    return (_read_json(Path(gen_dir) / f"{stem}.json") or {}).get("time_utc")
+
+
+def stale_judgement(gen_dir: Path, out_dir: Path, stem: str) -> bool:
+    """A judged file is stale when its generation was redone after it was judged: the judged manifest records the
+    generation's time_utc (gen_time_utc); older judged manifests without it are stale if judged before the
+    generation was written. Unknown (no generation manifest / no judged manifest): not stale."""
+    g, j = gen_time(gen_dir, stem), _read_json(Path(out_dir) / f"{stem}.json")
+    if not g or not j:
+        return False
+    if j.get("gen_time_utc"):
+        return j["gen_time_utc"] != g
+    return bool(j.get("time_utc")) and j["time_utc"] < g
 
 
 def run_matches(stem: str, patterns: list[str]) -> bool:
@@ -295,9 +321,11 @@ def _pull(cfg: dict, gen_dir: Path, out_dir: Path) -> None:
     from aftermarket.generate import pull_from_hub
 
     pull_from_hub(cfg, out_dir, cfg["push"]["path_in_repo"])  # finished judgements (+ manifests) -> skipped
-    # generations not judged yet (a fresh session has neither locally)
+    # generation manifests (small): tell which judged files predate a re-run of their cell
+    pull_from_hub(cfg, gen_dir, cfg["push"]["gen_path_in_repo"], suffixes=(".json",))
+    # generations not judged yet, or judged before they were redone (a fresh session has neither locally)
     pull_from_hub(cfg, gen_dir, cfg["push"]["gen_path_in_repo"], suffixes=(".parquet",),
-                  want=lambda stem: not (out_dir / f"{stem}.parquet").exists())
+                  want=lambda stem: not (out_dir / f"{stem}.parquet").exists() or stale_judgement(gen_dir, out_dir, stem))
 
 
 def plan(cfg: dict, gen_dir: Path, out_dir: Path) -> tuple[list[Path], list[Path]]:
@@ -478,7 +506,7 @@ def wildguard_columns(df, wildguard):
     return df
 
 
-def judge_manifest(df, cfg: dict, name: str, prev: dict | None = None) -> dict:
+def judge_manifest(df, cfg: dict, name: str, prev: dict | None = None, gen_time_utc: str | None = None) -> dict:
     """Manifest for one judged file: which judges labelled it (pinned revisions), git sha, time, config."""
     from aftermarket.generate import _git_sha
 
@@ -491,16 +519,18 @@ def judge_manifest(df, cfg: dict, name: str, prev: dict | None = None) -> dict:
         judges["mmlu"] = "letter parsing (aftermarket.judge.parse_mmlu)"
     judges["keyword"] = "aftermarket.judge.refusal_label"
     return {"file": name, "n_rows": len(df), "judges": judges, "git_sha": _git_sha(),
+            "gen_time_utc": gen_time_utc or (prev or {}).get("gen_time_utc"),
             "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "config": cfg}
 
 
-def write_judged(df, dest: Path, cfg: dict) -> dict:
-    """Atomic parquet write + manifest (pushed flag false until the push succeeds), then a non-fatal push."""
+def write_judged(df, dest: Path, cfg: dict, gen_time_utc: str | None = None, fresh: bool = False) -> dict:
+    """Atomic parquet write + manifest (pushed flag false until the push succeeds), then a non-fatal push.
+    fresh: a first (or redone) judgement, so the previous manifest's judges are not carried over."""
     from aftermarket.generate import PUSH_DISABLED_ENV, try_push
 
     mpath = dest.with_suffix(".json")
-    prev = json.loads(mpath.read_text(encoding="utf-8")) if mpath.exists() else None
-    m = judge_manifest(df, cfg, dest.name, prev)
+    prev = None if fresh else _read_json(mpath)
+    m = judge_manifest(df, cfg, dest.name, prev, gen_time_utc)
     # the pushed copy says pushed=true; if the push fails the local manifest is rewritten with pushed=false
     m["pushed"] = bool(cfg.get("push", {}).get("enabled")) and not os.environ.get(PUSH_DISABLED_ENV)
     tmp = dest.with_name(dest.name + ".tmp")
@@ -529,7 +559,7 @@ def _judge_file(p: Path, out_dir: Path, cfg: dict, guard, wildguard) -> None:
 
     t0 = time.time()
     df = judge_frame(pd.read_parquet(p), guard, wildguard)
-    write_judged(df, out_dir / p.name, cfg)
+    write_judged(df, out_dir / p.name, cfg, gen_time_utc=gen_time(p.parent, p.stem), fresh=True)
     msg = f"[{p.stem}] {len(df)} rows in {time.time() - t0:.0f}s"
     if "unsafe" in df:
         msg += f" | unsafe {df['unsafe'].mean():.1%} | unparsed {df['guard_label'].isna().mean():.1%}"

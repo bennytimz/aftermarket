@@ -9,6 +9,7 @@ Parts (A3 only, same seed / batch size / settings as every other cell):
   am    frozen AM + AM_rand0, AM_rand1, AM_all on the same test splits (--final; refuses
         unless AM is frozen and pinned on the Hub)                                             12 jobs
   all   dev, team, am in that order
+  auto  like all, but checks the Hub first and starts only parts with pending jobs (am still needs AM frozen)
 
 Every job is claimed on the Hub before it starts (aftermarket.claims): finished jobs and jobs locked by another
 session less than 2 h ago are skipped, so two notebooks running at once never do the same job. No choice is made
@@ -33,7 +34,7 @@ ORDER = ["dev", "team", "am"]
 
 
 def parts_of(part: str) -> list[str]:
-    return ORDER if part == "all" else [part]
+    return ORDER if part in ("all", "auto") else [part]
 
 
 def part_jobs(part: str, attacks: dict | None = None) -> list:
@@ -74,8 +75,8 @@ def current_results(gen_dir, names: set[str]) -> set[str]:
     return out
 
 
-def summary(part: str, started: float, max_hours: float | None) -> dict:
-    """Per (run, split): done (parquet or pushed manifest here / on the Hub), locked elsewhere, or pending."""
+def job_states(part: str) -> tuple[list, dict[str, str]]:
+    """(jobs, {name: state}) with state "done" (v2 manifest here / on the Hub), "elsewhere: ..." or "pending"."""
     from aftermarket import claims
     from aftermarket.generate import load_attacks, pull_from_hub
 
@@ -92,19 +93,34 @@ def summary(part: str, started: float, max_hours: float | None) -> dict:
             locked = claims.held_by_others(hub, sub, claims.session_id())
         except Exception as e:
             print(f"(locks not listed: {type(e).__name__}: {e})")
+    return jobs, {j.name: classify(j.name, done, locked) for j in jobs}
+
+
+def classify(name: str, done: set[str], locked: dict) -> str:
+    if name in done:
+        return "done"
+    if name in locked:
+        return f"elsewhere ({locked[name].get('owner')}, since {locked[name].get('time_utc')})"
+    return "pending"
+
+
+def pending_parts(states: dict[str, str]) -> list[str]:
+    """Parts (in ORDER) that still have a pending job; "auto" starts only these."""
+    return [p for p in ORDER if any(states.get(j.name) == "pending" for j in part_jobs(p))]
+
+
+def summary(part: str, started: float, max_hours: float | None) -> dict:
+    """Per (run, split): done (parquet or pushed manifest here / on the Hub), locked elsewhere, or pending."""
+    jobs, states = job_states(part)
     print(f"\n== A3 v2 status, part {part} ==")
-    pending = []
     for j in jobs:
-        if j.name in done:
-            state = "done"
-        elif j.name in locked:
-            state = f"running elsewhere ({locked[j.name].get('owner')}, since {locked[j.name].get('time_utc')})"
-        else:
-            state = "PENDING"
-            pending.append(j.name)
-        print(f"  {j.name:36s} {state}")
-    n_done = sum(j.name in done for j in jobs)
-    print(f"done {n_done}/{len(jobs)}, running elsewhere {len(locked.keys() & names - done)}, pending {len(pending)}"
+        st = states[j.name]
+        label = {"done": "done", "pending": "PENDING"}.get(st, f"running {st}")
+        print(f"  {j.name:36s} {label}")
+    pending = [j.name for j in jobs if states[j.name] == "pending"]
+    n_done = sum(states[j.name] == "done" for j in jobs)
+    n_else = len(jobs) - n_done - len(pending)
+    print(f"done {n_done}/{len(jobs)}, running elsewhere {n_else}, pending {len(pending)}"
           f" | session {(time.time() - started) / 3600:.2f} h" + (f" of --max-hours {max_hours}" if max_hours else ""))
     if pending:
         print("re-run this notebook (Colab: Run all; Kaggle: Save & Run All) to continue; claims prevent double work")
@@ -113,7 +129,7 @@ def summary(part: str, started: float, max_hours: float | None) -> dict:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--part", choices=ORDER + ["all"], default="all")
+    ap.add_argument("--part", choices=ORDER + ["all", "auto"], default="auto")
     ap.add_argument("--gpus", help="comma-separated GPU ids (Colab: 0, Kaggle: 0,1)")
     ap.add_argument("--max-hours", type=float, help="start no job once the session has run this long")
     ap.add_argument("--session-start", type=float, help="epoch seconds the session started (default: now)")
@@ -129,7 +145,11 @@ def main(argv: list[str] | None = None) -> None:
 
     claims.session_id()  # one owner id for every generate call of this run (inherited through the environment)
     print(f"session {claims.session_id()}")
-    for p in parts_of(args.part):
+    parts = parts_of(args.part)
+    if args.part == "auto":
+        parts = pending_parts(job_states("all")[1])
+        print(f"auto: parts with pending jobs: {parts or 'none'}")
+    for p in parts:
         if args.max_hours is not None and (time.time() - started) / 3600 >= args.max_hours:
             print(f"--max-hours {args.max_hours} reached: part {p} not started")
             break

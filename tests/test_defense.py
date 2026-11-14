@@ -536,11 +536,17 @@ def test_battery_worker_command_is_all_str(monkeypatch, part, gpus):
     for cmd, env in calls:
         assert all(isinstance(a, str) for a in cmd), cmd
         assert all(isinstance(k, str) and isinstance(v, str) for k, v in env.items())
-        assert cmd[1:4] == ["-m", "aftermarket.generate", "--config"] and "--final" in cmd
+        assert cmd[1:4] == ["-m", "aftermarket.generate", "--config"] and "--final" in cmd and "--claim" in cmd
         if gpus:
             assert cmd[cmd.index("--gpus") + 1] == gpus
         else:
             assert "--gpus" not in cmd  # Kaggle: the configs' two GPUs
+
+
+def test_battery_command_passes_session_clock():
+    cmd = P.battery_command(P.BATTERY, "A1", "0,1", 6.0, 123.0)
+    assert cmd[cmd.index("--max-hours") + 1] == "6.0" and cmd[cmd.index("--session-start") + 1] == "123.0"
+    assert "--claim" in cmd and "--max-hours" not in P.battery_command(P.BATTERY, "A1", None)
 
 
 def test_check_cmd_rejects_lists():
