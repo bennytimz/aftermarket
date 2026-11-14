@@ -25,7 +25,7 @@ def xrow(run, attack, item, refused):
 def population():
     rows = []
     for run in ["BASE", "SDT", "GC"]:
-        for attack in ["A0", "A3"]:
+        for attack in ["A0", "A3", "A5raw", "A5bon"]:
             for i in range(40):
                 lg = "unsafe" if i % 2 else "safe"
                 wg = (i % 2 == 1) if i % 5 else (i % 2 == 0)  # every 5th item: the judges disagree
@@ -35,10 +35,12 @@ def population():
 
 
 def test_stratum_of():
-    assert L.stratum_of(hrow("B", "A0", "h", "unsafe", True)) == "harmful:both_unsafe"
-    assert L.stratum_of(hrow("B", "A0", "h", "safe", False)) == "harmful:both_safe"
-    assert L.stratum_of(hrow("B", "A0", "h", "safe", True)) == "harmful:disagree"
-    assert L.stratum_of(hrow("B", "A0", "h", None, True)) == "harmful:disagree"   # one judge unparsed
+    assert L.stratum_of(hrow("B", "A0", "h", "unsafe", True)) == "harmful:other:both_unsafe"
+    assert L.stratum_of(hrow("B", "A0", "h", "safe", False)) == "harmful:other:both_safe"
+    assert L.stratum_of(hrow("B", "A0", "h", "safe", True)) == "harmful:other:disagree"
+    assert L.stratum_of(hrow("B", "A0", "h", None, True)) == "harmful:other:disagree"   # one judge unparsed
+    assert L.stratum_of(hrow("B", "A5raw", "h", "unsafe", False)) == "harmful:a5:disagree"
+    assert L.stratum_of(hrow("B", "A5bon", "h", "safe", False)) == "harmful:a5:both_safe"
     assert L.stratum_of(hrow("B", "A0", "h", None, None)) is None
     assert L.stratum_of(xrow("B", "A0", "x", True)) == "xstest:refused"
     assert L.stratum_of(xrow("B", "A0", "x", None)) is None
@@ -47,10 +49,11 @@ def test_stratum_of():
 def test_allocate_caps_and_redistributes():
     full = {s: 1000 for s in L.QUOTAS}
     got = L.allocate(full)
-    assert sum(got.values()) == 100 and got["harmful:disagree"] == 30
-    short = {**full, "harmful:disagree": 5}
+    assert sum(got.values()) == 100 and got["harmful:a5:disagree"] == 22
+    assert sum(v for k, v in got.items() if k.startswith("harmful:a5:")) >= L.MIN_A5
+    short = {**full, "harmful:a5:disagree": 5}
     got = L.allocate(short)
-    assert got["harmful:disagree"] == 5 and sum(got.values()) == 100
+    assert got["harmful:a5:disagree"] == 5 and sum(got.values()) == 100
     assert sum(L.allocate({"xstest:refused": 7}).values()) == 7
 
 
@@ -59,15 +62,27 @@ def test_draw_sample_deterministic_stratified_and_weighted():
     a, b = L.draw_sample(rows), L.draw_sample(rows)
     assert a == b and len(a) == 100 and len({s["id"] for s in a}) == 100
     strata = pd.Series([s["stratum"] for s in a]).value_counts()
-    assert strata["harmful:disagree"] == 30  # oversampled: 48 of 480 harmful rows disagree (10%), 30% of the sample
+    assert strata["harmful:a5:disagree"] == 22 and strata["harmful:other:disagree"] == 15  # 10% of rows disagree
+    assert sum(s["id"].split("__")[1] in L.A5_ATTACKS and s["split"] == "harmful_test" for s in a) >= L.MIN_A5
+    assert any(s["id"].startswith("GC__A5raw__") for s in a)
     for s in a:
         assert s["weight"] == pytest.approx(s["stratum_population"] / s["stratum_n"])
         assert set(s) == {"id", "split", "stratum", "stratum_population", "stratum_n", "weight"}  # no text
-    cells = {tuple(s["id"].split("__")[:2]) for s in a if s["stratum"] == "harmful:both_safe"}
-    assert len(cells) == 6  # spread over every (model, attack) cell
-    few = [r for r in rows if L.stratum_of(r) != "harmful:disagree" or r["item_id"] in ("h0", "h5")]
+    cells = {tuple(s["id"].split("__")[:2]) for s in a if s["stratum"] == "harmful:a5:both_safe"}
+    assert len(cells) == 6  # spread over every (model, A5 attack) cell
+    few = [r for r in rows if L.stratum_of(r) != "harmful:a5:disagree" or r["item_id"] in ("h0", "h5")]
     capped = pd.Series([s["stratum"] for s in L.draw_sample(few)]).value_counts()
-    assert capped["harmful:disagree"] == 12 and capped.sum() == 100  # short stratum: all of it, seats move on
+    assert capped["harmful:a5:disagree"] == 12 and capped.sum() == 100  # short stratum: all of it, seats move on
+
+
+def test_must_cells_come_first():
+    import random
+
+    rows = [hrow(r, a, f"h{i}", "safe", True) for r in ["BASE", "SDT", "IL", "GC"] for a in ["A5bon", "A5raw"]
+            for i in range(5)]
+    for seed in range(5):
+        got = L.spread_pick(rows, 1, random.Random(seed))
+        assert (got[0]["run_id"], got[0]["attack_id"]) == ("GC", "A5raw")
 
 
 def test_labels_append_last_wins_and_validate(tmp_path):

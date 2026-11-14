@@ -114,3 +114,15 @@ def test_run_with_nothing_judged_yet(tmp_path):
     assert res["figures"] == []
     text = doc.read_text(encoding="utf-8")
     assert "<!--v:n_models-->TBD<!--/v-->" in text and "_Pending" in text
+
+
+def test_a3_finding():
+    import pandas as pd
+
+    rows = lambda run, a0, a3: [{"stage": "test", "run": run, "attack": "A0", "metric": "asr_lg", "value": a0},
+                                {"stage": "test", "run": run, "attack": "A3", "metric": "asr_lg", "value": a3}]
+    ci = pd.DataFrame(rows("BASE", 0.08, 0.70) + rows("GC", 0.02, 0.30) + rows("AM", 0.0, 0.1))
+    assert report.a3_finding(ci.iloc[:0]) == report.TBD
+    s = report.a3_finding(ci, runs=("BASE", "GC"))
+    assert s == "A3 raises Llama Guard ASR from 5% to 50% on average; 1 of 2 runs exceed 50%"  # AM not counted
+    assert report.a3_finding(ci).endswith("(6 runs not judged yet)")

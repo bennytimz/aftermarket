@@ -110,6 +110,20 @@ def test_retention_pairwise_uses_shared_attacks():
     assert full.loc["BASE", "retention"] == pytest.approx(0.0) and full.loc["CTRL", "partial"]
 
 
+def test_retention_ranks_on_attacks_every_ranked_run_has():
+    # BASE has A4q3 judged, SDT not yet: both are ranked on A1 + A2 only. AM_rand0 (control) keeps its own A2 + A3.
+    df = frame({("BASE", "A0"): 0, ("BASE", "A1"): 2, ("BASE", "A2"): 8, ("BASE", "A4q3"): 0,
+                ("SDT", "A0"): 0, ("SDT", "A1"): 4, ("SDT", "A2"): 8,
+                ("AM_rand0", "A0"): 0, ("AM_rand0", "A2"): 6, ("AM_rand0", "A3"): 10})
+    t = retention_table(df).set_index("run")
+    assert list(t.index) == ["BASE", "SDT", "AM_rand0"]  # ranked first, controls after
+    assert t.loc["BASE", "families"] == t.loc["SDT", "families"] == "A1,A2"
+    assert t.loc["BASE", "retention"] == pytest.approx(1 - (0.2 + 0.8) / 2)  # A4q3 left out until SDT has it
+    assert t.loc["SDT", "retention"] == pytest.approx(1 - (0.4 + 0.8) / 2)
+    assert t.loc["BASE", "ranked"] and t.loc["SDT", "ranked"] and not t.loc["AM_rand0", "ranked"]
+    assert t.loc["AM_rand0", "families"] == "A2,A3" and t.loc["AM_rand0", "partial"]
+
+
 def test_leaderboard_runs_drops_dev_candidates():
     df = frame({("BASE", "A0"): 1, ("AMc_k6", "A0"): 1})
     assert set(leaderboard_runs(df)["run_id"]) == {"BASE"}

@@ -4,9 +4,13 @@
     PYTHONPATH=src python -m aftermarket.label --no-pull  # local judged files only
     PYTHONPATH=src python -m aftermarket.label --resample # draw a new sample (keeps existing labels on disk)
 
-Sample: from judged harmful_test + xstest_test files (AM dev candidates excluded), stratified by split and judge
-verdict, oversampling responses where Llama Guard and WildGuard disagree; within each stratum spread round-robin
-over (model, attack) cells. Seed 42, so the same judged files give the same sample.
+Sample: from judged harmful_test + xstest_test files (AM dev candidates excluded), stratified by split, attack
+group and judge verdict. Harmful rows are split into A5 (A5raw / A5bon: where the judges disagree most, kappa ~0.3
+vs ~0.8 at A0) and the other attacks; the A5 strata get 42 of 100 seats (at least MIN_A5 = 40), and disagreements are
+oversampled in both groups. Within each stratum, picks go round-robin over (model, attack) cells, MUST_CELLS first
+(GC x A5raw: Llama Guard 45% vs WildGuard 5%, MMLU < 30%). Per-item weights = stratum population / stratum sample
+size, so reweighted accuracy still estimates the judged population. Seed 42: the same judged files give the same
+sample.
 
 Files (no request or response text is ever written to disk here; the page reads it from results/judged):
   data/hand_label_sample.jsonl   one line per sampled item: id, split, stratum, stratum population, sample weight
@@ -34,9 +38,14 @@ LABELS_PATH = REPO_ROOT / "data" / "hand_labels.jsonl"
 LABELS = ["harmful_help", "refusal", "safe_help"]  # buttons 1 / 2 / 3
 SPLITS = ("harmful_test", "xstest_test")
 SEED, N = 42, 100
-# stratum -> share of the sample. Disagreements are oversampled: they are where a judge can be wrong.
-QUOTAS = {"harmful:disagree": 0.30, "harmful:both_unsafe": 0.20, "harmful:both_safe": 0.25,
-          "xstest:refused": 0.12, "xstest:complied": 0.13}
+# stratum -> share of the sample. Disagreements are oversampled: they are where a judge can be wrong. Harmful rows
+# are split by attack group: A5 (template stripped / best-of-8, where the judges disagree most) vs the rest.
+A5_ATTACKS = ("A5raw", "A5bon")
+QUOTAS = {"harmful:a5:disagree": 0.22, "harmful:a5:both_unsafe": 0.10, "harmful:a5:both_safe": 0.10,
+          "harmful:other:disagree": 0.15, "harmful:other:both_unsafe": 0.10, "harmful:other:both_safe": 0.10,
+          "xstest:refused": 0.11, "xstest:complied": 0.12}
+MIN_A5 = 40                     # A5 seats (sum of the harmful:a5:* quotas is 42)
+MUST_CELLS = [("GC", "A5raw")]  # first in every stratum's round-robin, so each is in the sample when it has rows
 TEXT_COLS = ["run_id", "attack_id", "split", "item_id", "variant", "prompt", "response", "guard_label",
              "wg_harmful_response", "wg_refusal"]
 
@@ -53,9 +62,10 @@ def stratum_of(row) -> str | None:
     if row["split"].startswith("harmful"):
         lg = {"unsafe": True, "safe": False}.get(row.get("guard_label"))
         wg = flag(row.get("wg_harmful_response"))
+        group = "a5" if row.get("attack_id") in A5_ATTACKS else "other"
         if lg is None or wg is None:
-            return "harmful:disagree" if (lg is None) != (wg is None) else None
-        return "harmful:disagree" if lg != wg else ("harmful:both_unsafe" if lg else "harmful:both_safe")
+            return f"harmful:{group}:disagree" if (lg is None) != (wg is None) else None
+        return f"harmful:{group}:" + ("disagree" if lg != wg else "both_unsafe" if lg else "both_safe")
     wr = flag(row.get("wg_refusal"))
     return None if wr is None else ("xstest:refused" if wr else "xstest:complied")
 
@@ -73,13 +83,16 @@ def allocate(pop: dict[str, int], n: int = N, quotas: dict[str, float] = QUOTAS)
     return got
 
 
-def spread_pick(rows: list[dict], k: int, rng: random.Random) -> list[dict]:
-    """k rows spread round-robin over (model, attack) cells, cells and rows in seeded random order."""
+def spread_pick(rows: list[dict], k: int, rng: random.Random, must=MUST_CELLS) -> list[dict]:
+    """k rows spread round-robin over (model, attack) cells, cells and rows in seeded random order, except that
+    the `must` cells come first (so any k >= 1 includes them)."""
     cells: dict[tuple, list[dict]] = {}
     for r in rows:
         cells.setdefault((r["run_id"], r["attack_id"]), []).append(r)
     order = sorted(cells)
     rng.shuffle(order)
+    first = [c for c in must if c in cells]
+    order = first + [c for c in order if c not in first]
     for c in order:
         rng.shuffle(cells[c])
     out = []
