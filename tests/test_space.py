@@ -87,3 +87,14 @@ def test_app_loads_missing_data_and_draws(tmp_path):
     assert all(v.empty for v in d.values())
     assert a.heatmap(ci_rows(), "asr_lg", True) is not None
     assert a.retention_figure(d["retention"]) is not None
+
+
+def test_report_card_tab_reads_cards(tmp_path):
+    a = app()
+    (tmp_path / "GC.png").write_bytes(b"png")
+    (tmp_path / "GC.md").write_text("# card\n\n![report card](GC.png)\n\nbody\n", encoding="utf-8")
+    (tmp_path / "BASE.md").write_text("no png", encoding="utf-8")
+    assert a.card_runs(tmp_path) == ["GC"]
+    img, md = a.card("GC", tmp_path)
+    assert img.endswith("GC.png") and "![report card]" not in md and "body" in md
+    assert a.card("SP", tmp_path) == (None, "No report card for this model yet.")

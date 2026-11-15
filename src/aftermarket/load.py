@@ -21,6 +21,7 @@ validation can be unit-tested on a laptop without them.
 from __future__ import annotations
 
 import io
+import os
 from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
@@ -65,6 +66,23 @@ def load_registry(path: str | Path = MODELS_YAML) -> dict:
         reg = yaml.safe_load(f)
     if Path(path) == MODELS_YAML:
         merge_defense_models(reg)
+        merge_audit_models(reg)
+    return reg
+
+
+AUDIT_MODELS_ENV = "AFTERMARKET_AUDIT_MODELS"  # yaml written by `aftermarket audit`: the model under audit
+
+
+def merge_audit_models(reg: dict, path: str | None = None) -> dict:
+    """Add the model under audit (`aftermarket audit` writes it and sets AFTERMARKET_AUDIT_MODELS, so every worker
+    process sees it). Its id may never shadow a registry model."""
+    path = path or os.environ.get(AUDIT_MODELS_ENV)
+    if not path:
+        return reg
+    for mid, spec in yaml.safe_load(Path(path).read_text(encoding="utf-8")).get("models", {}).items():
+        if mid in reg["models"] or mid in reg.get("runs", {}):
+            raise ValueError(f"audit model id {mid!r} clashes with a registry model: pick another --name")
+        reg["models"][mid] = spec
     return reg
 
 
@@ -131,6 +149,8 @@ def _chat_template(spec: dict, template: str) -> str | None:
     """Model's own template text (template='native'), or None to use BASE's."""
     if template == "base" or not spec.get("chat_template_file"):
         return None
+    if Path(spec["hf_path"]).is_dir():  # a local model folder (aftermarket audit --model ./path)
+        return (Path(spec["hf_path"]) / spec["chat_template_file"]).read_text(encoding="utf-8")
     from huggingface_hub import hf_hub_download
 
     p = hf_hub_download(spec["hf_path"], spec["chat_template_file"], revision=spec["revision"])

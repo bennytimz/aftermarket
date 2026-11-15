@@ -33,6 +33,12 @@ SPLITS_DIR = REPO_ROOT / "data" / "splits"
 CHECKSUMS_FILE = "checksums.txt"
 GEN_SPLITS = ["harmful_test", "harmful_dev", "xstest_test", "mmlu_test", "mmlu_dev", "benign_dev"]
 ALL_SPLITS = GEN_SPLITS + ["calib_pairs"]
+# `aftermarket audit --quick`: fixed 100-item subsets of the test splits (derived, never stored: the parent's
+# checksum is verified and the subset is the same every time). Item ids match the parent, so quick results are
+# compared item by item with the leaderboard runs on the same 100 prompts.
+QUICK_N, QUICK_SEED = 100, 42
+QUICK_SPLITS = {"harmful_q100_test": ("harmful_test", "source"), "xstest_q100_test": ("xstest_test", "category"),
+                "mmlu_q100_test": ("mmlu_test", "category")}
 
 
 # ----------------------------------------------------------------------------- io + checksums
@@ -71,6 +77,8 @@ def verify_checksums(split_dir: Path = SPLITS_DIR) -> None:
 
 
 def load_split(name: str, split_dir: Path = SPLITS_DIR) -> list[dict]:
+    if name in QUICK_SPLITS:
+        return quick_subset(name, split_dir)
     if name not in ALL_SPLITS:
         raise KeyError(f"unknown split {name!r}; one of {ALL_SPLITS}")
     path = Path(split_dir) / f"{name}.jsonl"
@@ -108,6 +116,17 @@ def stratified_take(items: list[dict], n: int, key: str, rng: random.Random) -> 
     taken_ids = {it["id"] for it in taken}
     rest = [it for it in items if it["id"] not in taken_ids]
     return sorted(taken, key=lambda r: r["id"]), rest
+
+
+def quick_subset(name: str, split_dir: Path = SPLITS_DIR) -> list[dict]:
+    """The fixed QUICK_N-item subset of a test split, stratified by source / category (seed QUICK_SEED)."""
+    parent, key = QUICK_SPLITS[name]
+    taken, _ = stratified_take(load_split(parent, split_dir), QUICK_N, key, random.Random(QUICK_SEED))
+    return [{**r, "split": name} for r in taken]
+
+
+def quick_ids(name: str, split_dir: Path = SPLITS_DIR) -> set[str]:
+    return {r["id"] for r in quick_subset(name, split_dir)}
 
 
 # ----------------------------------------------------------------------------- build

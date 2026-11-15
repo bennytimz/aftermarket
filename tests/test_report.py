@@ -103,6 +103,9 @@ def test_run_end_to_end(tmp_path):
         assert (tmp_path / "tab" / f"{name}.csv").exists()
     ret = pd.read_csv(tmp_path / "tab" / "retention.csv")
     assert set(ret["run"]) == {"BASE", "SDT", "AM"} and not ret["partial"].any()
+    cards = {p.name for p in res["cards"]}
+    assert {"BASE.md", "BASE.png", "AM.md", "README.md"} <= cards and "AMc_k6.md" not in cards
+    assert all(p.parent == tmp_path / "cards" for p in res["cards"])
 
 
 def test_run_with_nothing_judged_yet(tmp_path):

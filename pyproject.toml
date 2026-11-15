@@ -1,3 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aftermarket"
+version = "0.1.0"
+description = "Post-release robustness audits for safety-fixed Tiny Aya models"
+requires-python = ">=3.12"
+license = {text = "Apache-2.0"}
+# pinned dependencies live in requirements.txt (Kaggle: requirements-kaggle.txt); install those first
+
+[project.scripts]
+aftermarket = "aftermarket.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]

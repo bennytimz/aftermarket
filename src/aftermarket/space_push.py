@@ -6,7 +6,8 @@
 
 What can leave the machine is an allowlist: five aggregate CSVs, only the listed columns, only test-stage rows,
 no AM dev candidates (AMc_*). Any column that looks like text (prompt, response, raw judge output, item ids)
-stops the push. The Space itself is space/app.py + requirements.txt + README.md + data/*.csv.
+stops the push. Report cards (results/cards/<run>.png + .md, aggregates only) are copied to space/cards/ for the
+leaderboard runs only. The Space itself is space/app.py + requirements.txt + README.md + data/*.csv + cards/*.
 """
 
 from __future__ import annotations
@@ -28,6 +29,7 @@ ALLOW = {  # file -> columns that may be published
 REQUIRED = "cell_ci.csv"
 FORBIDDEN = ("prompt", "response", "model_input", "raw", "item", "label_id", "completion", "text")
 SPACE_FILES = ["app.py", "requirements.txt", "README.md"]
+CARD_DIR = REPO_ROOT / "results" / "cards"
 
 
 class UnsafeBundle(ValueError):
@@ -65,6 +67,37 @@ def build_bundle(table_dir: Path = TABLE_DIR, out_dir: Path = SPACE_DIR / "data"
     return counts
 
 
+def build_cards(card_dir: Path = CARD_DIR, out_dir: Path = SPACE_DIR / "cards") -> int:
+    """Copy the leaderboard runs' report cards (PNG + markdown). Returns the number of runs copied."""
+    import shutil
+
+    from aftermarket.evaluate import RUN_ORDER
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for old in out_dir.iterdir():
+        old.unlink()
+    n = 0
+    for run in RUN_ORDER:
+        src = [Path(card_dir) / f"{run}{ext}" for ext in (".png", ".md")]
+        if all(p.exists() for p in src):
+            for p in src:
+                shutil.copy2(p, out_dir / p.name)
+            n += 1
+    check_cards(out_dir)
+    return n
+
+
+def check_cards(out_dir: Path) -> None:
+    """Only <leaderboard run>.png / .md: never an audit's card or any other file."""
+    from aftermarket.evaluate import RUN_ORDER
+
+    allowed = {f"{r}{ext}" for r in RUN_ORDER for ext in (".png", ".md")}
+    bad = [p.name for p in Path(out_dir).iterdir() if p.name not in allowed]
+    if bad:
+        raise UnsafeBundle(f"unexpected files in the Space cards dir: {bad}")
+
+
 def check_bundle(out_dir: Path) -> None:
     """Refuse anything outside the allowlist: unknown files, unknown or text-like columns, dev rows, AMc_* runs."""
     import pandas as pd
@@ -89,10 +122,13 @@ def push(repo_id: str = DEFAULT_REPO, space_dir: Path = SPACE_DIR) -> str:
     from huggingface_hub import HfApi
 
     check_bundle(space_dir / "data")
+    if (space_dir / "cards").exists():
+        check_cards(space_dir / "cards")
     api = HfApi()
     api.create_repo(repo_id, repo_type="space", space_sdk="gradio", private=False, exist_ok=True)
     api.upload_folder(repo_id=repo_id, repo_type="space", folder_path=str(space_dir),
-                      allow_patterns=SPACE_FILES + ["data/*.csv"], commit_message="Update leaderboard metrics")
+                      allow_patterns=SPACE_FILES + ["data/*.csv", "cards/*.png", "cards/*.md"],
+                      commit_message="Update leaderboard metrics and report cards")
     return f"https://huggingface.co/spaces/{repo_id}"
 
 
@@ -103,6 +139,7 @@ def main(argv: list[str] | None = None) -> None:
     args = ap.parse_args(argv)
     counts = build_bundle()
     print(f"bundle OK (test stage, allowlisted columns): {counts} -> {SPACE_DIR / 'data'}")
+    print(f"report cards: {build_cards()} runs -> {SPACE_DIR / 'cards'}")
     if not args.push:
         print(f"dry run: nothing uploaded. Re-run with --push to publish https://huggingface.co/spaces/{args.repo}")
         return

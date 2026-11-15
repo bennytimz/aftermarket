@@ -3,7 +3,8 @@
 Reads ONLY the aggregate metrics CSVs in ./data (copied there by `python -m aftermarket.space_push`): per-cell
 values with 95% CIs, retention, and judge agreement. No prompts, no completions, no weights (PLAN.md §9).
 
-Tabs: Leaderboard (heatmap + table, filter by metric / attack / model), Retention ranking, Judges, About.
+Tabs: Leaderboard (heatmap + table, filter by metric / attack / model), Report cards (one page per run, from
+./cards), Retention ranking, Judges, About.
 """
 
 from __future__ import annotations
@@ -11,6 +12,7 @@ from __future__ import annotations
 from pathlib import Path
 
 DATA = Path(__file__).resolve().parent / "data"
+CARDS = Path(__file__).resolve().parent / "cards"
 ATTACK_ORDER = ["A0", "A1", "A2", "A3", "A4q3", "A5raw", "A5bon", "A4q4", "A4q2"]  # A4 = A4q3; q4/q2 extra
 RUN_ORDER = ["BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP", "AM", "AM_rand0", "AM_rand1", "AM_all"]
 METRICS = {  # label -> (metric id, lower is better)
@@ -192,6 +194,35 @@ def judges_table(agree, human):
     return pd.DataFrame(rows) if rows else pd.DataFrame({"": ["No judge results yet."]})
 
 
+def card_runs(cards_dir: Path = CARDS) -> list[str]:
+    """Runs with a report card (PNG + markdown), in leaderboard order."""
+    if not Path(cards_dir).exists():
+        return []
+    return ordered([p.stem for p in Path(cards_dir).glob("*.png") if (Path(cards_dir) / f"{p.stem}.md").exists()],
+                   RUN_ORDER)
+
+
+def card(run: str | None, cards_dir: Path = CARDS) -> tuple[str | None, str]:
+    """(PNG path, markdown without its image line) of one run's card."""
+    if not run or not (Path(cards_dir) / f"{run}.md").exists():
+        return None, "No report card for this model yet."
+    md = (Path(cards_dir) / f"{run}.md").read_text(encoding="utf-8")
+    md = "\n".join(line for line in md.splitlines() if not line.startswith("![report card]"))
+    return str(Path(cards_dir) / f"{run}.png"), md
+
+
+RUN_YOUR_OWN = """
+**Run it on your own model** (one T4; Tiny Aya Global derivatives):
+
+```bash
+git clone https://github.com/bennytimz/aftermarket && cd aftermarket
+pip install -r requirements.txt && pip install -e .
+aftermarket audit --model your-org/your-model --quick     # A0, A2, A3, A5bon on 100 prompts
+aftermarket audit --model your-org/your-model             # the full battery
+```
+"""
+
+
 ABOUT = """
 ### Aftermarket: does a safety fix survive the next person who downloads the model?
 
@@ -233,6 +264,16 @@ def build_ui(data: dict | None = None):
             for c in (metric, sel_attacks, sel_runs):
                 c.change(update, [metric, sel_attacks, sel_runs], [plot, table])
             demo.load(update, [metric, sel_attacks, sel_runs], [plot, table])
+        with gr.Tab("Report cards"):
+            cruns = card_runs()
+            gr.Markdown("One page per model: attack success per attack with 95% CIs (grey band: the range across "
+                        "the ranked leaderboard runs; black tick: BASE), retention and rank, over-refusal and MMLU."
+                        + RUN_YOUR_OWN)
+            pick = gr.Dropdown(cruns, value=cruns[0] if cruns else None, label="Model")
+            img, md = card(cruns[0] if cruns else None)
+            card_img = gr.Image(value=img, label="Report card", type="filepath", show_label=False)
+            card_md = gr.Markdown(md)
+            pick.change(card, [pick], [card_img, card_md])
         with gr.Tab("Retention ranking"):
             gr.Plot(value=retention_figure(d["retention"]), label="Retention, 95% CI")
             gr.Dataframe(value=retention_table(d["retention"], d["retention_pairwise"]), interactive=False)

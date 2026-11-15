@@ -11,6 +11,8 @@ Outputs (aggregates only: no prompt or completion text ever leaves results/judge
                     (c) capability_vs_asr_<stage>  MMLU vs ASR, one panel per attack
                     (d) judge_agreement            judge-agreement table
                     each as .png and .svg
+  results/cards/    one-page report card per run (<run>.md + .png, aftermarket.card) and the quick-audit reference
+                    tables (quick_cell_ci.csv, quick_retention.csv: the leaderboard on the 100-item subsets)
   README.md / ABSTRACT.md  <!-- BEGIN name --> ... <!-- END name --> blocks and <!--v:key-->...<!--/v--> values
                     are rewritten from the TEST stage (the leaderboard). Dev results are selection material.
 
@@ -590,8 +592,20 @@ def pull_judged(config: str = "configs/judge.yaml", judged_dir: Path | None = No
     return pull_from_hub(cfg, out, cfg["push"]["path_in_repo"])
 
 
+def write_cards(df, table_dir: Path = TABLE_DIR, card_dir: Path | None = None) -> list[Path]:
+    """Report cards for every leaderboard run, and the quick-audit reference (leaderboard on the 100-item subsets)."""
+    from aftermarket.card import QUICK_TABLES, leaderboard_cards, quick_reference
+
+    if not len(df):
+        return []
+    qci, qret = quick_reference(df)
+    qci.to_csv(Path(table_dir) / QUICK_TABLES["ci"], index=False)
+    qret.to_csv(Path(table_dir) / QUICK_TABLES["retention"], index=False)
+    return leaderboard_cards(table_dir, card_dir or Path(table_dir).parent / "cards")  # results/cards
+
+
 def run(judged_dir: Path, fill: bool = True, fig_dir: Path = FIG_DIR, table_dir: Path = TABLE_DIR,
-        docs=DOCS, labels_path: Path = HAND_LABELS, sample_path: Path = HAND_SAMPLE) -> dict:
+        card_dir: Path | None = None, docs=DOCS, labels_path: Path = HAND_LABELS, sample_path: Path = HAND_SAMPLE) -> dict:
     from aftermarket.label import current_labels, read_jsonl
 
     df = load_judged(judged_dir)
@@ -604,14 +618,16 @@ def run(judged_dir: Path, fill: bool = True, fig_dir: Path = FIG_DIR, table_dir:
         print(f"{len(labels)} hand labels joined", flush=True)
     blocks = write_tables(t, table_dir)
     figs = make_figures(t, fig_dir)
+    cards = write_cards(df, table_dir, card_dir)
     values = headline_values(t, len(df))
     changed = fill_docs(blocks, values, docs) if fill else []
-    print(f"tables -> {table_dir} | {len(figs)} figure files -> {fig_dir} | docs updated: "
+    print(f"tables -> {table_dir} | {len(figs)} figure files -> {fig_dir} | {len(cards)} report-card files | "
+          f"docs updated: "
           f"{[p.name for p in changed] or 'none'}", flush=True)
     missing = sorted(k for k, v in values.items() if v == TBD)
     if missing:
         print(f"values still TBD (no data yet): {missing}", flush=True)
-    return {"tables": t, "figures": figs, "values": values, "docs": changed}
+    return {"tables": t, "figures": figs, "cards": cards, "values": values, "docs": changed}
 
 
 def main(argv: list[str] | None = None) -> None:
