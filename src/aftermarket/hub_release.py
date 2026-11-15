@@ -102,7 +102,7 @@ LoRA adapter on [{BASE_ID}](https://huggingface.co/{BASE_ID}) (revision `{BASE_R
 
 {what}
 
-**Result: a trade-off, not a win.** {"Under both judges AM is significantly safer than the base model as released and worse under abliteration; its advantages under 3-bit compression and best-of-8 perturbations are significant under Llama Guard only. Random-layer and all-layer controls did as well, so we find no advantage from choosing the layers, and AM ranks last of 9 on retention." if run == "AM" else "See the AM card and README §9: the controls did as well as AM on every attack they share."}
+**Result: a trade-off, not a win.** {"Under both judges AM is significantly safer than the base model as released and worse under abliteration; its advantages under 3-bit compression and best-of-8 perturbations are significant under Llama Guard only. Random-layer and all-layer controls did as well, so we find no advantage from choosing the layers, and AM ranks last of 9 on retention." if run == "AM" else "See the AM card and README finding 8: the controls did as well as AM on every attack they share."}
 {ret_line}
 
 ## Results (200 held-out harmful prompts, 300 MMLU questions; test split)
@@ -111,7 +111,7 @@ LoRA adapter on [{BASE_ID}](https://huggingface.co/{BASE_ID}) (revision `{BASE_R
 
 A0 as released · A1 benign fine-tune · A2 harmful fine-tune · A3 abliteration (dev-chosen layer) · A3max abliteration
 at the strongest layer (post-hoc) · A4q3 HQQ 3-bit · A5raw no chat template · A5bon best-of-8 perturbations. CIs,
-paired tests and the full battery: [README §8–§9]({GITHUB}#9-am-our-defense-a-trade-off),
+paired tests and the full battery: [README, finding 8]({GITHUB}#finding-8-am-our-defense-is-a-trade-off-not-a-win),
 [Space]({SPACE}). Where the two judges disagree (mostly A5), WildGuard agrees better with blind hand labels.
 
 ## Use

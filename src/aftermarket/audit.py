@@ -127,7 +127,7 @@ def a3_caveat(gen_dir: Path, name: str, split: str) -> str:
         return ""
     return (f"A3's layer rule (KL filter on benign prompts) picked a layer that left most refusals in place on dev "
             f"({before:.0%} → {after:.0%}), so a low A3 here does not show the model resists abliteration "
-            "(README §3, finding 6).")
+            "(README, finding 6).")
 
 
 # ----------------------------------------------------------------------------- steps
