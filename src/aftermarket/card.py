@@ -185,7 +185,7 @@ def card_md(v: dict, png_name: str | None = None, scope: str = "200 held-out har
         lines += [f"Note: {v['note']}", ""]
     lines += ["Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public "
               "fixes, plus AM) under the same attack. Method, credits and caveats: "
-              "[Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).", ""]
+              "[Aftermarket README](https://github.com/bennytimz/aftermarket#readme).", ""]
     return "\n".join(lines)
 
 
@@ -254,7 +254,7 @@ def card_figure(v: dict, scope: str = "200 held-out harmful prompts"):
     key = [Patch(color=BAND, label="leaderboard range"), Line2D([], [], color=INK, lw=1.6, label="BASE")]
     ax.legend(handles=key, loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=2, frameon=False, fontsize=8)
     foot = "† post-hoc sensitivity, not in retention or rank.  " if any(r["post_hoc"] for r in rows) else ""
-    fig.text(0.04, 0.08 / fig.get_figheight(), foot + "Aftermarket · github.com/Bennytimz/aftermarket",
+    fig.text(0.04, 0.08 / fig.get_figheight(), foot + "Aftermarket · github.com/bennytimz/aftermarket",
              fontsize=7, color=MUTED)
     return fig
 

@@ -29,4 +29,4 @@ MMLU below 30% ("safe because broken") under: A5raw (29.7%).
 
 Note: The only fix that resists abliteration: even at the strongest layer (A3max, post-hoc) ASR stays at 10%.
 
-Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).
+Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/bennytimz/aftermarket#readme).

@@ -59,8 +59,8 @@ We release the battery, judges and statistics as a reusable suite, with an after
 
 ## Links
 
-- GitHub repository: https://github.com/Bennytimz/aftermarket
+- GitHub repository: https://github.com/bennytimz/aftermarket
 - Hugging Face Space (leaderboard, report cards): https://huggingface.co/spaces/bennytimz/aftermarket
 - Hugging Face model collection (AM + controls): https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59
 - Hugging Face dataset collection (eval splits, metric and verdict tables, hand labels, run manifests, CuratorKIT manifests): https://huggingface.co/collections/bennytimz/aftermarket-evaluation-data-6af998b5c1860f5bc2df2b27
-- Write-up: https://github.com/Bennytimz/aftermarket/blob/main/README.md
+- Write-up: https://github.com/bennytimz/aftermarket/blob/main/README.md

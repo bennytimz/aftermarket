@@ -27,4 +27,4 @@
 
 Note: Our own defense: a trade-off. Under both judges safer than BASE as released and worse under abliteration (significant under WildGuard); safer at A4q3 and A5bon under Llama Guard only. No advantage from layer targeting over random layers (README, finding 8).
 
-Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).
+Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/bennytimz/aftermarket#readme).

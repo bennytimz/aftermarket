@@ -1054,7 +1054,7 @@ made (AM's 8-bit shield is applied at load time).
 
 ### GitHub repo
 
-[github.com/Bennytimz/aftermarket](https://github.com/Bennytimz/aftermarket): code, configs, notebooks 01–11, tests.
+[github.com/bennytimz/aftermarket](https://github.com/bennytimz/aftermarket): code, configs, notebooks 01–11, tests.
 
 ### Demo / Space
 
@@ -1226,7 +1226,7 @@ tamper-resistant training for AM, a larger judge and more hand labels, and an up
 
 ## Teammates tagged
 
-Solo entry: **Benny** (GitHub [@Bennytimz](https://github.com/Bennytimz), Hugging Face
+Solo entry: **Benny** (GitHub [@Bennytimz](https://github.com/bennytimz), Hugging Face
 [bennytimz](https://huggingface.co/bennytimz)).
 
 ### Author contributions

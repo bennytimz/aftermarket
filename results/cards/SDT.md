@@ -27,4 +27,4 @@
 
 Note: A3 is low only because the frozen A3 layer rule picked a layer that barely reduced refusal on dev (63% → 53%); at the strongest layer (A3max, post-hoc) ASR is 83%. Tested at the published 1% repair.
 
-Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).
+Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/bennytimz/aftermarket#readme).

@@ -30,7 +30,7 @@ REPO_NAMES = {"AM": "aftermarket-AM-frozen", "AM_rand0": "aftermarket-AM_rand0",
               "AM_all": "aftermarket-AM_all"}
 ADAPTER_FILES = ["adapter_config.json", "adapter_model.safetensors", "defense_meta.json"]
 DATASET = f"{OWNER}/aftermarket-eval"
-GITHUB = "https://github.com/Bennytimz/aftermarket"
+GITHUB = "https://github.com/bennytimz/aftermarket"
 SPACE = f"https://huggingface.co/spaces/{OWNER}/aftermarket"
 SPLITS = ["harmful_dev", "harmful_test", "benign_dev", "calib_pairs", "xstest_test", "mmlu_dev", "mmlu_test"]
 TABLES = ["cell_ci.csv", "cells.csv", "pairwise.csv", "retention.csv", "retention_wg.csv", "retention_pairwise.csv",

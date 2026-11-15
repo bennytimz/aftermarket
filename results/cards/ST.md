@@ -29,4 +29,4 @@ MMLU below 30% ("safe because broken") under: A5raw (22.3%).
 
 Note: Their 2% sparse repair, applied with a reimplementation of their loader. A3 already used the strongest layer, so A3max is the same cell.
 
-Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).
+Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/bennytimz/aftermarket#readme).

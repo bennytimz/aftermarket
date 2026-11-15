@@ -27,4 +27,4 @@
 
 Note: AM control (random layers, seed 0): reduced battery (A0, A2, A3) by design, not ranked.
 
-Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).
+Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/bennytimz/aftermarket#readme).

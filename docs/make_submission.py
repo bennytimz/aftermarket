@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-GITHUB = "https://github.com/Bennytimz/aftermarket"
+GITHUB = "https://github.com/bennytimz/aftermarket"
 SPACE = "https://huggingface.co/spaces/bennytimz/aftermarket"
 MODELS_COLL = "https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59"
 DATA_COLL = "https://huggingface.co/collections/bennytimz/aftermarket-evaluation-data-6af998b5c1860f5bc2df2b27"

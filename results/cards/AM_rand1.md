@@ -27,4 +27,4 @@
 
 Note: AM control (random layers, seed 1): reduced battery by design, not ranked. A3 is low because the A3 layer rule picked a layer that did not reduce refusal on dev; A3max (post-hoc) is 54%.
 
-Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/Bennytimz/aftermarket#readme).
+Leaderboard range: lowest and highest ASR among the ranked leaderboard runs (BASE and the public fixes, plus AM) under the same attack. Method, credits and caveats: [Aftermarket README](https://github.com/bennytimz/aftermarket#readme).
