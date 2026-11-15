@@ -19,8 +19,8 @@ dev prompts.
 
 Across <!--v:n_models-->12<!--/v--> model runs and <!--v:n_cells-->75<!--/v--> model × attack cells, the hardest
 change was <!--v:hardest_attack-->A2<!--/v--> (mean attack success <!--v:hardest_attack_asr-->82%<!--/v-->). The
-base model's attack success went from <!--v:base_asr_a0-->8% [4%–12%]<!--/v--> as released to
-<!--v:base_asr_a2-->81% [76%–86%]<!--/v--> after the harmful fine-tune and <!--v:base_asr_a3-->70% [64%–76%]<!--/v--> after abliteration.
+base model's attack success went from <!--v:base_asr_a0-->8% [5%–12%]<!--/v--> as released to
+<!--v:base_asr_a2-->81% [76%–86%]<!--/v--> after the harmful fine-tune and <!--v:base_asr_a3-->70% [63%–76%]<!--/v--> after abliteration.
 The most robust public fix by retention (1 − mean rise in attack success over the five attack families) was
 <!--v:top_retention_run-->GC<!--/v--> at <!--v:top_retention-->0.74<!--/v-->. The two judges agreed on
 <!--v:agree_lg_wg-->81.2%<!--/v--> of responses (Cohen's κ <!--v:kappa_lg_wg-->0.56<!--/v-->).
@@ -28,9 +28,9 @@ The most robust public fix by retention (1 − mean rise in attack success over 
 We then built AM, a defense combining what the leaderboard rewards: SafeGrad hardening restricted to the six layers
 with the strongest refusal direction, training against an ablated refusal direction, and an 8-bit shield for those
 layers under compression. Against random-layer and all-layer controls, AM reached retention
-<!--v:am_retention-->0.53 [0.50–0.56]<!--/v--> (rank <!--v:am_rank-->9 of 9<!--/v-->; vs base <!--v:am_vs_base_retention-->-0.06 (Holm-adjusted p = 0.044)<!--/v-->),
-with attack success <!--v:am_asr_a2-->86% [81%–91%]<!--/v--> after the harmful fine-tune and
-<!--v:am_asr_a3-->79% [74%–84%]<!--/v--> after abliteration, reported as measured. Random-layer and all-layer controls did as
+<!--v:am_retention-->0.53 [0.50–0.56]<!--/v--> (rank <!--v:am_rank-->9 of 9<!--/v-->; vs base <!--v:am_vs_base_retention-->-0.06 (Holm-adjusted p = 0.028)<!--/v-->),
+with attack success <!--v:am_asr_a2-->86% [81%–90%]<!--/v--> after the harmful fine-tune and
+<!--v:am_asr_a3-->79% [73%–84%]<!--/v--> after abliteration, reported as measured. Random-layer and all-layer controls did as
 well as AM on every attack they share, so we find no evidence that the choice of layers matters. Abliteration's
 strength also depends on its layer-selection rule: on four runs it chose a layer that left refusal intact on dev,
 so their low abliteration numbers are not evidence of robustness.

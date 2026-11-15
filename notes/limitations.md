@@ -84,6 +84,26 @@ write-up as written here.
 - **Where it ran.** All A3 cells (team models on test and dev, AM and controls on test) were re-run on a free Colab
   T4 (notebook 09), off the Kaggle quota.
 
+## A3 v2 on test: the KL filter makes it uneven; A3max is a post-hoc sensitivity check
+- **What test showed.** On SDT, RL, AM_rand1 and AM_all one candidate layer passed the KL <= 0.1 filter but barely
+  reduced dev refusal (SDT 0.63 -> 0.53, RL 0.94 -> 0.84, AM_rand1 / AM_all 0.97 -> 0.97), so the rule took it and
+  A3 left those models nearly intact (test ASR 0-16%). Where no layer passed, the rule fell back to the
+  lowest-refusal layer (dev refusal -> 0-0.03; test ASR 42-82%). The asymmetry is visible in the dev numbers each
+  A3 manifest logs, but we looked because of the test results.
+- **Decision (2026-11-15).** A3 v2 stays the primary abliteration attack, unchanged: it was fixed on dev before
+  any test run. **A3max** is added as a **post-hoc sensitivity variant, chosen after seeing test results**: the
+  same direction, window, candidates and dev scores, but the layer is the lowest dev refusal of all candidates, no
+  KL filter. Applied identically to all 12 runs on harmful_test and mmlu_test (notebook 10,
+  `aftermarket.attacks.a3max`). Predicted from the A3 v2 manifests, it picks a different layer only on the four runs
+  above. It is reported in its own labelled column and is never used in retention, rankings, the hardest-attack
+  headline or the primary Holm families (it has its own "post-hoc" family).
+
+## Statistics
+- **10,000 bootstrap resamples** (raised from 1,000 on 2026-11-15, after the AM results). With 1,000, the paired
+  test's p floor is 1/1,001, and Holm over a family of ~70 comparisons cannot go below ~0.065, so no comparison
+  could reach 0.05. The change affects only CI precision and the p floor, not any estimate. Conclusions that
+  changed with it are noted in the README.
+
 ## Test battery (quota)
 - **A4 is reported at 3-bit (A4q3) for every model.** Notebook 03 v2 (team models x A3/A4 on test) was stopped
   after 6.3 h because HQQ generation is about 6x slower than fp16 A0 (measured: ~7.1 s vs ~1.2 s per harmful

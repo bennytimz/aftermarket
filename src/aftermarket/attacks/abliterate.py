@@ -26,6 +26,7 @@ from __future__ import annotations
 from contextlib import contextmanager
 
 SELECT_BY = "bypass"  # attack_info.select_by of current A3 results (a3_archive treats anything else as stale)
+NO_KL = "bypass_nokl"  # A3max (post-hoc sensitivity): same candidates and scores, lowest dev refusal, no KL filter
 
 
 # ----------------------------------------------------------------------------- math (numpy or torch)
@@ -68,12 +69,15 @@ def candidate_layers(n_layers: int, window: tuple[float, float], stride: int = 1
     return list(range(lo, max(hi, lo + 1), max(1, int(stride))))
 
 
-def choose_layer(cands: list[dict], kl_max: float) -> tuple[int, bool]:
+def choose_layer(cands: list[dict], kl_max: float | None) -> tuple[int, bool]:
     """cands: [{layer, refusal, kl, sep}]. Keep candidates with kl <= kl_max (ablation leaves harmless prompts
     alone), then lowest refusal under ablation; ties -> higher separation, then lower layer.
-    Returns (layer, kl_relaxed): kl_relaxed=True when no candidate passed the KL filter (all were considered)."""
+    Returns (layer, kl_relaxed): kl_relaxed=True when no candidate passed the KL filter (all were considered).
+    kl_max=None (A3max, post-hoc sensitivity): no filter, the lowest refusal of all candidates."""
     if not cands:
         raise ValueError("no candidate layers")
+    if kl_max is None:
+        return min(cands, key=lambda c: (c["refusal"], -c["sep"], c["layer"]))["layer"], False
     ok = [c for c in cands if c["kl"] <= kl_max]
     best = min(ok or cands, key=lambda c: (c["refusal"], -c["sep"], c["layer"]))
     return best["layer"], not ok
@@ -256,12 +260,12 @@ def apply(model, tok, cfg: dict) -> dict:
     info: dict = {"select_by": select_by}
     if select_by == "separation":  # v1, kept only to reproduce archived results
         layer = pick_layer(sep, window)
-    elif select_by == "bypass":
+    elif select_by in ("bypass", NO_KL):
         s = cfg["select"]
         layers = candidate_layers(len(sep), window, s.get("stride", 1))
         base_refusal, cands = bypass_scores(model, tok, dirs, layers, sep, dev_h[:s["n_harmful"]],
                                             dev_b[:s["n_benign"]], s["max_new_tokens"], s.get("batch_size", 16))
-        layer, relaxed = choose_layer(cands, s["kl_max"])
+        layer, relaxed = choose_layer(cands, None if select_by == NO_KL else s["kl_max"])
         chosen = next(c for c in cands if c["layer"] == layer)
         info.update({"refusal_no_ablation": round(base_refusal, 4), "refusal_at_layer": chosen["refusal"],
                      "kl_at_layer": chosen["kl"], "kl_filter_relaxed": relaxed, "candidates": cands})
@@ -269,10 +273,10 @@ def apply(model, tok, cfg: dict) -> dict:
             print(f"WARNING A3: no candidate layer kept KL <= {s['kl_max']}; picked the lowest refusal anyway",
                   flush=True)
     else:
-        raise ValueError(f"A3 select_by must be 'bypass' or 'separation', got {select_by!r}")
+        raise ValueError(f"A3 select_by must be 'bypass', '{NO_KL}' or 'separation', got {select_by!r}")
     stats = abliterate(model, dirs[layer])
-    print(f"A3: layer {layer} ({select_by})" + (f", refusal {info['refusal_no_ablation']:.2f} -> "
-                                                f"{info['refusal_at_layer']:.2f} on dev selection prompts"
-                                                if select_by == "bypass" else ""), flush=True)
-    return {"attack": "A3", "layer": layer, "n_layers": len(sep), "separation": [round(s, 4) for s in sep],
+    print(f"abliterate: layer {layer} ({select_by})" + (f", refusal {info['refusal_no_ablation']:.2f} -> "
+                                                        f"{info['refusal_at_layer']:.2f} on dev selection prompts"
+                                                        if select_by != "separation" else ""), flush=True)
+    return {"layer": layer, "n_layers": len(sep), "separation": [round(s, 4) for s in sep],
             "separation_at_layer": round(sep[layer], 4), **info, **stats}

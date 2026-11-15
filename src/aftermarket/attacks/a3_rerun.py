@@ -49,9 +49,9 @@ def part_jobs(part: str, attacks: dict | None = None) -> list:
 
 
 def generate_command(path: str, final: bool, gpus: str | None, max_hours: float | None,
-                     started: float) -> list[str]:
-    """`python -m` args of one A3 generate call with claims and the session clock."""
-    cmd = ["aftermarket.generate", "--config", path, "--attacks", "A3", "--claim", "--session-start", repr(started)]
+                     started: float, attack: str = "A3") -> list[str]:
+    """`python -m` args of one generate call (A3 by default) with claims and the session clock."""
+    cmd = ["aftermarket.generate", "--config", path, "--attacks", attack, "--claim", "--session-start", repr(started)]
     cmd += ["--final"] if final else []
     cmd += ["--gpus", gpus] if gpus else []
     cmd += ["--max-hours", repr(max_hours)] if max_hours is not None else []

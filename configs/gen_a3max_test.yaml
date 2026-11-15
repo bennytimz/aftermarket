@@ -1,0 +1,19 @@
+# A3max: POST-HOC SENSITIVITY variant of A3 (no KL filter), chosen after seeing test results (configs/attacks.yaml).
+# All 12 runs, harmful_test + mmlu_test only; same seed / batch size / decoding as every other cell. Never used in
+# retention or rankings. Runner (claims, session clock, --plan-only): python -m aftermarket.attacks.a3max
+#   PYTHONPATH=src python -m aftermarket.generate --config configs/gen_a3max_test.yaml --final --claim
+seed: 42
+runs: [BASE, SDT, GC, IL, RL, RL_noguard, ST, SP, AM, AM_rand0, AM_rand1, AM_all]
+attacks: [A3max]
+splits: [harmful_test, mmlu_test]
+precision: fp16
+batch_size: 16
+max_new_tokens:
+  default: 256
+  mmlu: 8
+gpus: [0, 1]
+out_dir: results/gen
+push:
+  enabled: true
+  hf_repo: aftermarket-runs   # PRIVATE only
+  path_in_repo: gen

@@ -25,7 +25,7 @@ import re
 import time
 from pathlib import Path
 
-from aftermarket.evaluate import (ATTACK_ORDER, RUN_ORDER, TEAM_RUNS, _rank, agreement_table, cell_ci_table,
+from aftermarket.evaluate import (ATTACK_ORDER, POST_HOC, RUN_ORDER, TEAM_RUNS, _rank, agreement_table, cell_ci_table,
                                   cell_table, human_agreement, leaderboard_runs, load_judged, pairwise_table,
                                   retention_pairwise, retention_table)
 
@@ -111,7 +111,13 @@ def ci_matrix(ci, metric: str, stage: str):
         return pd.DataFrame()
     runs, attacks = _sorted(sub["run"].unique(), RUN_ORDER), _sorted(sub["attack"].unique(), ATTACK_ORDER)
     cells = {(r.run, r.attack): pct_ci(r.value, r.lo, r.hi) for r in sub.itertuples()}
-    return pd.DataFrame([[cells.get((r, a), "-") for a in attacks] for r in runs], index=runs, columns=attacks)
+    return pd.DataFrame([[cells.get((r, a), "-") for a in attacks] for r in runs], index=runs,
+                        columns=[attack_label(a) for a in attacks])
+
+
+def attack_label(attack: str) -> str:
+    """Column label; post-hoc attacks are marked wherever they appear (tables and figures)."""
+    return f"{attack} (post-hoc sensitivity)" if attack in POST_HOC else attack
 
 
 def md_table(frame, index_name: str = "model") -> str:
@@ -207,13 +213,14 @@ def headline_values(t: dict, n_rows: int) -> dict[str, str]:
         c = _cell(ci, run, attack)
         v[key] = TBD if c is None else pct_ci(c.value, c.lo, c.hi)
     asr = ci[(ci["metric"] == "asr_lg") & (ci["stage"] == "test") & ci["run"].isin(["BASE"] + TEAM_RUNS)]
-    attacked = asr[asr["attack"] != "A0"]
+    attacked = asr[(asr["attack"] != "A0") & ~asr["attack"].isin(POST_HOC)]
     if len(attacked):
         means = attacked.groupby("attack")["value"].mean()
         v["hardest_attack"], v["hardest_attack_asr"] = str(means.idxmax()), pct(means.max())
     tr = ret[ret["stage"] == "test"]
     v["retention_families"] = ranked_families(ret) or TBD
     v["a3_finding"] = a3_finding(ci)
+    v["a3max_status"] = a3max_status(ci)
     if len(tr) and tr["ranked"].any():
         full = tr[tr["ranked"]]
         top = full.iloc[0]
@@ -260,6 +267,18 @@ def a3_finding(ci, runs=("BASE", *TEAM_RUNS), stage: str = "test") -> str:
     pending = f" ({len(runs) - n} runs not judged yet)" if n < len(runs) else ""
     return (f"A3 raises Llama Guard ASR from {a0[both].mean():.0%} to {a3[both].mean():.0%} on average; "
             f"{over} of {n} runs exceed 50%{pending}")
+
+
+def a3max_status(ci, stage: str = "test") -> str:
+    """One sentence for the post-hoc A3max column: pending, or mean ASR over the runs judged under it."""
+    sub = ci[(ci["metric"] == "asr_lg") & (ci["stage"] == stage) & (ci["attack"] == "A3max")]
+    if not len(sub):
+        return "not run yet (notebook 10)"
+    a3 = ci[(ci["metric"] == "asr_lg") & (ci["stage"] == stage) & (ci["attack"] == "A3")].set_index("run")["value"]
+    both = [r for r in sub["run"] if r in a3.index]
+    mx = sub.set_index("run")["value"]
+    return (f"judged for {len(sub)} of 12 runs; mean Llama Guard ASR {mx.mean():.0%} under A3max vs "
+            f"{a3[both].mean():.0%} under A3 on the same runs; {sum(mx > 0.5)} of {len(sub)} exceed 50%")
 
 
 # ----------------------------------------------------------------------------- README / ABSTRACT placeholders
@@ -347,7 +366,7 @@ def fig_heatmap(ci, stage: str, out: Path = FIG_DIR) -> list[Path]:
             if c.lo == c.lo:
                 ax.text(j + 0.5, i + 0.72, f"{c.lo:.0%}–{c.hi:.0%}", ha="center", va="center", color=color,
                         fontsize=6.5)
-    ax.set_xticks(np.arange(len(attacks)) + 0.5, attacks)
+    ax.set_xticks(np.arange(len(attacks)) + 0.5, [attack_label(a).replace(" (", "\n(") for a in attacks])
     ax.set_yticks(np.arange(len(runs)) + 0.5, runs)
     ax.invert_yaxis()
     ax.tick_params(length=0)
@@ -487,7 +506,7 @@ def fig_capability_vs_asr(cells, stage: str, out: Path = FIG_DIR) -> list[Path]:
         for r in pts.itertuples():
             c = ORANGE if r.run == HIGHLIGHT else BLUE
             ax.scatter(r.asr_lg, r.mmlu, s=44, color=c, edgecolors=SURFACE, linewidths=2, zorder=3)
-        ax.set_title(a, fontsize=9)
+        ax.set_title(attack_label(a), fontsize=9)
         ax.set_xlim(-0.03, 1.03)
         ax.set_ylim(0, 1)
         to_label.append((ax, [(r.run, r.asr_lg, r.mmlu) for r in pts.itertuples()]))
