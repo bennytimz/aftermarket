@@ -24,7 +24,7 @@ aftermarket audit --model CohereLabs/tiny-aya-global --adapter your-org/lora   #
 The card lands in `results/audit/<name>/card/` (`.md` + `.png`). It uses the same seed, settings, prompts and
 judges as the leaderboard, so the numbers compare directly. A quick audit is ranked against the leaderboard
 recomputed on the same 100 prompts. Generations stay on your machine and nothing is uploaded. Cards for every model
-we tested: [`results/cards/`](results/cards/README.md) and the [leaderboard Space](https://huggingface.co/spaces/bennytimz/aftermarket).
+we tested: [`results/cards/`](results/cards/README.md).
 
 ![GC report card](results/cards/GC.png)
 
