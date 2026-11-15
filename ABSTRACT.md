@@ -2,6 +2,11 @@
 
 **Aftermarket: does a safety fix survive the next person who downloads the model?**
 
+**Less than an hour on a free T4 erases every safety fix we tested from this hackathon:** one QLoRA epoch on 100
+harmful examples takes attack success from 1–14% to 80–86%, with no loss in MMLU. **Abliteration, with no training
+at all, undoes most fixes; only one (GC, Lisa hardening) really resists it:** at its strongest layer it takes the
+other fixes from 3–14% to 33–83%.
+
 Safety fixes for open-weight models are evaluated on the checkpoint their authors release. But a released model
 rarely stays as released: users fine-tune it, compress it for a phone, serve it without its chat template, or
 remove its refusals on purpose. We ask which of this hackathon's public safety fixes for Tiny Aya Global survive
@@ -17,24 +22,26 @@ questions for capability, so a model cannot look safe by being broken. Uncertain
 confidence intervals over prompts and paired tests against the base model. All choices were made on separate
 dev prompts.
 
-Across <!--v:n_models-->12<!--/v--> model runs and <!--v:n_cells-->75<!--/v--> model × attack cells, the hardest
+Across <!--v:n_models-->12<!--/v--> model runs and <!--v:n_cells-->87<!--/v--> model × attack cells, the hardest
 change was <!--v:hardest_attack-->A2<!--/v--> (mean attack success <!--v:hardest_attack_asr-->82%<!--/v-->). The
 base model's attack success went from <!--v:base_asr_a0-->8% [5%–12%]<!--/v--> as released to
 <!--v:base_asr_a2-->81% [76%–86%]<!--/v--> after the harmful fine-tune and <!--v:base_asr_a3-->70% [63%–76%]<!--/v--> after abliteration.
 The most robust public fix by retention (1 − mean rise in attack success over the five attack families) was
 <!--v:top_retention_run-->GC<!--/v--> at <!--v:top_retention-->0.74<!--/v-->. The two judges agreed on
-<!--v:agree_lg_wg-->81.2%<!--/v--> of responses (Cohen's κ <!--v:kappa_lg_wg-->0.56<!--/v-->).
+<!--v:agree_lg_wg-->81.3%<!--/v--> of responses (Cohen's κ <!--v:kappa_lg_wg-->0.58<!--/v-->).
 
 We then built AM, a defense combining what the leaderboard rewards: SafeGrad hardening restricted to the six layers
 with the strongest refusal direction, training against an ablated refusal direction, and an 8-bit shield for those
 layers under compression. Against random-layer and all-layer controls, AM reached retention
 <!--v:am_retention-->0.53 [0.50–0.56]<!--/v--> (rank <!--v:am_rank-->9 of 9<!--/v-->; vs base <!--v:am_vs_base_retention-->-0.06 (Holm-adjusted p = 0.028)<!--/v-->),
 with attack success <!--v:am_asr_a2-->86% [81%–90%]<!--/v--> after the harmful fine-tune and
-<!--v:am_asr_a3-->79% [73%–84%]<!--/v--> after abliteration, reported as measured. Random-layer and all-layer controls did as
-well as AM on every attack they share, so we find no evidence that the choice of layers matters. Abliteration's
+<!--v:am_asr_a3-->79% [73%–84%]<!--/v--> after abliteration, reported as measured. AM is a trade-off: significantly
+safer than the base model as released, under 3-bit compression and under prompt perturbations, but worse under
+abliteration. Random-layer and all-layer controls did as well as AM on every attack they share, and two of them
+better under the strongest abliteration, so we find no advantage from choosing the layers. Abliteration's
 strength also depends on its layer-selection rule: on four runs it chose a layer that left refusal intact on dev,
 so their low abliteration numbers are not evidence of robustness.
 
 We release the battery, judges and statistics as a reusable suite built on CuratorKIT, SafeTune, CircuitKIT and
 AuditKIT, along with metrics and verdicts only: no attack-tuned weights and no harmful completions. Every team is
-credited and sent its own results before publication.
+credited by name with links to its release.

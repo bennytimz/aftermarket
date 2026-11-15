@@ -151,7 +151,8 @@ aftermarket/
 
 - Publish metrics and verdicts only. **Never publish attack-tuned weights**, abliterated checkpoints, or the full text of harmful completions. Release harmful outputs truncated or redacted.
 - Credit every team by name and link. Frame results as "robustness after release", never "X fails".
-- Before submitting, open a short, friendly GitHub issue on each tested repo sharing their row of results.
+- ~~Before submitting, open a short, friendly GitHub issue on each tested repo sharing their row of results.~~
+  Decision 2026-11-15: we do not contact the teams; each is credited by name with links to its release.
 - The attack data comes from existing public benchmarks; we don't create new harmful content.
 
 ## 10. Timeline (Lagos time)

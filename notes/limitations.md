@@ -1,4 +1,4 @@
-# Limitations and disclosures (for the write-up)
+# Limitations (for the write-up)
 
 Choices made to fit the Kaggle GPU quota (~30 h/week on 2x T4) and T4 memory. Each one is stated in the
 write-up as written here.

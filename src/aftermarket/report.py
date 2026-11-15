@@ -31,12 +31,9 @@ from aftermarket.evaluate import (ATTACK_ORDER, POST_HOC, RUN_ORDER, TEAM_RUNS, 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIG_DIR, TABLE_DIR = REPO_ROOT / "results" / "figures", REPO_ROOT / "results" / "tables"
-DOCS = [REPO_ROOT / "README.md", REPO_ROOT / "ABSTRACT.md",
-        *sorted((REPO_ROOT / "notes" / "disclosure").glob("*.md"))]  # disclosure drafts: each team's own row
+DOCS = [REPO_ROOT / "README.md", REPO_ROOT / "ABSTRACT.md"]
 HAND_LABELS = REPO_ROOT / "data" / "hand_labels.jsonl"
 HAND_SAMPLE = REPO_ROOT / "data" / "hand_label_sample.jsonl"
-# a team's disclosure row: its run(s); RL is shown with its guard template on and off
-TEAM_ROWS = {"SDT": ["SDT"], "GC": ["GC"], "IL": ["IL"], "RL": ["RL", "RL_noguard"], "ST": ["ST"], "SP": ["SP"]}
 TBD = "TBD"
 
 # chart chrome + data colours (dataviz reference palette, light mode)
@@ -67,25 +64,6 @@ def human_md(h) -> str:
                       "judge rate": [pct(v, 1) for v in h["judge_rate"]],
                       "human rate": [pct(v, 1) for v in h["human_rate"]]}, index=h["pair"].tolist())
     return md_table(t, "judge vs human")
-
-
-def team_row_md(ci, runs: list[str], stage: str = "test") -> str:
-    """One team's results per attack (their run(s) next to BASE): ASR by both judges, over-refusal, MMLU."""
-    import pandas as pd
-
-    sub = ci[ci["stage"] == stage]
-    if not len(sub) or not set(runs) & set(sub["run"]):
-        return md_table(None)
-    get = {(r.run, r.attack, r.metric): pct_ci(r.value, r.lo, r.hi) for r in sub.itertuples()}
-    rows, index = [], []
-    for run in runs:
-        for a in _sorted({x for (r, x, _) in get if r == run}, ATTACK_ORDER):
-            index.append(f"{run} · {a}")
-            rows.append([get.get((run, a, "asr_lg"), "-"), get.get(("BASE", a, "asr_lg"), "-"),
-                         get.get((run, a, "asr_wg"), "-"), get.get((run, a, "over_refusal_wg"), "-"),
-                         get.get((run, a, "mmlu"), "-")])
-    cols = ["ASR, Llama Guard", "BASE ASR, Llama Guard", "ASR, WildGuard", "over-refusal (XSTest)", "MMLU"]
-    return md_table(pd.DataFrame(rows, index=index, columns=cols), "model · attack")
 
 
 def pct(v, digits: int = 0) -> str:
@@ -186,7 +164,6 @@ def write_tables(t: dict, out: Path = TABLE_DIR) -> dict[str, str]:
         "retention": retention_md(t["retention"], t["retention_pairwise"], "test"),
         "agreement": agreement_md(t["agreement"]),
         "human_agreement": human_md(t["human_agreement"]),
-        **{f"row_{team}": team_row_md(t["ci"], runs) for team, runs in TEAM_ROWS.items()},
     }
     for name, md in blocks.items():
         (out / f"{name}.md").write_text(md + "\n", encoding="utf-8")
@@ -245,13 +222,6 @@ def headline_values(t: dict, n_rows: int) -> dict[str, str]:
         r = hv.get(judge)
         v[f"human_acc_{key}"] = pct(r.weighted_accuracy, 1) if r is not None else TBD
         v[f"human_kappa_{key}"] = f"{r.kappa:.2f}" if r is not None and r.kappa == r.kappa else TBD
-    full = tr[tr["ranked"]] if len(tr) else tr
-    order = list(full["run"]) if len(full) else []
-    for run in TEAM_RUNS:  # disclosure drafts: always present, TBD until the run has a retention score
-        row = tr[tr["run"] == run] if len(tr) else tr
-        v[f"{run}_retention"] = f"{row.iloc[0].retention:.2f} [{row.iloc[0].lo:.2f}–{row.iloc[0].hi:.2f}]" \
-            if len(row) else TBD
-        v[f"{run}_rank"] = f"{order.index(run) + 1} of {len(order)}" if run in order else TBD
     return v
 
 

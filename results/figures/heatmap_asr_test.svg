@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="683.507969pt" height="489.73957pt" viewBox="0 0 683.507969 489.73957" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="740.800799pt" height="493.76081pt" viewBox="0 0 740.800799 493.76081" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-15T01:44:28.239656</dc:date>
+    <dc:date>2026-11-15T10:07:58.675148</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,9 +21,9 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 489.73957 
-L 683.507969 489.73957 
-L 683.507969 0 
+   <path d="M 0 493.76081 
+L 740.800799 493.76081 
+L 740.800799 0 
 L 0 0 
 z
 " style="fill: #fcfcfb"/>
@@ -31,1291 +31,1442 @@ z
   <g id="axes_1">
    <g id="patch_2">
     <path d="M 52.5875 482.53957 
-L 611.5361 482.53957 
-L 611.5361 53.43397 
+L 666.90365 482.53957 
+L 666.90365 53.43397 
 L 52.5875 53.43397 
 z
 " style="fill: #fcfcfb"/>
    </g>
    <g id="QuadMesh_1">
     <path d="M 52.5875 53.43397 
-L 122.456075 53.43397 
-L 122.456075 89.19277 
+L 120.84485 53.43397 
+L 120.84485 89.19277 
 L 52.5875 89.19277 
 L 52.5875 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #dce8f5; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 53.43397 
-L 192.32465 53.43397 
-L 192.32465 89.19277 
-L 122.456075 89.19277 
-L 122.456075 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 53.43397 
-L 262.193225 53.43397 
-L 262.193225 89.19277 
-L 192.32465 89.19277 
-L 192.32465 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 53.43397 
-L 332.0618 53.43397 
-L 332.0618 89.19277 
-L 262.193225 89.19277 
-L 262.193225 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #286ec4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 53.43397 
-L 401.930375 53.43397 
-L 401.930375 89.19277 
-L 332.0618 89.19277 
-L 332.0618 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #cfe3fa; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 53.43397 
-L 471.79895 53.43397 
-L 471.79895 89.19277 
-L 401.930375 89.19277 
-L 401.930375 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #3d89e6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 53.43397 
-L 541.667525 53.43397 
-L 541.667525 89.19277 
-L 471.79895 89.19277 
-L 471.79895 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #113e79; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 53.43397 
-L 611.5361 53.43397 
-L 611.5361 89.19277 
-L 541.667525 89.19277 
-L 541.667525 53.43397 
-" clip-path="url(#pb267467c93)" style="fill: #d9e6f6; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #dce8f5; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 53.43397 
+L 189.1022 53.43397 
+L 189.1022 89.19277 
+L 120.84485 89.19277 
+L 120.84485 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 53.43397 
+L 257.35955 53.43397 
+L 257.35955 89.19277 
+L 189.1022 89.19277 
+L 189.1022 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 53.43397 
+L 325.6169 53.43397 
+L 325.6169 89.19277 
+L 257.35955 89.19277 
+L 257.35955 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #286ec4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 53.43397 
+L 393.87425 53.43397 
+L 393.87425 89.19277 
+L 325.6169 89.19277 
+L 325.6169 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #cfe3fa; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 53.43397 
+L 462.1316 53.43397 
+L 462.1316 89.19277 
+L 393.87425 89.19277 
+L 393.87425 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #3d89e6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 53.43397 
+L 530.38895 53.43397 
+L 530.38895 89.19277 
+L 462.1316 89.19277 
+L 462.1316 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #113e79; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 53.43397 
+L 598.6463 53.43397 
+L 598.6463 89.19277 
+L 530.38895 89.19277 
+L 530.38895 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #d9e6f6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 53.43397 
+L 666.90365 53.43397 
+L 666.90365 89.19277 
+L 598.6463 89.19277 
+L 598.6463 53.43397 
+" clip-path="url(#p567d0bb407)" style="fill: #286ec4; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 89.19277 
-L 122.456075 89.19277 
-L 122.456075 124.95157 
+L 120.84485 89.19277 
+L 120.84485 124.95157 
 L 52.5875 124.95157 
 L 52.5875 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #cce2fb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 89.19277 
-L 192.32465 89.19277 
-L 192.32465 124.95157 
-L 122.456075 124.95157 
-L 122.456075 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #b8d5f8; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 89.19277 
-L 262.193225 89.19277 
-L 262.193225 124.95157 
-L 192.32465 124.95157 
-L 192.32465 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #195097; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 89.19277 
-L 332.0618 89.19277 
-L 332.0618 124.95157 
-L 262.193225 124.95157 
-L 262.193225 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #cae0fb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 89.19277 
-L 401.930375 89.19277 
-L 401.930375 124.95157 
-L 332.0618 124.95157 
-L 332.0618 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #cbe1fb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 89.19277 
-L 471.79895 89.19277 
-L 471.79895 124.95157 
-L 401.930375 124.95157 
-L 401.930375 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #2264b6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 89.19277 
-L 541.667525 89.19277 
-L 541.667525 124.95157 
-L 471.79895 124.95157 
-L 471.79895 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #0f3b74; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 89.19277 
-L 611.5361 89.19277 
-L 611.5361 124.95157 
-L 541.667525 124.95157 
-L 541.667525 89.19277 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #cce2fb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 89.19277 
+L 189.1022 89.19277 
+L 189.1022 124.95157 
+L 120.84485 124.95157 
+L 120.84485 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #b8d5f8; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 89.19277 
+L 257.35955 89.19277 
+L 257.35955 124.95157 
+L 189.1022 124.95157 
+L 189.1022 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #195097; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 89.19277 
+L 325.6169 89.19277 
+L 325.6169 124.95157 
+L 257.35955 124.95157 
+L 257.35955 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #cae0fb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 89.19277 
+L 393.87425 89.19277 
+L 393.87425 124.95157 
+L 325.6169 124.95157 
+L 325.6169 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #cbe1fb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 89.19277 
+L 462.1316 89.19277 
+L 462.1316 124.95157 
+L 393.87425 124.95157 
+L 393.87425 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #2264b6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 89.19277 
+L 530.38895 89.19277 
+L 530.38895 124.95157 
+L 462.1316 124.95157 
+L 462.1316 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #0f3b74; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 89.19277 
+L 598.6463 89.19277 
+L 598.6463 124.95157 
+L 530.38895 124.95157 
+L 530.38895 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 89.19277 
+L 666.90365 89.19277 
+L 666.90365 124.95157 
+L 598.6463 124.95157 
+L 598.6463 89.19277 
+" clip-path="url(#p567d0bb407)" style="fill: #1a549d; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 124.95157 
-L 122.456075 124.95157 
-L 122.456075 160.71037 
+L 120.84485 124.95157 
+L 120.84485 160.71037 
 L 52.5875 160.71037 
 L 52.5875 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 124.95157 
-L 192.32465 124.95157 
-L 192.32465 160.71037 
-L 122.456075 160.71037 
-L 122.456075 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #e1e9f3; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 124.95157 
-L 262.193225 124.95157 
-L 262.193225 160.71037 
-L 192.32465 160.71037 
-L 192.32465 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #1b559e; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 124.95157 
-L 332.0618 124.95157 
-L 332.0618 160.71037 
-L 262.193225 160.71037 
-L 262.193225 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #d8e6f6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 124.95157 
-L 401.930375 124.95157 
-L 401.930375 160.71037 
-L 332.0618 160.71037 
-L 332.0618 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 124.95157 
-L 471.79895 124.95157 
-L 471.79895 160.71037 
-L 401.930375 160.71037 
-L 401.930375 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #65a2eb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 124.95157 
-L 541.667525 124.95157 
-L 541.667525 160.71037 
-L 471.79895 160.71037 
-L 471.79895 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #9cc4f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 124.95157 
-L 611.5361 124.95157 
-L 611.5361 160.71037 
-L 541.667525 160.71037 
-L 541.667525 124.95157 
-" clip-path="url(#pb267467c93)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 124.95157 
+L 189.1022 124.95157 
+L 189.1022 160.71037 
+L 120.84485 160.71037 
+L 120.84485 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #e1e9f3; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 124.95157 
+L 257.35955 124.95157 
+L 257.35955 160.71037 
+L 189.1022 160.71037 
+L 189.1022 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #1b559e; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 124.95157 
+L 325.6169 124.95157 
+L 325.6169 160.71037 
+L 257.35955 160.71037 
+L 257.35955 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #d8e6f6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 124.95157 
+L 393.87425 124.95157 
+L 393.87425 160.71037 
+L 325.6169 160.71037 
+L 325.6169 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 124.95157 
+L 462.1316 124.95157 
+L 462.1316 160.71037 
+L 393.87425 160.71037 
+L 393.87425 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #65a2eb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 124.95157 
+L 530.38895 124.95157 
+L 530.38895 160.71037 
+L 462.1316 160.71037 
+L 462.1316 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #9cc4f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 124.95157 
+L 598.6463 124.95157 
+L 598.6463 160.71037 
+L 530.38895 160.71037 
+L 530.38895 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 124.95157 
+L 666.90365 124.95157 
+L 666.90365 160.71037 
+L 598.6463 160.71037 
+L 598.6463 124.95157 
+" clip-path="url(#p567d0bb407)" style="fill: #d8e6f6; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 160.71037 
-L 122.456075 160.71037 
-L 122.456075 196.46917 
+L 120.84485 160.71037 
+L 120.84485 196.46917 
 L 52.5875 196.46917 
 L 52.5875 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 160.71037 
-L 192.32465 160.71037 
-L 192.32465 196.46917 
-L 122.456075 196.46917 
-L 122.456075 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #d7e6f7; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 160.71037 
-L 262.193225 160.71037 
-L 262.193225 196.46917 
-L 192.32465 196.46917 
-L 192.32465 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #174d92; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 160.71037 
-L 332.0618 160.71037 
-L 332.0618 196.46917 
-L 262.193225 196.46917 
-L 262.193225 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #2b72ca; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 160.71037 
-L 401.930375 160.71037 
-L 401.930375 196.46917 
-L 332.0618 196.46917 
-L 332.0618 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #d5e5f8; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 160.71037 
-L 471.79895 160.71037 
-L 471.79895 196.46917 
-L 401.930375 196.46917 
-L 401.930375 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #4e94e8; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 160.71037 
-L 541.667525 160.71037 
-L 541.667525 196.46917 
-L 471.79895 196.46917 
-L 471.79895 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #12417d; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 160.71037 
-L 611.5361 160.71037 
-L 611.5361 196.46917 
-L 541.667525 196.46917 
-L 541.667525 160.71037 
-" clip-path="url(#pb267467c93)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 160.71037 
+L 189.1022 160.71037 
+L 189.1022 196.46917 
+L 120.84485 196.46917 
+L 120.84485 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #d7e6f7; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 160.71037 
+L 257.35955 160.71037 
+L 257.35955 196.46917 
+L 189.1022 196.46917 
+L 189.1022 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #174d92; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 160.71037 
+L 325.6169 160.71037 
+L 325.6169 196.46917 
+L 257.35955 196.46917 
+L 257.35955 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #2b72ca; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 160.71037 
+L 393.87425 160.71037 
+L 393.87425 196.46917 
+L 325.6169 196.46917 
+L 325.6169 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #d5e5f8; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 160.71037 
+L 462.1316 160.71037 
+L 462.1316 196.46917 
+L 393.87425 196.46917 
+L 393.87425 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #4e94e8; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 160.71037 
+L 530.38895 160.71037 
+L 530.38895 196.46917 
+L 462.1316 196.46917 
+L 462.1316 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #12417d; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 160.71037 
+L 598.6463 160.71037 
+L 598.6463 196.46917 
+L 530.38895 196.46917 
+L 530.38895 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 160.71037 
+L 666.90365 160.71037 
+L 666.90365 196.46917 
+L 598.6463 196.46917 
+L 598.6463 160.71037 
+" clip-path="url(#p567d0bb407)" style="fill: #2b72ca; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 196.46917 
-L 122.456075 196.46917 
-L 122.456075 232.22797 
+L 120.84485 196.46917 
+L 120.84485 232.22797 
 L 52.5875 232.22797 
 L 52.5875 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #e9edef; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 196.46917 
-L 192.32465 196.46917 
-L 192.32465 232.22797 
-L 122.456075 232.22797 
-L 122.456075 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #edeeed; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 196.46917 
-L 262.193225 196.46917 
-L 262.193225 232.22797 
-L 192.32465 232.22797 
-L 192.32465 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 196.46917 
-L 332.0618 196.46917 
-L 332.0618 232.22797 
-L 262.193225 232.22797 
-L 262.193225 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #e2eaf2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 196.46917 
-L 401.930375 196.46917 
-L 401.930375 232.22797 
-L 332.0618 232.22797 
-L 332.0618 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #e5ebf1; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 196.46917 
-L 471.79895 196.46917 
-L 471.79895 232.22797 
-L 401.930375 232.22797 
-L 401.930375 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #3d89e6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 196.46917 
-L 541.667525 196.46917 
-L 541.667525 232.22797 
-L 471.79895 232.22797 
-L 471.79895 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #438de6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 196.46917 
-L 611.5361 196.46917 
-L 611.5361 232.22797 
-L 541.667525 232.22797 
-L 541.667525 196.46917 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #e9edef; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 196.46917 
+L 189.1022 196.46917 
+L 189.1022 232.22797 
+L 120.84485 232.22797 
+L 120.84485 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #edeeed; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 196.46917 
+L 257.35955 196.46917 
+L 257.35955 232.22797 
+L 189.1022 232.22797 
+L 189.1022 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 196.46917 
+L 325.6169 196.46917 
+L 325.6169 232.22797 
+L 257.35955 232.22797 
+L 257.35955 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #e2eaf2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 196.46917 
+L 393.87425 196.46917 
+L 393.87425 232.22797 
+L 325.6169 232.22797 
+L 325.6169 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #e5ebf1; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 196.46917 
+L 462.1316 196.46917 
+L 462.1316 232.22797 
+L 393.87425 232.22797 
+L 393.87425 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #3d89e6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 196.46917 
+L 530.38895 196.46917 
+L 530.38895 232.22797 
+L 462.1316 232.22797 
+L 462.1316 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #438de6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 196.46917 
+L 598.6463 196.46917 
+L 598.6463 232.22797 
+L 530.38895 232.22797 
+L 530.38895 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 196.46917 
+L 666.90365 196.46917 
+L 666.90365 232.22797 
+L 598.6463 232.22797 
+L 598.6463 196.46917 
+" clip-path="url(#p567d0bb407)" style="fill: #8fbcf2; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 232.22797 
-L 122.456075 232.22797 
-L 122.456075 267.98677 
+L 120.84485 232.22797 
+L 120.84485 267.98677 
 L 52.5875 267.98677 
 L 52.5875 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #dce8f5; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 232.22797 
-L 192.32465 232.22797 
-L 192.32465 267.98677 
-L 122.456075 267.98677 
-L 122.456075 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 232.22797 
-L 262.193225 232.22797 
-L 262.193225 267.98677 
-L 192.32465 267.98677 
-L 192.32465 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 232.22797 
-L 332.0618 232.22797 
-L 332.0618 267.98677 
-L 262.193225 267.98677 
-L 262.193225 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #286ec4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 232.22797 
-L 401.930375 232.22797 
-L 401.930375 267.98677 
-L 332.0618 267.98677 
-L 332.0618 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #cfe3fa; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 232.22797 
-L 471.79895 232.22797 
-L 471.79895 267.98677 
-L 401.930375 267.98677 
-L 401.930375 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #3d89e6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 232.22797 
-L 541.667525 232.22797 
-L 541.667525 267.98677 
-L 471.79895 267.98677 
-L 471.79895 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #113e79; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 232.22797 
-L 611.5361 232.22797 
-L 611.5361 267.98677 
-L 541.667525 267.98677 
-L 541.667525 232.22797 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #dce8f5; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 232.22797 
+L 189.1022 232.22797 
+L 189.1022 267.98677 
+L 120.84485 267.98677 
+L 120.84485 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 232.22797 
+L 257.35955 232.22797 
+L 257.35955 267.98677 
+L 189.1022 267.98677 
+L 189.1022 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 232.22797 
+L 325.6169 232.22797 
+L 325.6169 267.98677 
+L 257.35955 267.98677 
+L 257.35955 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #286ec4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 232.22797 
+L 393.87425 232.22797 
+L 393.87425 267.98677 
+L 325.6169 267.98677 
+L 325.6169 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #cfe3fa; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 232.22797 
+L 462.1316 232.22797 
+L 462.1316 267.98677 
+L 393.87425 267.98677 
+L 393.87425 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #3d89e6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 232.22797 
+L 530.38895 232.22797 
+L 530.38895 267.98677 
+L 462.1316 267.98677 
+L 462.1316 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #113e79; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 232.22797 
+L 598.6463 232.22797 
+L 598.6463 267.98677 
+L 530.38895 267.98677 
+L 530.38895 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 232.22797 
+L 666.90365 232.22797 
+L 666.90365 267.98677 
+L 598.6463 267.98677 
+L 598.6463 232.22797 
+" clip-path="url(#p567d0bb407)" style="fill: #286ec4; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 267.98677 
-L 122.456075 267.98677 
-L 122.456075 303.74557 
+L 120.84485 267.98677 
+L 120.84485 303.74557 
 L 52.5875 303.74557 
 L 52.5875 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #d9e6f6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 267.98677 
-L 192.32465 267.98677 
-L 192.32465 303.74557 
-L 122.456075 303.74557 
-L 122.456075 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #a0c6f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 267.98677 
-L 262.193225 267.98677 
-L 262.193225 303.74557 
-L 192.32465 303.74557 
-L 192.32465 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 267.98677 
-L 332.0618 267.98677 
-L 332.0618 303.74557 
-L 262.193225 303.74557 
-L 262.193225 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #71aaed; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 267.98677 
-L 401.930375 267.98677 
-L 401.930375 303.74557 
-L 332.0618 303.74557 
-L 332.0618 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 267.98677 
-L 471.79895 267.98677 
-L 471.79895 303.74557 
-L 401.930375 303.74557 
-L 401.930375 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #2467bb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 267.98677 
-L 541.667525 267.98677 
-L 541.667525 303.74557 
-L 471.79895 303.74557 
-L 471.79895 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #103e78; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 267.98677 
-L 611.5361 267.98677 
-L 611.5361 303.74557 
-L 541.667525 303.74557 
-L 541.667525 267.98677 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #d9e6f6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 267.98677 
+L 189.1022 267.98677 
+L 189.1022 303.74557 
+L 120.84485 303.74557 
+L 120.84485 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #a0c6f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 267.98677 
+L 257.35955 267.98677 
+L 257.35955 303.74557 
+L 189.1022 303.74557 
+L 189.1022 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #1c58a2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 267.98677 
+L 325.6169 267.98677 
+L 325.6169 303.74557 
+L 257.35955 303.74557 
+L 257.35955 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #71aaed; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 267.98677 
+L 393.87425 267.98677 
+L 393.87425 303.74557 
+L 325.6169 303.74557 
+L 325.6169 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 267.98677 
+L 462.1316 267.98677 
+L 462.1316 303.74557 
+L 393.87425 303.74557 
+L 393.87425 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #2467bb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 267.98677 
+L 530.38895 267.98677 
+L 530.38895 303.74557 
+L 462.1316 303.74557 
+L 462.1316 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #103e78; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 267.98677 
+L 598.6463 267.98677 
+L 598.6463 303.74557 
+L 530.38895 303.74557 
+L 530.38895 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 267.98677 
+L 666.90365 267.98677 
+L 666.90365 303.74557 
+L 598.6463 303.74557 
+L 598.6463 267.98677 
+" clip-path="url(#p567d0bb407)" style="fill: #70a9ed; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 303.74557 
-L 122.456075 303.74557 
-L 122.456075 339.50437 
+L 120.84485 303.74557 
+L 120.84485 339.50437 
 L 52.5875 339.50437 
 L 52.5875 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #e2eaf2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 303.74557 
-L 192.32465 303.74557 
-L 192.32465 339.50437 
-L 122.456075 339.50437 
-L 122.456075 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #d9e6f6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 303.74557 
-L 262.193225 303.74557 
-L 262.193225 339.50437 
-L 192.32465 339.50437 
-L 192.32465 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #1d5aa6; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 303.74557 
-L 332.0618 303.74557 
-L 332.0618 339.50437 
-L 262.193225 339.50437 
-L 262.193225 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #1b559e; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 303.74557 
-L 401.930375 303.74557 
-L 401.930375 339.50437 
-L 332.0618 339.50437 
-L 332.0618 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #d7e6f7; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 303.74557 
-L 471.79895 303.74557 
-L 471.79895 339.50437 
-L 401.930375 339.50437 
-L 401.930375 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #3581dd; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 303.74557 
-L 541.667525 303.74557 
-L 541.667525 339.50437 
-L 471.79895 339.50437 
-L 471.79895 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #0f3b74; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 303.74557 
-L 611.5361 303.74557 
-L 611.5361 339.50437 
-L 541.667525 339.50437 
-L 541.667525 303.74557 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #e2eaf2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 303.74557 
+L 189.1022 303.74557 
+L 189.1022 339.50437 
+L 120.84485 339.50437 
+L 120.84485 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #d9e6f6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 303.74557 
+L 257.35955 303.74557 
+L 257.35955 339.50437 
+L 189.1022 339.50437 
+L 189.1022 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #1d5aa6; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 303.74557 
+L 325.6169 303.74557 
+L 325.6169 339.50437 
+L 257.35955 339.50437 
+L 257.35955 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #1b559e; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 303.74557 
+L 393.87425 303.74557 
+L 393.87425 339.50437 
+L 325.6169 339.50437 
+L 325.6169 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #d7e6f7; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 303.74557 
+L 462.1316 303.74557 
+L 462.1316 339.50437 
+L 393.87425 339.50437 
+L 393.87425 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #3581dd; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 303.74557 
+L 530.38895 303.74557 
+L 530.38895 339.50437 
+L 462.1316 339.50437 
+L 462.1316 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #0f3b74; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 303.74557 
+L 598.6463 303.74557 
+L 598.6463 339.50437 
+L 530.38895 339.50437 
+L 530.38895 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 303.74557 
+L 666.90365 303.74557 
+L 666.90365 339.50437 
+L 598.6463 339.50437 
+L 598.6463 303.74557 
+" clip-path="url(#p567d0bb407)" style="fill: #1b559e; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 339.50437 
-L 122.456075 339.50437 
-L 122.456075 375.26317 
+L 120.84485 339.50437 
+L 120.84485 375.26317 
 L 52.5875 375.26317 
 L 52.5875 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 339.50437 
-L 192.32465 339.50437 
-L 192.32465 375.26317 
-L 122.456075 375.26317 
-L 122.456075 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 339.50437 
-L 262.193225 339.50437 
-L 262.193225 375.26317 
-L 192.32465 375.26317 
-L 192.32465 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #184e93; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 339.50437 
-L 332.0618 339.50437 
-L 332.0618 375.26317 
-L 262.193225 375.26317 
-L 262.193225 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #1e5ba8; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 339.50437 
-L 401.930375 339.50437 
-L 401.930375 375.26317 
-L 332.0618 375.26317 
-L 332.0618 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #e5ebf1; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 339.50437 
-L 471.79895 339.50437 
-L 471.79895 375.26317 
-L 401.930375 375.26317 
-L 401.930375 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #3886e4; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 339.50437 
-L 541.667525 339.50437 
-L 541.667525 375.26317 
-L 471.79895 375.26317 
-L 471.79895 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #2970c7; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 339.50437 
-L 611.5361 339.50437 
-L 611.5361 375.26317 
-L 541.667525 375.26317 
-L 541.667525 339.50437 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 339.50437 
+L 189.1022 339.50437 
+L 189.1022 375.26317 
+L 120.84485 375.26317 
+L 120.84485 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #dee8f4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 339.50437 
+L 257.35955 339.50437 
+L 257.35955 375.26317 
+L 189.1022 375.26317 
+L 189.1022 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #184e93; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 339.50437 
+L 325.6169 339.50437 
+L 325.6169 375.26317 
+L 257.35955 375.26317 
+L 257.35955 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #1e5ba8; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 339.50437 
+L 393.87425 339.50437 
+L 393.87425 375.26317 
+L 325.6169 375.26317 
+L 325.6169 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #e5ebf1; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 339.50437 
+L 462.1316 339.50437 
+L 462.1316 375.26317 
+L 393.87425 375.26317 
+L 393.87425 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #3886e4; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 339.50437 
+L 530.38895 339.50437 
+L 530.38895 375.26317 
+L 462.1316 375.26317 
+L 462.1316 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #2970c7; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 339.50437 
+L 598.6463 339.50437 
+L 598.6463 375.26317 
+L 530.38895 375.26317 
+L 530.38895 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 339.50437 
+L 666.90365 339.50437 
+L 666.90365 375.26317 
+L 598.6463 375.26317 
+L 598.6463 339.50437 
+" clip-path="url(#p567d0bb407)" style="fill: #1e5ba8; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 375.26317 
-L 122.456075 375.26317 
-L 122.456075 411.02197 
+L 120.84485 375.26317 
+L 120.84485 411.02197 
 L 52.5875 411.02197 
 L 52.5875 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 375.26317 
-L 192.32465 375.26317 
-L 192.32465 411.02197 
-L 122.456075 411.02197 
-L 122.456075 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 375.26317 
-L 262.193225 375.26317 
-L 262.193225 411.02197 
-L 192.32465 411.02197 
-L 192.32465 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #164b8f; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 375.26317 
-L 332.0618 375.26317 
-L 332.0618 411.02197 
-L 262.193225 411.02197 
-L 262.193225 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #2162b2; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 375.26317 
-L 401.930375 375.26317 
-L 401.930375 411.02197 
-L 332.0618 411.02197 
-L 332.0618 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 375.26317 
-L 471.79895 375.26317 
-L 471.79895 411.02197 
-L 401.930375 411.02197 
-L 401.930375 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 375.26317 
-L 541.667525 375.26317 
-L 541.667525 411.02197 
-L 471.79895 411.02197 
-L 471.79895 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 375.26317 
-L 611.5361 375.26317 
-L 611.5361 411.02197 
-L 541.667525 411.02197 
-L 541.667525 375.26317 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 375.26317 
+L 189.1022 375.26317 
+L 189.1022 411.02197 
+L 120.84485 411.02197 
+L 120.84485 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 375.26317 
+L 257.35955 375.26317 
+L 257.35955 411.02197 
+L 189.1022 411.02197 
+L 189.1022 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #164b8f; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 375.26317 
+L 325.6169 375.26317 
+L 325.6169 411.02197 
+L 257.35955 411.02197 
+L 257.35955 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #2162b2; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 375.26317 
+L 393.87425 375.26317 
+L 393.87425 411.02197 
+L 325.6169 411.02197 
+L 325.6169 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 375.26317 
+L 462.1316 375.26317 
+L 462.1316 411.02197 
+L 393.87425 411.02197 
+L 393.87425 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 375.26317 
+L 530.38895 375.26317 
+L 530.38895 411.02197 
+L 462.1316 411.02197 
+L 462.1316 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 375.26317 
+L 598.6463 375.26317 
+L 598.6463 411.02197 
+L 530.38895 411.02197 
+L 530.38895 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 375.26317 
+L 666.90365 375.26317 
+L 666.90365 411.02197 
+L 598.6463 411.02197 
+L 598.6463 375.26317 
+" clip-path="url(#p567d0bb407)" style="fill: #2162b2; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 411.02197 
-L 122.456075 411.02197 
-L 122.456075 446.78077 
+L 120.84485 411.02197 
+L 120.84485 446.78077 
 L 52.5875 446.78077 
 L 52.5875 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 411.02197 
-L 192.32465 411.02197 
-L 192.32465 446.78077 
-L 122.456075 446.78077 
-L 122.456075 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 411.02197 
-L 262.193225 411.02197 
-L 262.193225 446.78077 
-L 192.32465 446.78077 
-L 192.32465 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #164b8f; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 411.02197 
-L 332.0618 411.02197 
-L 332.0618 446.78077 
-L 262.193225 446.78077 
-L 262.193225 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 411.02197 
-L 401.930375 411.02197 
-L 401.930375 446.78077 
-L 332.0618 446.78077 
-L 332.0618 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 411.02197 
-L 471.79895 411.02197 
-L 471.79895 446.78077 
-L 401.930375 446.78077 
-L 401.930375 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 411.02197 
-L 541.667525 411.02197 
-L 541.667525 446.78077 
-L 471.79895 446.78077 
-L 471.79895 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 411.02197 
-L 611.5361 411.02197 
-L 611.5361 446.78077 
-L 541.667525 446.78077 
-L 541.667525 411.02197 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 411.02197 
+L 189.1022 411.02197 
+L 189.1022 446.78077 
+L 120.84485 446.78077 
+L 120.84485 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 411.02197 
+L 257.35955 411.02197 
+L 257.35955 446.78077 
+L 189.1022 446.78077 
+L 189.1022 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #164b8f; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 411.02197 
+L 325.6169 411.02197 
+L 325.6169 446.78077 
+L 257.35955 446.78077 
+L 257.35955 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #eeeeed; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 411.02197 
+L 393.87425 411.02197 
+L 393.87425 446.78077 
+L 325.6169 446.78077 
+L 325.6169 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 411.02197 
+L 462.1316 411.02197 
+L 462.1316 446.78077 
+L 393.87425 446.78077 
+L 393.87425 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 411.02197 
+L 530.38895 411.02197 
+L 530.38895 446.78077 
+L 462.1316 446.78077 
+L 462.1316 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 411.02197 
+L 598.6463 411.02197 
+L 598.6463 446.78077 
+L 530.38895 446.78077 
+L 530.38895 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 411.02197 
+L 666.90365 411.02197 
+L 666.90365 446.78077 
+L 598.6463 446.78077 
+L 598.6463 411.02197 
+" clip-path="url(#p567d0bb407)" style="fill: #4790e7; stroke: #fcfcfb; stroke-width: 2"/>
     <path d="M 52.5875 446.78077 
-L 122.456075 446.78077 
-L 122.456075 482.53957 
+L 120.84485 446.78077 
+L 120.84485 482.53957 
 L 52.5875 482.53957 
 L 52.5875 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 122.456075 446.78077 
-L 192.32465 446.78077 
-L 192.32465 482.53957 
-L 122.456075 482.53957 
-L 122.456075 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 192.32465 446.78077 
-L 262.193225 446.78077 
-L 262.193225 482.53957 
-L 192.32465 482.53957 
-L 192.32465 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #164b8e; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 262.193225 446.78077 
-L 332.0618 446.78077 
-L 332.0618 482.53957 
-L 262.193225 482.53957 
-L 262.193225 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 332.0618 446.78077 
-L 401.930375 446.78077 
-L 401.930375 482.53957 
-L 332.0618 482.53957 
-L 332.0618 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 401.930375 446.78077 
-L 471.79895 446.78077 
-L 471.79895 482.53957 
-L 401.930375 482.53957 
-L 401.930375 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 471.79895 446.78077 
-L 541.667525 446.78077 
-L 541.667525 482.53957 
-L 471.79895 482.53957 
-L 471.79895 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
-    <path d="M 541.667525 446.78077 
-L 611.5361 446.78077 
-L 611.5361 482.53957 
-L 541.667525 482.53957 
-L 541.667525 446.78077 
-" clip-path="url(#pb267467c93)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+" clip-path="url(#p567d0bb407)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 120.84485 446.78077 
+L 189.1022 446.78077 
+L 189.1022 482.53957 
+L 120.84485 482.53957 
+L 120.84485 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 189.1022 446.78077 
+L 257.35955 446.78077 
+L 257.35955 482.53957 
+L 189.1022 482.53957 
+L 189.1022 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #164b8e; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 257.35955 446.78077 
+L 325.6169 446.78077 
+L 325.6169 482.53957 
+L 257.35955 482.53957 
+L 257.35955 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #efefec; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 325.6169 446.78077 
+L 393.87425 446.78077 
+L 393.87425 482.53957 
+L 325.6169 482.53957 
+L 325.6169 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 393.87425 446.78077 
+L 462.1316 446.78077 
+L 462.1316 482.53957 
+L 393.87425 482.53957 
+L 393.87425 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 462.1316 446.78077 
+L 530.38895 446.78077 
+L 530.38895 482.53957 
+L 462.1316 482.53957 
+L 462.1316 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 530.38895 446.78077 
+L 598.6463 446.78077 
+L 598.6463 482.53957 
+L 530.38895 482.53957 
+L 530.38895 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #fcfcfb; stroke: #fcfcfb; stroke-width: 2"/>
+    <path d="M 598.6463 446.78077 
+L 666.90365 446.78077 
+L 666.90365 482.53957 
+L 598.6463 482.53957 
+L 598.6463 446.78077 
+" clip-path="url(#p567d0bb407)" style="fill: #317cd6; stroke: #fcfcfb; stroke-width: 2"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1"/>
      <g id="text_1">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="87.521788" y="48.250376" transform="rotate(-0 87.521788 48.250376)">A0</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="86.716175" y="48.250376" transform="rotate(-0 86.716175 48.250376)">A0</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_2"/>
      <g id="text_2">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="157.390362" y="48.250376" transform="rotate(-0 157.390362 48.250376)">A1</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="154.973525" y="48.250376" transform="rotate(-0 154.973525 48.250376)">A1</text>
      </g>
     </g>
     <g id="xtick_3">
      <g id="line2d_3"/>
      <g id="text_3">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="227.258937" y="48.250376" transform="rotate(-0 227.258937 48.250376)">A2</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="223.230875" y="48.250376" transform="rotate(-0 223.230875 48.250376)">A2</text>
      </g>
     </g>
     <g id="xtick_4">
      <g id="line2d_4"/>
      <g id="text_4">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="297.127512" y="48.250376" transform="rotate(-0 297.127512 48.250376)">A3</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="291.488225" y="48.250376" transform="rotate(-0 291.488225 48.250376)">A3</text>
      </g>
     </g>
     <g id="xtick_5">
      <g id="line2d_5"/>
      <g id="text_5">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="366.996087" y="48.09397" transform="rotate(-0 366.996087 48.09397)">A4q3</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="359.745575" y="48.09397" transform="rotate(-0 359.745575 48.09397)">A4q3</text>
      </g>
     </g>
     <g id="xtick_6">
      <g id="line2d_6"/>
      <g id="text_6">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="436.864663" y="48.250376" transform="rotate(-0 436.864663 48.250376)">A5raw</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="428.002925" y="48.250376" transform="rotate(-0 428.002925 48.250376)">A5raw</text>
      </g>
     </g>
     <g id="xtick_7">
      <g id="line2d_7"/>
      <g id="text_7">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="506.733237" y="48.250376" transform="rotate(-0 506.733237 48.250376)">A5bon</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="496.260275" y="48.250376" transform="rotate(-0 496.260275 48.250376)">A5bon</text>
      </g>
     </g>
     <g id="xtick_8">
      <g id="line2d_8"/>
      <g id="text_8">
-      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="576.601812" y="48.09397" transform="rotate(-0 576.601812 48.09397)">A4q4</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="564.517625" y="48.09397" transform="rotate(-0 564.517625 48.09397)">A4q4</text>
+     </g>
+    </g>
+    <g id="xtick_9">
+     <g id="line2d_9"/>
+     <g id="text_9">
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #52514e" transform="translate(620.72185 38.869204)">A3max</text>
+      <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #52514e" transform="translate(596.242475 47.526079)">(post-hoc sensitivity)</text>
      </g>
     </g>
    </g>
    <g id="matplotlib.axis_2">
     <g id="ytick_1">
-     <g id="line2d_9"/>
-     <g id="text_9">
+     <g id="line2d_10"/>
+     <g id="text_10">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="74.225479" transform="rotate(-0 49.0875 74.225479)">BASE</text>
      </g>
     </g>
     <g id="ytick_2">
-     <g id="line2d_10"/>
-     <g id="text_10">
+     <g id="line2d_11"/>
+     <g id="text_11">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="109.984279" transform="rotate(-0 49.0875 109.984279)">SDT</text>
      </g>
     </g>
     <g id="ytick_3">
-     <g id="line2d_11"/>
-     <g id="text_11">
+     <g id="line2d_12"/>
+     <g id="text_12">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="145.743079" transform="rotate(-0 49.0875 145.743079)">GC</text>
      </g>
     </g>
     <g id="ytick_4">
-     <g id="line2d_12"/>
-     <g id="text_12">
+     <g id="line2d_13"/>
+     <g id="text_13">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="181.501879" transform="rotate(-0 49.0875 181.501879)">IL</text>
      </g>
     </g>
     <g id="ytick_5">
-     <g id="line2d_13"/>
-     <g id="text_13">
+     <g id="line2d_14"/>
+     <g id="text_14">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="217.260679" transform="rotate(-0 49.0875 217.260679)">RL</text>
      </g>
     </g>
     <g id="ytick_6">
-     <g id="line2d_14"/>
-     <g id="text_14">
+     <g id="line2d_15"/>
+     <g id="text_15">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="253.06862" transform="rotate(-0 49.0875 253.06862)">RL_noguard</text>
      </g>
     </g>
     <g id="ytick_7">
-     <g id="line2d_15"/>
-     <g id="text_15">
+     <g id="line2d_16"/>
+     <g id="text_16">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="288.778279" transform="rotate(-0 49.0875 288.778279)">ST</text>
      </g>
     </g>
     <g id="ytick_8">
-     <g id="line2d_16"/>
-     <g id="text_16">
+     <g id="line2d_17"/>
+     <g id="text_17">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="324.537079" transform="rotate(-0 49.0875 324.537079)">SP</text>
      </g>
     </g>
     <g id="ytick_9">
-     <g id="line2d_17"/>
-     <g id="text_17">
+     <g id="line2d_18"/>
+     <g id="text_18">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="360.295879" transform="rotate(-0 49.0875 360.295879)">AM</text>
      </g>
     </g>
     <g id="ytick_10">
-     <g id="line2d_18"/>
-     <g id="text_18">
+     <g id="line2d_19"/>
+     <g id="text_19">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="396.10382" transform="rotate(-0 49.0875 396.10382)">AM_rand0</text>
      </g>
     </g>
     <g id="ytick_11">
-     <g id="line2d_19"/>
-     <g id="text_19">
+     <g id="line2d_20"/>
+     <g id="text_20">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="431.86262" transform="rotate(-0 49.0875 431.86262)">AM_rand1</text>
      </g>
     </g>
     <g id="ytick_12">
-     <g id="line2d_20"/>
-     <g id="text_20">
+     <g id="line2d_21"/>
+     <g id="text_21">
       <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="49.0875" y="467.62142" transform="rotate(-0 49.0875 467.62142)">AM_all</text>
      </g>
     </g>
    </g>
-   <g id="text_21">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="70.652373" transform="rotate(-0 87.521788 70.652373)">8%</text>
-   </g>
    <g id="text_22">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="80.862435" transform="rotate(-0 87.521788 80.862435)">5%–12%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="70.652373" transform="rotate(-0 86.716175 70.652373)">8%</text>
    </g>
    <g id="text_23">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="70.652373" transform="rotate(-0 157.390362 70.652373)">8%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="80.862435" transform="rotate(-0 86.716175 80.862435)">5%–12%</text>
    </g>
    <g id="text_24">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="80.862435" transform="rotate(-0 157.390362 80.862435)">4%–12%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="70.652373" transform="rotate(-0 154.973525 70.652373)">8%</text>
    </g>
    <g id="text_25">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="70.652373" transform="rotate(-0 227.258937 70.652373)">81%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="80.862435" transform="rotate(-0 154.973525 80.862435)">4%–12%</text>
    </g>
    <g id="text_26">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="80.862435" transform="rotate(-0 227.258937 80.862435)">76%–86%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="70.652373" transform="rotate(-0 223.230875 70.652373)">81%</text>
    </g>
    <g id="text_27">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="70.652373" transform="rotate(-0 297.127512 70.652373)">70%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="80.862435" transform="rotate(-0 223.230875 80.862435)">76%–86%</text>
    </g>
    <g id="text_28">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="80.862435" transform="rotate(-0 297.127512 80.862435)">63%–76%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="70.652373" transform="rotate(-0 291.488225 70.652373)">70%</text>
    </g>
    <g id="text_29">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="70.652373" transform="rotate(-0 366.996087 70.652373)">14%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="80.862435" transform="rotate(-0 291.488225 80.862435)">63%–76%</text>
    </g>
    <g id="text_30">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="80.862435" transform="rotate(-0 366.996087 80.862435)">9%–18%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="70.652373" transform="rotate(-0 359.745575 70.652373)">14%</text>
    </g>
    <g id="text_31">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="70.652373" transform="rotate(-0 436.864663 70.652373)">56%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="80.862435" transform="rotate(-0 359.745575 80.862435)">9%–18%</text>
    </g>
    <g id="text_32">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="80.862435" transform="rotate(-0 436.864663 80.862435)">50%–63%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="70.652373" transform="rotate(-0 428.002925 70.652373)">56%</text>
    </g>
    <g id="text_33">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="70.652373" transform="rotate(-0 506.733237 70.652373)">95%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="80.862435" transform="rotate(-0 428.002925 80.862435)">50%–63%</text>
    </g>
    <g id="text_34">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="80.862435" transform="rotate(-0 506.733237 80.862435)">92%–98%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="70.652373" transform="rotate(-0 496.260275 70.652373)">95%</text>
    </g>
    <g id="text_35">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="576.601812" y="70.652373" transform="rotate(-0 576.601812 70.652373)">10%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="80.862435" transform="rotate(-0 496.260275 80.862435)">92%–98%</text>
    </g>
    <g id="text_36">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="576.601812" y="80.862435" transform="rotate(-0 576.601812 80.862435)">6%–14%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="564.517625" y="70.652373" transform="rotate(-0 564.517625 70.652373)">10%</text>
    </g>
    <g id="text_37">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="106.411173" transform="rotate(-0 87.521788 106.411173)">14%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="564.517625" y="80.862435" transform="rotate(-0 564.517625 80.862435)">6%–14%</text>
    </g>
    <g id="text_38">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="116.621235" transform="rotate(-0 87.521788 116.621235)">10%–20%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="70.652373" transform="rotate(-0 632.774975 70.652373)">70%</text>
    </g>
    <g id="text_39">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="106.411173" transform="rotate(-0 157.390362 106.411173)">21%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="80.862435" transform="rotate(-0 632.774975 80.862435)">63%–76%</text>
    </g>
    <g id="text_40">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="116.621235" transform="rotate(-0 157.390362 116.621235)">16%–26%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="106.411173" transform="rotate(-0 86.716175 106.411173)">14%</text>
    </g>
    <g id="text_41">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="106.411173" transform="rotate(-0 227.258937 106.411173)">85%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="116.621235" transform="rotate(-0 86.716175 116.621235)">10%–20%</text>
    </g>
    <g id="text_42">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="116.621235" transform="rotate(-0 227.258937 116.621235)">80%–90%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="106.411173" transform="rotate(-0 154.973525 106.411173)">21%</text>
    </g>
    <g id="text_43">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="106.411173" transform="rotate(-0 297.127512 106.411173)">16%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="116.621235" transform="rotate(-0 154.973525 116.621235)">16%–26%</text>
    </g>
    <g id="text_44">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="116.621235" transform="rotate(-0 297.127512 116.621235)">10%–20%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="106.411173" transform="rotate(-0 223.230875 106.411173)">85%</text>
    </g>
    <g id="text_45">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="106.411173" transform="rotate(-0 366.996087 106.411173)">15%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="116.621235" transform="rotate(-0 223.230875 116.621235)">80%–90%</text>
    </g>
    <g id="text_46">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="116.621235" transform="rotate(-0 366.996087 116.621235)">10%–20%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="106.411173" transform="rotate(-0 291.488225 106.411173)">16%</text>
    </g>
    <g id="text_47">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="106.411173" transform="rotate(-0 436.864663 106.411173)">74%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="116.621235" transform="rotate(-0 291.488225 116.621235)">10%–20%</text>
    </g>
    <g id="text_48">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="116.621235" transform="rotate(-0 436.864663 116.621235)">68%–80%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="106.411173" transform="rotate(-0 359.745575 106.411173)">15%</text>
    </g>
    <g id="text_49">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="106.411173" transform="rotate(-0 506.733237 106.411173)">96%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="116.621235" transform="rotate(-0 359.745575 116.621235)">10%–20%</text>
    </g>
    <g id="text_50">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="116.621235" transform="rotate(-0 506.733237 116.621235)">94%–99%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="106.411173" transform="rotate(-0 428.002925 106.411173)">74%</text>
    </g>
    <g id="text_51">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="109.142482" transform="rotate(-0 576.601812 109.142482)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="116.621235" transform="rotate(-0 428.002925 116.621235)">68%–80%</text>
    </g>
    <g id="text_52">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="142.169973" transform="rotate(-0 87.521788 142.169973)">1%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="106.411173" transform="rotate(-0 496.260275 106.411173)">96%</text>
    </g>
    <g id="text_53">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="152.380035" transform="rotate(-0 87.521788 152.380035)">0%–2%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="116.621235" transform="rotate(-0 496.260275 116.621235)">94%–99%</text>
    </g>
    <g id="text_54">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="142.169973" transform="rotate(-0 157.390362 142.169973)">6%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="109.142482" transform="rotate(-0 564.517625 109.142482)">–</text>
    </g>
    <g id="text_55">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="152.380035" transform="rotate(-0 157.390362 152.380035)">4%–10%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="106.411173" transform="rotate(-0 632.774975 106.411173)">83%</text>
    </g>
    <g id="text_56">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="142.169973" transform="rotate(-0 227.258937 142.169973)">82%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="116.621235" transform="rotate(-0 632.774975 116.621235)">78%–88%</text>
    </g>
    <g id="text_57">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="152.380035" transform="rotate(-0 227.258937 152.380035)">77%–88%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="142.169973" transform="rotate(-0 86.716175 142.169973)">1%</text>
    </g>
    <g id="text_58">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="142.169973" transform="rotate(-0 297.127512 142.169973)">10%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="152.380035" transform="rotate(-0 86.716175 152.380035)">0%–2%</text>
    </g>
    <g id="text_59">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="152.380035" transform="rotate(-0 297.127512 152.380035)">6%–14%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="142.169973" transform="rotate(-0 154.973525 142.169973)">6%</text>
    </g>
    <g id="text_60">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="142.169973" transform="rotate(-0 366.996087 142.169973)">1%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="152.380035" transform="rotate(-0 154.973525 152.380035)">4%–10%</text>
    </g>
    <g id="text_61">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="152.380035" transform="rotate(-0 366.996087 152.380035)">0%–2%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="142.169973" transform="rotate(-0 223.230875 142.169973)">82%</text>
    </g>
    <g id="text_62">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="436.864663" y="142.169973" transform="rotate(-0 436.864663 142.169973)">45%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="152.380035" transform="rotate(-0 223.230875 152.380035)">77%–88%</text>
    </g>
    <g id="text_63">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="436.864663" y="152.380035" transform="rotate(-0 436.864663 152.380035)">38%–52%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="142.169973" transform="rotate(-0 291.488225 142.169973)">10%</text>
    </g>
    <g id="text_64">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="506.733237" y="142.169973" transform="rotate(-0 506.733237 142.169973)">29%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="152.380035" transform="rotate(-0 291.488225 152.380035)">6%–14%</text>
    </g>
    <g id="text_65">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="506.733237" y="152.380035" transform="rotate(-0 506.733237 152.380035)">22%–36%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="142.169973" transform="rotate(-0 359.745575 142.169973)">1%</text>
    </g>
    <g id="text_66">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="576.601812" y="142.169973" transform="rotate(-0 576.601812 142.169973)">0%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="152.380035" transform="rotate(-0 359.745575 152.380035)">0%–2%</text>
    </g>
    <g id="text_67">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="576.601812" y="152.380035" transform="rotate(-0 576.601812 152.380035)">0%–2%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="428.002925" y="142.169973" transform="rotate(-0 428.002925 142.169973)">45%</text>
    </g>
    <g id="text_68">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="177.928773" transform="rotate(-0 87.521788 177.928773)">8%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="428.002925" y="152.380035" transform="rotate(-0 428.002925 152.380035)">38%–52%</text>
    </g>
    <g id="text_69">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="188.138835" transform="rotate(-0 87.521788 188.138835)">4%–12%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="496.260275" y="142.169973" transform="rotate(-0 496.260275 142.169973)">29%</text>
    </g>
    <g id="text_70">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="177.928773" transform="rotate(-0 157.390362 177.928773)">10%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="496.260275" y="152.380035" transform="rotate(-0 496.260275 152.380035)">22%–36%</text>
    </g>
    <g id="text_71">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="188.138835" transform="rotate(-0 157.390362 188.138835)">6%–15%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="564.517625" y="142.169973" transform="rotate(-0 564.517625 142.169973)">0%</text>
    </g>
    <g id="text_72">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="177.928773" transform="rotate(-0 227.258937 177.928773)">86%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="564.517625" y="152.380035" transform="rotate(-0 564.517625 152.380035)">0%–2%</text>
    </g>
    <g id="text_73">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="188.138835" transform="rotate(-0 227.258937 188.138835)">82%–91%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="142.169973" transform="rotate(-0 632.774975 142.169973)">10%</text>
    </g>
    <g id="text_74">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="177.928773" transform="rotate(-0 297.127512 177.928773)">68%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="152.380035" transform="rotate(-0 632.774975 152.380035)">6%–14%</text>
    </g>
    <g id="text_75">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="188.138835" transform="rotate(-0 297.127512 188.138835)">61%–74%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="177.928773" transform="rotate(-0 86.716175 177.928773)">8%</text>
    </g>
    <g id="text_76">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="177.928773" transform="rotate(-0 366.996087 177.928773)">11%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="188.138835" transform="rotate(-0 86.716175 188.138835)">4%–12%</text>
    </g>
    <g id="text_77">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="188.138835" transform="rotate(-0 366.996087 188.138835)">7%–16%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="177.928773" transform="rotate(-0 154.973525 177.928773)">10%</text>
    </g>
    <g id="text_78">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="436.864663" y="177.928773" transform="rotate(-0 436.864663 177.928773)">52%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="188.138835" transform="rotate(-0 154.973525 188.138835)">6%–15%</text>
    </g>
    <g id="text_79">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="436.864663" y="188.138835" transform="rotate(-0 436.864663 188.138835)">45%–58%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="177.928773" transform="rotate(-0 223.230875 177.928773)">86%</text>
    </g>
    <g id="text_80">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="177.928773" transform="rotate(-0 506.733237 177.928773)">94%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="188.138835" transform="rotate(-0 223.230875 188.138835)">82%–91%</text>
    </g>
    <g id="text_81">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="188.138835" transform="rotate(-0 506.733237 188.138835)">90%–97%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="177.928773" transform="rotate(-0 291.488225 177.928773)">68%</text>
    </g>
    <g id="text_82">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="576.601812" y="177.928773" transform="rotate(-0 576.601812 177.928773)">8%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="188.138835" transform="rotate(-0 291.488225 188.138835)">61%–74%</text>
    </g>
    <g id="text_83">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="576.601812" y="188.138835" transform="rotate(-0 576.601812 188.138835)">4%–12%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="177.928773" transform="rotate(-0 359.745575 177.928773)">11%</text>
    </g>
    <g id="text_84">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="213.687573" transform="rotate(-0 87.521788 213.687573)">3%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="188.138835" transform="rotate(-0 359.745575 188.138835)">7%–16%</text>
    </g>
    <g id="text_85">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="223.897635" transform="rotate(-0 87.521788 223.897635)">1%–6%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="428.002925" y="177.928773" transform="rotate(-0 428.002925 177.928773)">52%</text>
    </g>
    <g id="text_86">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="213.687573" transform="rotate(-0 157.390362 213.687573)">2%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="428.002925" y="188.138835" transform="rotate(-0 428.002925 188.138835)">45%–58%</text>
    </g>
    <g id="text_87">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="223.897635" transform="rotate(-0 157.390362 223.897635)">0%–4%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="177.928773" transform="rotate(-0 496.260275 177.928773)">94%</text>
    </g>
    <g id="text_88">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="213.687573" transform="rotate(-0 227.258937 213.687573)">81%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="188.138835" transform="rotate(-0 496.260275 188.138835)">90%–97%</text>
    </g>
    <g id="text_89">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="223.897635" transform="rotate(-0 227.258937 223.897635)">76%–86%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="564.517625" y="177.928773" transform="rotate(-0 564.517625 177.928773)">8%</text>
    </g>
    <g id="text_90">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="213.687573" transform="rotate(-0 297.127512 213.687573)">6%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="564.517625" y="188.138835" transform="rotate(-0 564.517625 188.138835)">4%–12%</text>
    </g>
    <g id="text_91">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="223.897635" transform="rotate(-0 297.127512 223.897635)">3%–10%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="177.928773" transform="rotate(-0 632.774975 177.928773)">68%</text>
    </g>
    <g id="text_92">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="213.687573" transform="rotate(-0 366.996087 213.687573)">4%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="188.138835" transform="rotate(-0 632.774975 188.138835)">61%–74%</text>
    </g>
    <g id="text_93">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="223.897635" transform="rotate(-0 366.996087 223.897635)">2%–8%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="213.687573" transform="rotate(-0 86.716175 213.687573)">3%</text>
    </g>
    <g id="text_94">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="213.687573" transform="rotate(-0 436.864663 213.687573)">56%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="223.897635" transform="rotate(-0 86.716175 223.897635)">1%–6%</text>
    </g>
    <g id="text_95">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="223.897635" transform="rotate(-0 436.864663 223.897635)">50%–63%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="213.687573" transform="rotate(-0 154.973525 213.687573)">2%</text>
    </g>
    <g id="text_96">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="506.733237" y="213.687573" transform="rotate(-0 506.733237 213.687573)">55%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="223.897635" transform="rotate(-0 154.973525 223.897635)">0%–4%</text>
    </g>
    <g id="text_97">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="506.733237" y="223.897635" transform="rotate(-0 506.733237 223.897635)">48%–62%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="213.687573" transform="rotate(-0 223.230875 213.687573)">81%</text>
    </g>
    <g id="text_98">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="216.418882" transform="rotate(-0 576.601812 216.418882)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="223.897635" transform="rotate(-0 223.230875 223.897635)">76%–86%</text>
    </g>
    <g id="text_99">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="249.446373" transform="rotate(-0 87.521788 249.446373)">8%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="213.687573" transform="rotate(-0 291.488225 213.687573)">6%</text>
    </g>
    <g id="text_100">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="259.656435" transform="rotate(-0 87.521788 259.656435)">5%–12%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="223.897635" transform="rotate(-0 291.488225 223.897635)">3%–10%</text>
    </g>
    <g id="text_101">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="249.446373" transform="rotate(-0 157.390362 249.446373)">8%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="213.687573" transform="rotate(-0 359.745575 213.687573)">4%</text>
    </g>
    <g id="text_102">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="259.656435" transform="rotate(-0 157.390362 259.656435)">4%–12%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="223.897635" transform="rotate(-0 359.745575 223.897635)">2%–8%</text>
    </g>
    <g id="text_103">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="249.446373" transform="rotate(-0 227.258937 249.446373)">81%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="213.687573" transform="rotate(-0 428.002925 213.687573)">56%</text>
    </g>
    <g id="text_104">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="259.656435" transform="rotate(-0 227.258937 259.656435)">76%–86%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="223.897635" transform="rotate(-0 428.002925 223.897635)">50%–63%</text>
    </g>
    <g id="text_105">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="249.446373" transform="rotate(-0 297.127512 249.446373)">70%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="496.260275" y="213.687573" transform="rotate(-0 496.260275 213.687573)">55%</text>
    </g>
    <g id="text_106">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="259.656435" transform="rotate(-0 297.127512 259.656435)">63%–76%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="496.260275" y="223.897635" transform="rotate(-0 496.260275 223.897635)">48%–62%</text>
    </g>
    <g id="text_107">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="249.446373" transform="rotate(-0 366.996087 249.446373)">14%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="216.418882" transform="rotate(-0 564.517625 216.418882)">–</text>
    </g>
    <g id="text_108">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="259.656435" transform="rotate(-0 366.996087 259.656435)">9%–18%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="213.687573" transform="rotate(-0 632.774975 213.687573)">33%</text>
    </g>
    <g id="text_109">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="249.446373" transform="rotate(-0 436.864663 249.446373)">56%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="223.897635" transform="rotate(-0 632.774975 223.897635)">26%–40%</text>
    </g>
    <g id="text_110">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="259.656435" transform="rotate(-0 436.864663 259.656435)">50%–63%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="249.446373" transform="rotate(-0 86.716175 249.446373)">8%</text>
    </g>
    <g id="text_111">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="249.446373" transform="rotate(-0 506.733237 249.446373)">95%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="259.656435" transform="rotate(-0 86.716175 259.656435)">5%–12%</text>
    </g>
    <g id="text_112">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="259.656435" transform="rotate(-0 506.733237 259.656435)">92%–98%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="249.446373" transform="rotate(-0 154.973525 249.446373)">8%</text>
    </g>
    <g id="text_113">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="252.177682" transform="rotate(-0 576.601812 252.177682)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="259.656435" transform="rotate(-0 154.973525 259.656435)">4%–12%</text>
    </g>
    <g id="text_114">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="285.205173" transform="rotate(-0 87.521788 285.205173)">10%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="249.446373" transform="rotate(-0 223.230875 249.446373)">81%</text>
    </g>
    <g id="text_115">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="295.415235" transform="rotate(-0 87.521788 295.415235)">6%–14%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="259.656435" transform="rotate(-0 223.230875 259.656435)">76%–86%</text>
    </g>
    <g id="text_116">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="285.205173" transform="rotate(-0 157.390362 285.205173)">28%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="249.446373" transform="rotate(-0 291.488225 249.446373)">70%</text>
    </g>
    <g id="text_117">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="295.415235" transform="rotate(-0 157.390362 295.415235)">22%–34%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="259.656435" transform="rotate(-0 291.488225 259.656435)">63%–76%</text>
    </g>
    <g id="text_118">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="285.205173" transform="rotate(-0 227.258937 285.205173)">81%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="249.446373" transform="rotate(-0 359.745575 249.446373)">14%</text>
    </g>
    <g id="text_119">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="295.415235" transform="rotate(-0 227.258937 295.415235)">76%–86%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="259.656435" transform="rotate(-0 359.745575 259.656435)">9%–18%</text>
    </g>
    <g id="text_120">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="285.205173" transform="rotate(-0 297.127512 285.205173)">42%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="249.446373" transform="rotate(-0 428.002925 249.446373)">56%</text>
    </g>
    <g id="text_121">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="295.415235" transform="rotate(-0 297.127512 295.415235)">34%–48%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="259.656435" transform="rotate(-0 428.002925 259.656435)">50%–63%</text>
    </g>
    <g id="text_122">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="285.205173" transform="rotate(-0 366.996087 285.205173)">8%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="249.446373" transform="rotate(-0 496.260275 249.446373)">95%</text>
    </g>
    <g id="text_123">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="295.415235" transform="rotate(-0 366.996087 295.415235)">4%–12%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="259.656435" transform="rotate(-0 496.260275 259.656435)">92%–98%</text>
    </g>
    <g id="text_124">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="285.205173" transform="rotate(-0 436.864663 285.205173)">73%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="252.177682" transform="rotate(-0 564.517625 252.177682)">–</text>
    </g>
    <g id="text_125">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="295.415235" transform="rotate(-0 436.864663 295.415235)">67%–79%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="249.446373" transform="rotate(-0 632.774975 249.446373)">70%</text>
    </g>
    <g id="text_126">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="285.205173" transform="rotate(-0 506.733237 285.205173)">96%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="259.656435" transform="rotate(-0 632.774975 259.656435)">63%–76%</text>
    </g>
    <g id="text_127">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="295.415235" transform="rotate(-0 506.733237 295.415235)">92%–98%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="285.205173" transform="rotate(-0 86.716175 285.205173)">10%</text>
    </g>
    <g id="text_128">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="287.936482" transform="rotate(-0 576.601812 287.936482)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="295.415235" transform="rotate(-0 86.716175 295.415235)">6%–14%</text>
    </g>
    <g id="text_129">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="320.963973" transform="rotate(-0 87.521788 320.963973)">6%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="285.205173" transform="rotate(-0 154.973525 285.205173)">28%</text>
    </g>
    <g id="text_130">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="331.174035" transform="rotate(-0 87.521788 331.174035)">3%–10%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="295.415235" transform="rotate(-0 154.973525 295.415235)">22%–34%</text>
    </g>
    <g id="text_131">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="320.963973" transform="rotate(-0 157.390362 320.963973)">10%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="285.205173" transform="rotate(-0 223.230875 285.205173)">81%</text>
    </g>
    <g id="text_132">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="331.174035" transform="rotate(-0 157.390362 331.174035)">6%–14%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="295.415235" transform="rotate(-0 223.230875 295.415235)">76%–86%</text>
    </g>
    <g id="text_133">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="320.963973" transform="rotate(-0 227.258937 320.963973)">80%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="285.205173" transform="rotate(-0 291.488225 285.205173)">42%</text>
    </g>
    <g id="text_134">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="331.174035" transform="rotate(-0 227.258937 331.174035)">74%–86%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="295.415235" transform="rotate(-0 291.488225 295.415235)">34%–48%</text>
    </g>
    <g id="text_135">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="320.963973" transform="rotate(-0 297.127512 320.963973)">82%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="285.205173" transform="rotate(-0 359.745575 285.205173)">8%</text>
    </g>
    <g id="text_136">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="331.174035" transform="rotate(-0 297.127512 331.174035)">77%–88%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="295.415235" transform="rotate(-0 359.745575 295.415235)">4%–12%</text>
    </g>
    <g id="text_137">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="320.963973" transform="rotate(-0 366.996087 320.963973)">10%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="285.205173" transform="rotate(-0 428.002925 285.205173)">73%</text>
    </g>
    <g id="text_138">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="331.174035" transform="rotate(-0 366.996087 331.174035)">6%–15%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="295.415235" transform="rotate(-0 428.002925 295.415235)">67%–79%</text>
    </g>
    <g id="text_139">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="320.963973" transform="rotate(-0 436.864663 320.963973)">60%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="285.205173" transform="rotate(-0 496.260275 285.205173)">96%</text>
    </g>
    <g id="text_140">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="331.174035" transform="rotate(-0 436.864663 331.174035)">54%–66%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="295.415235" transform="rotate(-0 496.260275 295.415235)">92%–98%</text>
    </g>
    <g id="text_141">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="320.963973" transform="rotate(-0 506.733237 320.963973)">96%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="287.936482" transform="rotate(-0 564.517625 287.936482)">–</text>
    </g>
    <g id="text_142">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="331.174035" transform="rotate(-0 506.733237 331.174035)">94%–99%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="285.205173" transform="rotate(-0 632.774975 285.205173)">42%</text>
    </g>
    <g id="text_143">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="323.695282" transform="rotate(-0 576.601812 323.695282)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="295.415235" transform="rotate(-0 632.774975 295.415235)">35%–48%</text>
    </g>
    <g id="text_144">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="356.722773" transform="rotate(-0 87.521788 356.722773)">1%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="320.963973" transform="rotate(-0 86.716175 320.963973)">6%</text>
    </g>
    <g id="text_145">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="366.932835" transform="rotate(-0 87.521788 366.932835)">0%–2%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="331.174035" transform="rotate(-0 86.716175 331.174035)">3%–10%</text>
    </g>
    <g id="text_146">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="356.722773" transform="rotate(-0 157.390362 356.722773)">8%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="320.963973" transform="rotate(-0 154.973525 320.963973)">10%</text>
    </g>
    <g id="text_147">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="157.390362" y="366.932835" transform="rotate(-0 157.390362 366.932835)">4%–12%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="331.174035" transform="rotate(-0 154.973525 331.174035)">6%–14%</text>
    </g>
    <g id="text_148">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="356.722773" transform="rotate(-0 227.258937 356.722773)">86%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="320.963973" transform="rotate(-0 223.230875 320.963973)">80%</text>
    </g>
    <g id="text_149">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="366.932835" transform="rotate(-0 227.258937 366.932835)">81%–90%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="331.174035" transform="rotate(-0 223.230875 331.174035)">74%–86%</text>
    </g>
    <g id="text_150">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="356.722773" transform="rotate(-0 297.127512 356.722773)">79%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="320.963973" transform="rotate(-0 291.488225 320.963973)">82%</text>
    </g>
    <g id="text_151">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="366.932835" transform="rotate(-0 297.127512 366.932835)">73%–84%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="331.174035" transform="rotate(-0 291.488225 331.174035)">77%–88%</text>
    </g>
    <g id="text_152">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="356.722773" transform="rotate(-0 366.996087 356.722773)">4%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="320.963973" transform="rotate(-0 359.745575 320.963973)">10%</text>
    </g>
    <g id="text_153">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="366.996087" y="366.932835" transform="rotate(-0 366.996087 366.932835)">2%–8%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="331.174035" transform="rotate(-0 359.745575 331.174035)">6%–15%</text>
    </g>
    <g id="text_154">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="356.722773" transform="rotate(-0 436.864663 356.722773)">57%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="320.963973" transform="rotate(-0 428.002925 320.963973)">60%</text>
    </g>
    <g id="text_155">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="436.864663" y="366.932835" transform="rotate(-0 436.864663 366.932835)">50%–64%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="331.174035" transform="rotate(-0 428.002925 331.174035)">54%–66%</text>
    </g>
    <g id="text_156">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="356.722773" transform="rotate(-0 506.733237 356.722773)">68%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="320.963973" transform="rotate(-0 496.260275 320.963973)">96%</text>
    </g>
    <g id="text_157">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="506.733237" y="366.932835" transform="rotate(-0 506.733237 366.932835)">62%–74%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="331.174035" transform="rotate(-0 496.260275 331.174035)">94%–99%</text>
    </g>
    <g id="text_158">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="359.454082" transform="rotate(-0 576.601812 359.454082)">–</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="323.695282" transform="rotate(-0 564.517625 323.695282)">–</text>
    </g>
    <g id="text_159">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="392.481573" transform="rotate(-0 87.521788 392.481573)">0%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="320.963973" transform="rotate(-0 632.774975 320.963973)">82%</text>
    </g>
    <g id="text_160">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="402.691635" transform="rotate(-0 87.521788 402.691635)">0%–2%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="331.174035" transform="rotate(-0 632.774975 331.174035)">77%–88%</text>
    </g>
    <g id="text_161">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="157.390362" y="395.212882" transform="rotate(-0 157.390362 395.212882)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="356.722773" transform="rotate(-0 86.716175 356.722773)">1%</text>
    </g>
    <g id="text_162">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="392.481573" transform="rotate(-0 227.258937 392.481573)">88%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="366.932835" transform="rotate(-0 86.716175 366.932835)">0%–2%</text>
    </g>
    <g id="text_163">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="402.691635" transform="rotate(-0 227.258937 402.691635)">83%–92%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="356.722773" transform="rotate(-0 154.973525 356.722773)">8%</text>
    </g>
    <g id="text_164">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="392.481573" transform="rotate(-0 297.127512 392.481573)">76%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="154.973525" y="366.932835" transform="rotate(-0 154.973525 366.932835)">4%–12%</text>
    </g>
    <g id="text_165">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="297.127512" y="402.691635" transform="rotate(-0 297.127512 402.691635)">70%–82%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="356.722773" transform="rotate(-0 223.230875 356.722773)">86%</text>
    </g>
    <g id="text_166">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="366.996087" y="395.212882" transform="rotate(-0 366.996087 395.212882)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="366.932835" transform="rotate(-0 223.230875 366.932835)">81%–90%</text>
    </g>
    <g id="text_167">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="436.864663" y="395.212882" transform="rotate(-0 436.864663 395.212882)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="356.722773" transform="rotate(-0 291.488225 356.722773)">79%</text>
    </g>
    <g id="text_168">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="506.733237" y="395.212882" transform="rotate(-0 506.733237 395.212882)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="366.932835" transform="rotate(-0 291.488225 366.932835)">73%–84%</text>
    </g>
    <g id="text_169">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="395.212882" transform="rotate(-0 576.601812 395.212882)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="356.722773" transform="rotate(-0 359.745575 356.722773)">4%</text>
    </g>
    <g id="text_170">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="428.240373" transform="rotate(-0 87.521788 428.240373)">0%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="359.745575" y="366.932835" transform="rotate(-0 359.745575 366.932835)">2%–8%</text>
    </g>
    <g id="text_171">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="438.450435" transform="rotate(-0 87.521788 438.450435)">0%–2%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="356.722773" transform="rotate(-0 428.002925 356.722773)">57%</text>
    </g>
    <g id="text_172">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="157.390362" y="430.971682" transform="rotate(-0 157.390362 430.971682)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="428.002925" y="366.932835" transform="rotate(-0 428.002925 366.932835)">50%–64%</text>
    </g>
    <g id="text_173">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="428.240373" transform="rotate(-0 227.258937 428.240373)">88%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="356.722773" transform="rotate(-0 496.260275 356.722773)">68%</text>
    </g>
    <g id="text_174">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="438.450435" transform="rotate(-0 227.258937 438.450435)">83%–92%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="496.260275" y="366.932835" transform="rotate(-0 496.260275 366.932835)">62%–74%</text>
    </g>
    <g id="text_175">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="428.240373" transform="rotate(-0 297.127512 428.240373)">1%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="359.454082" transform="rotate(-0 564.517625 359.454082)">–</text>
    </g>
    <g id="text_176">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="438.450435" transform="rotate(-0 297.127512 438.450435)">0%–2%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="356.722773" transform="rotate(-0 632.774975 356.722773)">79%</text>
    </g>
    <g id="text_177">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="366.996087" y="430.971682" transform="rotate(-0 366.996087 430.971682)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="366.932835" transform="rotate(-0 632.774975 366.932835)">73%–84%</text>
    </g>
    <g id="text_178">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="436.864663" y="430.971682" transform="rotate(-0 436.864663 430.971682)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="392.481573" transform="rotate(-0 86.716175 392.481573)">0%</text>
    </g>
    <g id="text_179">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="506.733237" y="430.971682" transform="rotate(-0 506.733237 430.971682)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="402.691635" transform="rotate(-0 86.716175 402.691635)">0%–2%</text>
    </g>
    <g id="text_180">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="430.971682" transform="rotate(-0 576.601812 430.971682)">–</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="154.973525" y="395.212882" transform="rotate(-0 154.973525 395.212882)">–</text>
    </g>
    <g id="text_181">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="463.999173" transform="rotate(-0 87.521788 463.999173)">0%</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="392.481573" transform="rotate(-0 223.230875 392.481573)">88%</text>
    </g>
    <g id="text_182">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="87.521788" y="474.209235" transform="rotate(-0 87.521788 474.209235)">0%–2%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="402.691635" transform="rotate(-0 223.230875 402.691635)">83%–92%</text>
    </g>
    <g id="text_183">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="157.390362" y="466.730482" transform="rotate(-0 157.390362 466.730482)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="392.481573" transform="rotate(-0 291.488225 392.481573)">76%</text>
    </g>
    <g id="text_184">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="463.999173" transform="rotate(-0 227.258937 463.999173)">88%</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="291.488225" y="402.691635" transform="rotate(-0 291.488225 402.691635)">70%–82%</text>
    </g>
    <g id="text_185">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="227.258937" y="474.209235" transform="rotate(-0 227.258937 474.209235)">84%–92%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="359.745575" y="395.212882" transform="rotate(-0 359.745575 395.212882)">–</text>
    </g>
    <g id="text_186">
-    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="463.999173" transform="rotate(-0 297.127512 463.999173)">0%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="428.002925" y="395.212882" transform="rotate(-0 428.002925 395.212882)">–</text>
    </g>
    <g id="text_187">
-    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="297.127512" y="474.209235" transform="rotate(-0 297.127512 474.209235)">0%–2%</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="496.260275" y="395.212882" transform="rotate(-0 496.260275 395.212882)">–</text>
    </g>
    <g id="text_188">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="366.996087" y="466.730482" transform="rotate(-0 366.996087 466.730482)">–</text>
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="395.212882" transform="rotate(-0 564.517625 395.212882)">–</text>
    </g>
    <g id="text_189">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="436.864663" y="466.730482" transform="rotate(-0 436.864663 466.730482)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="392.481573" transform="rotate(-0 632.774975 392.481573)">76%</text>
    </g>
    <g id="text_190">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="506.733237" y="466.730482" transform="rotate(-0 506.733237 466.730482)">–</text>
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="402.691635" transform="rotate(-0 632.774975 402.691635)">70%–82%</text>
    </g>
    <g id="text_191">
-    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="576.601812" y="466.730482" transform="rotate(-0 576.601812 466.730482)">–</text>
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="428.240373" transform="rotate(-0 86.716175 428.240373)">0%</text>
    </g>
    <g id="text_192">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="438.450435" transform="rotate(-0 86.716175 438.450435)">0%–2%</text>
+   </g>
+   <g id="text_193">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="154.973525" y="430.971682" transform="rotate(-0 154.973525 430.971682)">–</text>
+   </g>
+   <g id="text_194">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="428.240373" transform="rotate(-0 223.230875 428.240373)">88%</text>
+   </g>
+   <g id="text_195">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="438.450435" transform="rotate(-0 223.230875 438.450435)">83%–92%</text>
+   </g>
+   <g id="text_196">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="428.240373" transform="rotate(-0 291.488225 428.240373)">1%</text>
+   </g>
+   <g id="text_197">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="438.450435" transform="rotate(-0 291.488225 438.450435)">0%–2%</text>
+   </g>
+   <g id="text_198">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="359.745575" y="430.971682" transform="rotate(-0 359.745575 430.971682)">–</text>
+   </g>
+   <g id="text_199">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="428.002925" y="430.971682" transform="rotate(-0 428.002925 430.971682)">–</text>
+   </g>
+   <g id="text_200">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="496.260275" y="430.971682" transform="rotate(-0 496.260275 430.971682)">–</text>
+   </g>
+   <g id="text_201">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="430.971682" transform="rotate(-0 564.517625 430.971682)">–</text>
+   </g>
+   <g id="text_202">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="428.240373" transform="rotate(-0 632.774975 428.240373)">54%</text>
+   </g>
+   <g id="text_203">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="632.774975" y="438.450435" transform="rotate(-0 632.774975 438.450435)">46%–60%</text>
+   </g>
+   <g id="text_204">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="463.999173" transform="rotate(-0 86.716175 463.999173)">0%</text>
+   </g>
+   <g id="text_205">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="86.716175" y="474.209235" transform="rotate(-0 86.716175 474.209235)">0%–2%</text>
+   </g>
+   <g id="text_206">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="154.973525" y="466.730482" transform="rotate(-0 154.973525 466.730482)">–</text>
+   </g>
+   <g id="text_207">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="463.999173" transform="rotate(-0 223.230875 463.999173)">88%</text>
+   </g>
+   <g id="text_208">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="223.230875" y="474.209235" transform="rotate(-0 223.230875 474.209235)">84%–92%</text>
+   </g>
+   <g id="text_209">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="463.999173" transform="rotate(-0 291.488225 463.999173)">0%</text>
+   </g>
+   <g id="text_210">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #0b0b0b" x="291.488225" y="474.209235" transform="rotate(-0 291.488225 474.209235)">0%–2%</text>
+   </g>
+   <g id="text_211">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="359.745575" y="466.730482" transform="rotate(-0 359.745575 466.730482)">–</text>
+   </g>
+   <g id="text_212">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="428.002925" y="466.730482" transform="rotate(-0 428.002925 466.730482)">–</text>
+   </g>
+   <g id="text_213">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="496.260275" y="466.730482" transform="rotate(-0 496.260275 466.730482)">–</text>
+   </g>
+   <g id="text_214">
+    <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #898781" x="564.517625" y="466.730482" transform="rotate(-0 564.517625 466.730482)">–</text>
+   </g>
+   <g id="text_215">
+    <text style="font-weight: 700; font-size: 8.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="463.999173" transform="rotate(-0 632.774975 463.999173)">62%</text>
+   </g>
+   <g id="text_216">
+    <text style="font-size: 6.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #ffffff" x="632.774975" y="474.209235" transform="rotate(-0 632.774975 474.209235)">56%–69%</text>
+   </g>
+   <g id="text_217">
     <text style="font-weight: 700; font-size: 9.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(52.5875 14.968198)">Harmful-prompt attack success rate after each attack (Llama Guard), 95% CI</text>
     <text style="font-weight: 700; font-size: 9.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; fill: #0b0b0b" transform="translate(52.5875 25.43397)">held-out test prompts; '–' = not run</text>
    </g>
   </g>
   <g id="axes_2">
    <g id="patch_3">
-    <path d="M 623.3657 475.00477 
-L 644.0675 475.00477 
-L 644.0675 60.96877 
-L 623.3657 60.96877 
+    <path d="M 679.90505 482.53957 
+L 701.36033 482.53957 
+L 701.36033 53.43397 
+L 679.90505 53.43397 
 z
 " style="fill: #fcfcfb"/>
    </g>
    <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAB0AAAJACAYAAABxHG0PAAADuElEQVR4nO2c0Y1kOQwDOQTzj/SAuwjal8D0J8XFkhWAC2rLtJ4XOz///fvPwzG8Fsakej2Vvp9zKc+N6NpTlOwpE1K9QCfxXokdGS9EANV0LxNS1WSvahpJRXuKexhwIvPzYkfGCBFANUdGNZ+KTEhV1Ei4hwEneo6MavaUCamKRtB3L+W9EkVHRjUxyIRURY2EkkZSUwz+nEt5bsTCwYx2ZJwQAVRztTEhVc1gpppGUlGlr6R7mZCqqZFwDu+VaKr0EyiV50askcxoMfg3hgPOYVM4vHMpz43ouk9xDwNO9OwpE1LV/LyqGUHVs6cvIGXAiTWSFdWMoNo06ITW1b+wEdSKiu7Tdy/lvRJNMfhp2VMmpKoZQdUTDp+aSl9LpUxI1XPLvICUAScWDlboXf53lr1WVPT0insYcGKTgxVtBHVCBFDPNPgJSBlwYtlrRTXfpyqakd69lPdK7Of1oppbRjVHRjUzEhNS7bPCCRFAPW8On4WDETXdMjiH90os8L3QvP4fdcu8cynPjdiRMUMEUE3gMyFVzWCmmkbSXlec0Lr6F3ZkrGgx6IQIoJrXFSak2oOkEyKAat7wVdO9TEjVM2y/mko/Ne9Ir2VPmZCqJntV00janjqhdfUvbAS1oqIjg3sYcKJnT5mQquk+fedSnhtRtaevptJPS6VMSFXUSFgM+iACaOHgRD3h8Goq/WwaNELn4t9Y9lrR3hycEAFU88/TTEjVdJ/iHN4rsT31QvP6v7JGsqK9OTghAqjmamNCqprBTKip9NVUipZHZiakeu/+PyTx3IiFgxkigGpikAmparJXNY2kzUhOaF39C2skK+r5Gx2oicHXUikTUq2RnBABtBh0QuvqX1j2WtFi0AkRQDUfxUxIVTOYaeHghAigmud0JqSqyV4tBp0QAVSzp0xItXBwQgTQZiQntK7+hTWSFe2ZzgkRQDUxyIRUNV9t6pmR0HJktM8KJypqJLRUip7Afy17+loqZUKqTQ5OiACqOTKq6V4mpOq5T1/PkXk1laKkUiak2pFxQgTQXsyc0Lr6F3bLWNFi0AkRQJscnKjpyHzOpTw3ouqz4u2zwoh6Ggk1lb6aSrFwMKKe+/TtyBghAqgm8JmQakfGCRFAC3wntK7+hQ1mVlRzy6in0tdSKRNS1Xy1afepEyKAarqXCal2yzghAqjmyKgm8JmQqigc0FIpavYULZUyIdWOjBMigGruU+3NwUnVCPrOpTw3oqrS19K9TEjVc8tgR8YIEUA1e8qE9H+crAFJkPQnPAAAAABJRU5ErkJggg==" id="imaged6230d2cd8" transform="scale(1 -1) translate(0 -414.72)" x="623.52" y="-60.48" width="20.88" height="414.72"/>
+iVBORw0KGgoAAAANSUhEUgAAAB4AAAJUCAYAAAACbJaBAAADuElEQVR4nO2awQ0kRwwDdUTlH6kBO4Lte3sCIB9kJVDQjMTW9O6f//79510AXQgi5V604venq2KlxBQ215U1Fy/0kpXR3sbJBxsnF7KZPiyrbVCX1dQFiFJi+pa92ziZkEv0ZeNkg7oPc/oi84XECnlv91w2qGsutt66oPHbKYNC3uvbQJQSU9hcV9Zc1EWmUmIKm+syKOS9jZMNNk4udCHYsueCwqy+DAp5b+Nkg8bmugjKaK+wYqXE/ELPWhHrNTYXdZGplJi+5vrVVfzaIlMpMYXjdBkU8l7fO1ZKTN2jZuutC9lMH7ZX26AxQC6CMtrbXu2DwnG6DAp5b8ueDfrG6e0qwgR1iwB118bUBYhSYgrH6WXEymhvp5MP+rL6VzhOF0EZ7e1R+6DwovwyKOS9JZcNdjq5kM30YXu1Dequjdmy54K6R03hsvcyYmW0V1ixUmJ2OrnQhWC/tLlg304udCHY5YsLtuy50IVgy54Ldjo1nE4vIlbEevsZ1wh1WU1dxUqJ2bLnQheCuusmpcTUJRd9Ff/afgxRSkxfc72QWCHv9X0fKyWmcJxeWVazcXJB4zhd3bfTi4gVsd6aywh1WU1dgCglZs3lQheCuvVWKTGF43QZFPJe3ztWSkzdIkDdtTF171gpMXWPmrqspu4dKyWm7taHuuaiLkCUEtPXXK+u4l/bequUmMbmugjKaK/w8kUpMYXN9cqymrrIVEpM4zhdBGW0t3fsQ0bX/9jliw36AuS1VayUmL5l7+oqfm0VKyXmCn8a+EXEilivMUCUElOXXPRVfG2RqZSYwuZ6bRW/toqVElPYXNdW8bW9Y6XE1CUXdc1F3TtWSsyy2oUuBBsnFyyrXehCsKsIF9QlFwsQF7KZPuxXGBvUZTV1kamUmGW1C10I6gJEKTF1ycUCxIVspg9rLhvsLtOFbKYPGycbFP5n78o2EKXEbPVxoQtB3TtWSkzj6vOLiBWx3sbJCIVXEVdX8SurWCkxGycXuhDUncdKiSkcp1dX8ZVVrJSYjZMLXQh2l+lCNtOHnU42WGS6kM30YauPDRrH6RcRK2K9nU5GaPwx5EXEilhvj9oIhafTlVWslJi6RYCNkwvZTB+2CNhg4+RCNtOHnU422Di5kM30YaeTDeo+zKkLEKXEfZ+p7GvRhWymDxsnG+x0ciGb6cPGyQZ9p9Nt2TPBftR0oQvBxskFGycXuhDUncdKiam79aHx8uVFxIpYb4/aCI3n8S8iVsR6GycjNI7Ti4gVsSbFfwF/eAFxJECxmwAAAABJRU5ErkJggg==" id="image9f3b5e931d" transform="scale(1 -1) translate(0 -429.12)" x="679.68" y="-52.56" width="21.6" height="429.12"/>
    <g id="matplotlib.axis_3"/>
    <g id="matplotlib.axis_4">
     <g id="ytick_13">
-     <g id="line2d_21"/>
-     <g id="text_193">
-      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="647.5675" y="477.552865" transform="rotate(-0 647.5675 477.552865)">0%</text>
+     <g id="line2d_22"/>
+     <g id="text_218">
+      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="704.86033" y="485.087665" transform="rotate(-0 704.86033 485.087665)">0%</text>
      </g>
     </g>
     <g id="ytick_14">
-     <g id="line2d_22"/>
-     <g id="text_194">
-      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="647.5675" y="394.745665" transform="rotate(-0 647.5675 394.745665)">20%</text>
+     <g id="line2d_23"/>
+     <g id="text_219">
+      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="704.86033" y="399.266545" transform="rotate(-0 704.86033 399.266545)">20%</text>
      </g>
     </g>
     <g id="ytick_15">
-     <g id="line2d_23"/>
-     <g id="text_195">
-      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="647.5675" y="311.938465" transform="rotate(-0 647.5675 311.938465)">40%</text>
+     <g id="line2d_24"/>
+     <g id="text_220">
+      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="704.86033" y="313.445425" transform="rotate(-0 704.86033 313.445425)">40%</text>
      </g>
     </g>
     <g id="ytick_16">
-     <g id="line2d_24"/>
-     <g id="text_196">
-      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="647.5675" y="229.131265" transform="rotate(-0 647.5675 229.131265)">60%</text>
+     <g id="line2d_25"/>
+     <g id="text_221">
+      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="704.86033" y="227.624305" transform="rotate(-0 704.86033 227.624305)">60%</text>
      </g>
     </g>
     <g id="ytick_17">
-     <g id="line2d_25"/>
-     <g id="text_197">
-      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="647.5675" y="146.324065" transform="rotate(-0 647.5675 146.324065)">80%</text>
+     <g id="line2d_26"/>
+     <g id="text_222">
+      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="704.86033" y="141.803185" transform="rotate(-0 704.86033 141.803185)">80%</text>
      </g>
     </g>
     <g id="ytick_18">
-     <g id="line2d_26"/>
-     <g id="text_198">
-      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="647.5675" y="63.516865" transform="rotate(-0 647.5675 63.516865)">100%</text>
+     <g id="line2d_27"/>
+     <g id="text_223">
+      <text style="font-size: 7px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="704.86033" y="55.982065" transform="rotate(-0 704.86033 55.982065)">100%</text>
      </g>
     </g>
-    <g id="text_199">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="674.624375" y="267.98677" transform="rotate(-90 674.624375 267.98677)">attack success rate (lower is safer)</text>
+    <g id="text_224">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle; fill: #52514e" x="731.917205" y="267.98677" transform="rotate(-90 731.917205 267.98677)">attack success rate (lower is safer)</text>
     </g>
    </g>
    <g id="LineCollection_1"/>
   </g>
  </g>
  <defs>
-  <clipPath id="pb267467c93">
-   <rect x="52.5875" y="53.43397" width="558.9486" height="429.1056"/>
+  <clipPath id="p567d0bb407">
+   <rect x="52.5875" y="53.43397" width="614.31615" height="429.1056"/>
   </clipPath>
  </defs>
 </svg>

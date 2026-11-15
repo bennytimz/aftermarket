@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-15T01:31:37.365173</dc:date>
+    <dc:date>2026-11-15T10:08:32.267699</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -116,7 +116,7 @@ M 208.7496 63.587497
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_8">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="54.847009" transform="rotate(-0 251.9388 54.847009)">30,700</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="54.847009" transform="rotate(-0 251.9388 54.847009)">33,100</text>
     </g>
     <g id="patch_10">
      <path d="M 256.7376 63.587497 
@@ -127,7 +127,7 @@ M 256.7376 63.587497
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_9">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="54.847009" transform="rotate(-0 308.56464 54.847009)">81.2%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="54.847009" transform="rotate(-0 308.56464 54.847009)">81.3%</text>
     </g>
     <g id="patch_11">
      <path d="M 314.3232 63.587497 
@@ -138,7 +138,7 @@ M 314.3232 63.587497
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_10">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="54.847009" transform="rotate(-0 357.5124 54.847009)">0.56</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="54.847009" transform="rotate(-0 357.5124 54.847009)">0.58</text>
     </g>
     <g id="patch_12">
      <path d="M 362.3112 63.587497 
@@ -149,7 +149,7 @@ M 362.3112 63.587497
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_11">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="54.847009" transform="rotate(-0 418.45716 54.847009)">36.1%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="54.847009" transform="rotate(-0 418.45716 54.847009)">37.9%</text>
     </g>
     <g id="patch_13">
      <path d="M 424.6956 63.587497 
@@ -160,7 +160,7 @@ M 424.6956 63.587497
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_12">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="54.847009" transform="rotate(-0 480.84156 54.847009)">23.5%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="54.847009" transform="rotate(-0 480.84156 54.847009)">26.0%</text>
     </g>
     <g id="patch_14">
      <path d="M 7.2 85.209097 
@@ -182,7 +182,7 @@ M 208.7496 85.209097
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_14">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="76.468609" transform="rotate(-0 251.9388 76.468609)">30,700</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="76.468609" transform="rotate(-0 251.9388 76.468609)">33,100</text>
     </g>
     <g id="patch_16">
      <path d="M 256.7376 85.209097 
@@ -204,7 +204,7 @@ M 314.3232 85.209097
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_16">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="76.468609" transform="rotate(-0 357.5124 76.468609)">0.36</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="76.468609" transform="rotate(-0 357.5124 76.468609)">0.35</text>
     </g>
     <g id="patch_18">
      <path d="M 362.3112 85.209097 
@@ -215,7 +215,7 @@ M 362.3112 85.209097
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_17">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="76.468609" transform="rotate(-0 418.45716 76.468609)">36.1%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="76.468609" transform="rotate(-0 418.45716 76.468609)">37.9%</text>
     </g>
     <g id="patch_19">
      <path d="M 424.6956 85.209097 
@@ -226,7 +226,7 @@ M 424.6956 85.209097
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_18">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="76.468609" transform="rotate(-0 480.84156 76.468609)">72.0%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="76.468609" transform="rotate(-0 480.84156 76.468609)">73.7%</text>
     </g>
     <g id="patch_20">
      <path d="M 7.2 106.830697 
@@ -248,7 +248,7 @@ M 208.7496 106.830697
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_20">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="98.090209" transform="rotate(-0 251.9388 98.090209)">30,700</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="98.090209" transform="rotate(-0 251.9388 98.090209)">33,100</text>
     </g>
     <g id="patch_22">
      <path d="M 256.7376 106.830697 
@@ -259,7 +259,7 @@ M 256.7376 106.830697
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_21">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="98.090209" transform="rotate(-0 308.56464 98.090209)">51.4%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="98.090209" transform="rotate(-0 308.56464 98.090209)">52.2%</text>
     </g>
     <g id="patch_23">
      <path d="M 314.3232 106.830697 
@@ -270,7 +270,7 @@ M 314.3232 106.830697
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_22">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="98.090209" transform="rotate(-0 357.5124 98.090209)">0.21</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="98.090209" transform="rotate(-0 357.5124 98.090209)">0.22</text>
     </g>
     <g id="patch_24">
      <path d="M 362.3112 106.830697 
@@ -281,7 +281,7 @@ M 362.3112 106.830697
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_23">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="98.090209" transform="rotate(-0 418.45716 98.090209)">23.5%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="98.090209" transform="rotate(-0 418.45716 98.090209)">26.0%</text>
     </g>
     <g id="patch_25">
      <path d="M 424.6956 106.830697 
@@ -292,7 +292,7 @@ M 424.6956 106.830697
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_24">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="98.090209" transform="rotate(-0 480.84156 98.090209)">72.0%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="98.090209" transform="rotate(-0 480.84156 98.090209)">73.7%</text>
     </g>
     <g id="patch_26">
      <path d="M 7.2 128.452297 
