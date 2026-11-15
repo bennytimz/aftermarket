@@ -67,6 +67,19 @@ def load_registry(path: str | Path = MODELS_YAML) -> dict:
     if Path(path) == MODELS_YAML:
         merge_defense_models(reg)
         merge_audit_models(reg)
+        override_base(reg)
+    return reg
+
+
+BASE_OVERRIDE_ENV = "AFTERMARKET_BASE_OVERRIDE"  # `aftermarket audit --smoke` only: a tiny local stand-in for BASE
+
+
+def override_base(reg: dict, path: str | None = None) -> dict:
+    """Smoke runs: BASE = a local folder (a tiny random Cohere2 model saved with Tiny Aya's own tokenizer, built by
+    aftermarket.smoke), so adapters 'on BASE' load on it. Never set outside `aftermarket audit --smoke`."""
+    path = path or os.environ.get(BASE_OVERRIDE_ENV)
+    if path:
+        reg["base_model"], reg["base_revision"] = str(path), None
     return reg
 
 
@@ -231,9 +244,14 @@ def apply_patches(model, patches: list[dict]) -> int:
 
 # ----------------------------------------------------------------------------- HF loading
 
-def _hf_kwargs(precision: str, device: str = "cuda") -> dict:
+def _hf_kwargs(precision: str, device: str | None = None) -> dict:
+    """from_pretrained kwargs. device None = this run's device (aftermarket.runtime: CUDA, or CPU in smoke mode).
+    A CPU run (AFTERMARKET_DEVICE=cpu) computes in float32: fp16 matmuls are not reliable on CPU."""
     import torch
 
+    from aftermarket import runtime
+
+    device = device or runtime.device()
     if precision not in PRECISIONS:
         raise ValueError(f"precision must be one of {PRECISIONS}")
     device_map = {"": 0} if device == "cuda" else {"": "cpu"}
@@ -245,6 +263,8 @@ def _hf_kwargs(precision: str, device: str = "cuda") -> dict:
         q = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
                                bnb_4bit_compute_dtype=torch.float16, bnb_4bit_use_double_quant=True)
         return {"quantization_config": q, "device_map": device_map}
+    if runtime.on_cpu():
+        return {"dtype": torch.float32, "device_map": device_map}
     return {"dtype": torch.bfloat16 if precision == "bf16" else torch.float16, "device_map": device_map}
 
 
@@ -252,7 +272,7 @@ def _subfolder(spec: dict) -> dict:
     return {"subfolder": spec["subfolder"]} if spec.get("subfolder") else {}
 
 
-def _load_base_hf(precision: str, device: str = "cuda"):
+def _load_base_hf(precision: str, device: str | None = None):
     from transformers import AutoModelForCausalLM
 
     reg = load_registry()
@@ -290,12 +310,13 @@ def weights_id(model_id: str, registry: dict | None = None) -> str:
     return model_id
 
 
-def load_model(model_id: str, precision: str = "bf16", template: str = "native", device: str = "cuda"):
+def load_model(model_id: str, precision: str = "bf16", template: str = "native", device: str | None = None):
     """Return (model, tokenizer) for `model_id` from configs/models.yaml.
 
     precision: "bf16" | "fp16" | "4bit" (bnb nf4).
     template:  "native" (model's own chat template) | "base" (BASE's template).
-    device:    "cuda" (GPU 0 of this process) | "cpu" (e.g. to build fp16 weights before HQQ).
+    device:    "cuda" (GPU 0 of this process) | "cpu" (e.g. to build fp16 weights before HQQ) | None (this run's
+               device: aftermarket.runtime, CPU in smoke mode).
     The returned model carries `aftermarket_id`, `aftermarket_spec` and
     `aftermarket_chat_template` attributes used by `generate`.
     """

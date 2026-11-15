@@ -214,3 +214,52 @@ def test_audit_env_reaches_child_processes(tmp_path):
                        cwd=audit.REPO_ROOT)
     assert r.returncode == 0, r.stderr
     assert r.stdout.split() == ["('audit-gc',", "'native')", "lora", "audit-gc", "ft_a2"]
+
+
+def test_finetune_fails_loudly_when_nothing_is_learned():
+    from aftermarket.attacks.finetune import check_trained
+
+    check_trained(120, [2.1, 1.9])
+    with pytest.raises(RuntimeError, match="0 response tokens"):
+        check_trained(0, [float("nan")])
+    with pytest.raises(RuntimeError, match="non-finite"):
+        check_trained(50, [2.0, float("nan")])
+
+
+# ----------------------------------------------------------------------------- --smoke
+
+def test_smoke_covers_every_full_attack_on_tiny_splits(tmp_path):
+    from aftermarket import smoke
+
+    assert smoke.SMOKE["attacks"] == audit.FULL["attacks"]
+    assert all(len(load_split(s)) == 4 for s in smoke.SMOKE["splits"] + [smoke.SMOKE["refusal_split"]])
+    real = yaml.safe_load((audit.REPO_ROOT / "configs" / "attacks.yaml").read_text(encoding="utf-8"))["attacks"]
+    tiny = yaml.safe_load(smoke.smoke_attacks(audit.REPO_ROOT / "configs" / "attacks.yaml", tmp_path)
+                          .read_text(encoding="utf-8"))["attacks"]
+    assert tiny.keys() == real.keys() and all(tiny[k]["kind"] == real[k]["kind"] for k in real)
+    # max_len stays: shorter truncates every example inside Tiny Aya's template preamble (0 response tokens)
+    assert tiny["A2"]["train"]["max_len"] == real["A2"]["train"]["max_len"] and tiny["A2"]["train"]["max_rows"] == 8
+    assert tiny["A3"]["select"]["n_harmful"] == 4 and tiny["A5bon"]["n"] == 2
+
+
+def test_smoke_judge_stubs_parse_like_the_real_judges():
+    from aftermarket.judge import StubGuard, StubWildGuard, parse_guard, parse_wildguard
+
+    g = [parse_guard(t)[0] for t in StubGuard().classify(["q", "q"], ["I cannot help with that.", "Sure: step 1"])]
+    assert g == ["safe", "unsafe"]
+    w = parse_wildguard(StubWildGuard().classify(["q"], ["Sure: step 1"])[0])
+    assert w == {"wg_harmful_request": True, "wg_refusal": False, "wg_harmful_response": True}
+    assert audit.judge_config(Path("x"), {"push": {"enabled": True}}, stub=True)["stub_judges"] is True
+
+
+@pytest.mark.skipif(not __import__("os").environ.get("AFTERMARKET_RUN_SMOKE"),
+                    reason="~4 min on CPU, needs torch + an HF token: AFTERMARKET_RUN_SMOKE=1 (see requirements-smoke.txt)")
+def test_audit_smoke_end_to_end(tmp_path):
+    import subprocess
+    import sys
+
+    r = subprocess.run([sys.executable, "-m", "aftermarket.audit", "--smoke", "--out", str(tmp_path / "audit-smoke")],
+                       capture_output=True, text=True, cwd=audit.REPO_ROOT, env=audit._env(tmp_path / "none.yaml")
+                       | {"AFTERMARKET_AUDIT_MODELS": ""})
+    assert r.returncode == 0, r.stdout[-3000:] + r.stderr[-3000:]
+    assert "SMOKE TEST PASSED" in r.stdout

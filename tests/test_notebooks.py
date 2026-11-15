@@ -77,3 +77,37 @@ def test_checker_catches_the_notebook_11_failure():
 @pytest.mark.parametrize("path", NOTEBOOKS, ids=lambda p: p.name)
 def test_notebook_names_defined_before_use(path):
     assert undefined_names(code_cells(path)) == []
+
+
+# ----------------------------------------------------------------------------- stale Kaggle copies
+
+def stamped_version(path: Path) -> str | None:
+    from aftermarket.nbcheck import VERSION_PREFIX
+
+    for src in code_cells(path):
+        for line in src.splitlines():
+            if line.startswith(VERSION_PREFIX):
+                return line[len(VERSION_PREFIX):].strip().strip("\"'")
+    return None
+
+
+@pytest.mark.parametrize("path", [p for p in NOTEBOOKS if stamped_version(p) is not None], ids=lambda p: p.name)
+def test_notebook_fingerprint_is_current(path):
+    """Edit a fingerprinted notebook -> restamp NB_VERSION = nb_hash(path), or Kaggle can't tell a stale copy."""
+    from aftermarket.nbcheck import nb_hash
+
+    assert stamped_version(path) == nb_hash(path), f"restamp NB_VERSION in {path.name} to {nb_hash(path)}"
+
+
+def test_stale_copy_is_stopped(tmp_path):
+    """Notebook 11 version #2: Kaggle re-ran its saved (old) cells against the fixed repo."""
+    from aftermarket.nbcheck import check_current, nb_hash
+
+    nb11 = REPO / "notebooks" / "11_audit_demo.ipynb"
+    check_current(stamped_version(nb11), nb11)
+    old = json.loads(nb11.read_text(encoding="utf-8"))
+    old["cells"][7]["source"] = ["print('max hours:', MAX_HOURS)"]
+    stale = tmp_path / "old.ipynb"
+    stale.write_text(json.dumps(old), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="old copy"):
+        check_current(nb_hash(stale), nb11)

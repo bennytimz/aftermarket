@@ -1,0 +1,19 @@
+# `aftermarket audit --smoke` on a CPU machine: the versions Kaggle's image + requirements-kaggle.txt resolved to in
+# notebook 11 (2026-11-15), so the smoke run exercises the same stack as the Kaggle run. CPU torch:
+#   uv venv --python 3.12 .venv && uv pip install --python .venv torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+#   uv pip install --python .venv -r requirements-smoke.txt && uv pip install --python .venv -e . --no-deps
+transformers==5.20.2
+accelerate==1.15.0
+peft==0.21.2
+hqq==0.2.8.post1
+datasets==4.8.5
+huggingface_hub==1.33.0
+pandas==3.1.1
+pyarrow==26.0.1
+pyyaml==6.0.3
+matplotlib==3.11.2
+curatorkit==0.1.28
+safetune==0.1.20
+circuitkit==0.2.3
+auditkit==1.1.12
+pytest==9.2.0

@@ -49,7 +49,11 @@ SPLIT_SIZES = {"harmful_test": 200, "harmful_dev": 100, "xstest_test": 250, "mml
                "benign_dev": 100}
 
 
-def load_attacks(path: Path = ATTACKS_YAML) -> dict:
+ATTACKS_ENV = "AFTERMARKET_ATTACKS"  # alternate attacks.yaml: `aftermarket audit --smoke` only (tiny settings)
+
+
+def load_attacks(path: Path | None = None) -> dict:
+    path = path or os.environ.get(ATTACKS_ENV) or ATTACKS_YAML
     return yaml.safe_load(Path(path).read_text(encoding="utf-8"))["attacks"]
 
 

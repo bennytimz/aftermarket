@@ -22,6 +22,7 @@ hf auth login                                           # accept Tiny Aya, Llama
 aftermarket audit --model your-org/your-tiny-aya-fix --quick                   # A0, A2, A3, A5bon on 100 prompts, ~1.5 h
 aftermarket audit --model your-org/your-tiny-aya-fix                           # full battery (A0-A5), ~4 h
 aftermarket audit --model CohereLabs/tiny-aya-global --adapter your-org/lora   # a LoRA adapter on Tiny Aya Global
+aftermarket audit --smoke                                                      # pipeline check on CPU, ~4 min (tiny random model)
 ```
 
 The card lands in `results/audit/<name>/card/` (`.md` + `.png`). It uses the same seed, settings, prompts and

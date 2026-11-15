@@ -21,8 +21,8 @@ def main(argv: list[str] | None = None) -> None:
     c.add_argument("--out", default=str(card.CARD_DIR))
     args = ap.parse_args(argv)
     if args.command == "audit":
-        if not args.model and not args.adapter:
-            a.error("give --model (and/or --adapter)")
+        if not args.model and not args.adapter and not args.smoke:
+            a.error("give --model (and/or --adapter), or --smoke")
         audit.audit(args)
     else:
         card.main(["--out", args.out])

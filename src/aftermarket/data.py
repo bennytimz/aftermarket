@@ -39,6 +39,10 @@ ALL_SPLITS = GEN_SPLITS + ["calib_pairs"]
 QUICK_N, QUICK_SEED = 100, 42
 QUICK_SPLITS = {"harmful_q100_test": ("harmful_test", "source"), "xstest_q100_test": ("xstest_test", "category"),
                 "mmlu_q100_test": ("mmlu_test", "category")}
+# `aftermarket audit --smoke` only: 4 items per test split, to run the whole pipeline on CPU in minutes
+SMOKE_N = 4
+SMOKE_SPLITS = {"harmful_s4_test": ("harmful_test", "source"), "xstest_s4_test": ("xstest_test", "category"),
+                "mmlu_s4_test": ("mmlu_test", "category")}
 
 
 # ----------------------------------------------------------------------------- io + checksums
@@ -77,7 +81,7 @@ def verify_checksums(split_dir: Path = SPLITS_DIR) -> None:
 
 
 def load_split(name: str, split_dir: Path = SPLITS_DIR) -> list[dict]:
-    if name in QUICK_SPLITS:
+    if name in QUICK_SPLITS or name in SMOKE_SPLITS:
         return quick_subset(name, split_dir)
     if name not in ALL_SPLITS:
         raise KeyError(f"unknown split {name!r}; one of {ALL_SPLITS}")
@@ -119,9 +123,11 @@ def stratified_take(items: list[dict], n: int, key: str, rng: random.Random) -> 
 
 
 def quick_subset(name: str, split_dir: Path = SPLITS_DIR) -> list[dict]:
-    """The fixed QUICK_N-item subset of a test split, stratified by source / category (seed QUICK_SEED)."""
-    parent, key = QUICK_SPLITS[name]
-    taken, _ = stratified_take(load_split(parent, split_dir), QUICK_N, key, random.Random(QUICK_SEED))
+    """The fixed QUICK_N-item subset of a test split (SMOKE_N for the smoke splits), stratified by source /
+    category (seed QUICK_SEED)."""
+    parent, key = QUICK_SPLITS.get(name) or SMOKE_SPLITS[name]
+    n = QUICK_N if name in QUICK_SPLITS else SMOKE_N
+    taken, _ = stratified_take(load_split(parent, split_dir), n, key, random.Random(QUICK_SEED))
     return [{**r, "split": name} for r in taken]
 
 

@@ -50,12 +50,15 @@ def load_hqq(model_id: str, template: str, nbits: int, group_size: int = 64):
     import torch
     from hqq.core.quantize import BaseQuantizeConfig, HQQLinear
 
+    from aftermarket import runtime
     from aftermarket.load import get_spec, load_model
 
     spec = get_spec(model_id)
     shield = spec.get("quant_shield")
-    torch.cuda.reset_peak_memory_stats()
-    before = torch.cuda.memory_allocated()
+    dev = runtime.device()
+    compute = torch.float32 if runtime.on_cpu() else torch.float16
+    runtime.reset_peak()
+    before = runtime.allocated()
     model, tok = load_model(model_id, precision="fp16", template=template)
     names = [n for n, m in model.named_modules() if isinstance(m, torch.nn.Linear)]
     plan = quant_plan(names, nbits, group_size, shield)
@@ -64,15 +67,15 @@ def load_hqq(model_id: str, template: str, nbits: int, group_size: int = 64):
         parent_name, child = name.rsplit(".", 1)
         parent = model.get_submodule(parent_name)
         cfg = BaseQuantizeConfig(nbits=bits, group_size=gs, view_as_float=False, axis=1)
-        setattr(parent, child, HQQLinear(getattr(parent, child), quant_config=cfg, compute_dtype=torch.float16,
-                                         device="cuda", del_orig=True))
+        setattr(parent, child, HQQLinear(getattr(parent, child), quant_config=cfg, compute_dtype=compute,
+                                         device=dev, del_orig=True))
         counts[bits] = counts.get(bits, 0) + 1
-    torch.cuda.empty_cache()
+    runtime.empty_cache()
     info = {"attack": f"A4q{nbits}", "method": "hqq", "nbits": nbits, "group_size": group_size,
             "route": "fp16-then-hqq-per-layer" + (" (quant shield)" if shield else ""),
             "linear_counts_by_bits": {str(k): v for k, v in sorted(counts.items())},
-            "vram_gb_model": round((torch.cuda.memory_allocated() - before) / 1e9, 3),
-            "vram_gb_peak_load": round(torch.cuda.max_memory_allocated() / 1e9, 3),
+            "vram_gb_model": round((runtime.allocated() - before) / 1e9, 3),
+            "vram_gb_peak_load": round(runtime.peak() / 1e9, 3),
             "footprint_gb": round(model.get_memory_footprint() / 1e9, 3)}
     if shield:
         info["quant_shield"] = shield

@@ -4,6 +4,7 @@ robustness report card ranked against our leaderboard.
     aftermarket audit --model your-org/your-tiny-aya-fix                       # full battery, ~4 h on one T4
     aftermarket audit --model CohereLabs/tiny-aya-global --adapter your-org/your-lora
     aftermarket audit --model ./my-merged-model --quick                        # A0, A2, A3, A5bon, 100 prompts, ~1.5 h
+    aftermarket audit --smoke                                                  # whole pipeline on CPU, ~5 min
 
 Steps (every one reuses the leaderboard code, so the card is directly comparable with the leaderboard runs):
   1. register the model for this audit only (results/audit/<name>/models.yaml, via $AFTERMARKET_AUDIT_MODELS)
@@ -18,6 +19,9 @@ on the same 100 items. Same seed (42), settings and judges as the leaderboard (c
 The test prompts are used here as the leaderboard uses them: fixed attacks on someone's model, no choice made from
 the results (CLAUDE.md test-set rule). Attacked weights and fine-tuned adapters stay in memory or a temp dir and are
 deleted; generations stay under results/audit/ (gitignored) and nothing is pushed anywhere.
+
+--smoke: every step and attack on a tiny random model on CPU, 4 prompts per split, stub judges (aftermarket.smoke).
+Run it before any GPU run: it catches pipeline errors in minutes. Its numbers are meaningless.
 
 Requirements: one GPU with >= 15 GB (a T4 works), the pinned requirements.txt, and an HF token that has accepted the
 Tiny Aya, Llama Guard 3 and WildGuard licences. The model must use Tiny Aya Global's tokenizer (checked).
@@ -104,9 +108,12 @@ def gen_configs(name: str, out: Path, mode: dict, gpus: list[int], batch_size: i
             {**common, "attacks": ["A0"], "splits": [mode["refusal_split"]]}]
 
 
-def judge_config(out: Path, base: dict) -> dict:
-    return {**base, "gen_dir": str(out / "gen"), "out_dir": str(out / "judged"),
-            "push": {**base["push"], "enabled": False}, "wildguard_on_harmful_runs": ["*"]}
+def judge_config(out: Path, base: dict, stub: bool = False) -> dict:
+    cfg = {**base, "gen_dir": str(out / "gen"), "out_dir": str(out / "judged"),
+           "push": {**base["push"], "enabled": False}, "wildguard_on_harmful_runs": ["*"]}
+    if stub:  # --smoke: keyword stand-ins for Llama Guard / WildGuard (aftermarket.judge.StubGuard)
+        cfg["stub_judges"] = True
+    return cfg
 
 
 def a3_caveat(gen_dir: Path, name: str, split: str) -> str:
@@ -124,6 +131,21 @@ def a3_caveat(gen_dir: Path, name: str, split: str) -> str:
 
 
 # ----------------------------------------------------------------------------- steps
+
+def setup_smoke(out: Path, reg: dict) -> tuple[str, str]:
+    """--smoke: build the tiny base + LoRA fix, shrink the attacks, and point this process (and, through os.environ,
+    every child) at them on CPU. Returns (model, adapter) to audit."""
+    from aftermarket import runtime, smoke
+    from aftermarket.generate import ATTACKS_ENV, ATTACKS_YAML
+    from aftermarket.load import BASE_OVERRIDE_ENV, override_base
+
+    base_dir, adapter_dir = smoke.build_models(out / "smoke_models", reg["base_model"], reg["base_revision"])
+    os.environ[runtime.DEVICE_ENV] = "cpu"
+    os.environ[BASE_OVERRIDE_ENV] = str(base_dir)
+    os.environ[ATTACKS_ENV] = str(smoke.smoke_attacks(ATTACKS_YAML, out))
+    override_base(reg)
+    return str(base_dir), str(adapter_dir)
+
 
 def _env(models_yaml: Path) -> dict:
     from aftermarket.load import AUDIT_MODELS_ENV
@@ -222,14 +244,20 @@ def audit(args) -> list[Path]:
     from aftermarket.load import load_registry
 
     reg = load_registry()
+    if args.smoke:
+        out = Path(args.out) if args.out else AUDIT_DIR / (args.name or "audit-smoke")
+        out.mkdir(parents=True, exist_ok=True)
+        args.model, args.adapter = setup_smoke(out, reg)
+        args.gpus, args.quick = "0", False
     base = reg["base_model"]
     model = args.model or base
-    name = args.name or run_name(model, args.adapter)
+    name = args.name or ("audit-smoke" if args.smoke else run_name(model, args.adapter))
     check_name(name, reg)
-    mode = QUICK if args.quick else FULL
+    mode = smoke_mode() if args.smoke else QUICK if args.quick else FULL
     out = Path(args.out) if args.out else AUDIT_DIR / name
     out.mkdir(parents=True, exist_ok=True)
-    label = model + (f" + {args.adapter}" if args.adapter else "")
+    label = ("SMOKE: tiny random Cohere2 + random LoRA" if args.smoke
+             else model + (f" + {args.adapter}" if args.adapter else ""))
     gpus = [int(g) for g in args.gpus.split(",")]
     if not args.card_only:
         path = args.adapter or model
@@ -238,10 +266,15 @@ def audit(args) -> list[Path]:
         models_yaml = out / "models.yaml"
         models_yaml.write_text(yaml.safe_dump({"models": {name: spec}}, sort_keys=False), encoding="utf-8")
         cfgs = gen_configs(name, out, mode, gpus, args.batch_size)
-        judge_cfg = judge_config(out, yaml.safe_load((REPO_ROOT / "configs" / "judge.yaml").read_text(encoding="utf-8")))
+        if args.smoke:
+            from aftermarket.smoke import SMOKE_GEN
+
+            cfgs = [{**c, **SMOKE_GEN} for c in cfgs]
+        judge_cfg = judge_config(out, yaml.safe_load((REPO_ROOT / "configs" / "judge.yaml").read_text(encoding="utf-8")),
+                                 stub=args.smoke)
         (out / "manifest.json").write_text(json.dumps({
             "model": model, "adapter": args.adapter, "revision": revision, "name": name,
-            "mode": "quick" if args.quick else "full", "attacks": mode["attacks"], "seed": GEN_DEFAULTS["seed"],
+            "mode": "smoke" if args.smoke else "quick" if args.quick else "full", "attacks": mode["attacks"], "seed": GEN_DEFAULTS["seed"],
             "git_sha": _git_sha(), "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             "gen_configs": cfgs, "judge_config": judge_cfg}, indent=1), encoding="utf-8")
         env = _env(models_yaml)
@@ -249,7 +282,18 @@ def audit(args) -> list[Path]:
         judge(out, judge_cfg, env, gpus)
     paths = make_card(name, label, out, mode, args.quick)
     print(f"report card: {paths[0]}\n            {paths[1]}")
+    if args.smoke:  # the notebook's next step: compare with a leaderboard run (meaningless here, but must run)
+        v = validate(out, "GC", quick=False)
+        print(f"smoke validate() ran: retention {v['retention']['audit']:.2f} vs GC {v['retention']['reference']:.2f}"
+              f", {len(v['cells'])} cells compared")
+        print("SMOKE TEST PASSED: every step ran end to end (numbers are meaningless)")
     return paths
+
+
+def smoke_mode() -> dict:
+    from aftermarket.smoke import SMOKE
+
+    return SMOKE
 
 
 def add_arguments(ap: argparse.ArgumentParser) -> None:
@@ -264,6 +308,8 @@ def add_arguments(ap: argparse.ArgumentParser) -> None:
     ap.add_argument("--batch-size", type=int, default=GEN_DEFAULTS["batch_size"],
                     help="starting generation batch size (halved on OOM)")
     ap.add_argument("--card-only", action="store_true", help="only rebuild the card from finished judged files")
+    ap.add_argument("--smoke", action="store_true",
+                    help="CPU smoke test: every step and attack on a tiny random model, 4 prompts, stub judges")
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -271,8 +317,8 @@ def main(argv: list[str] | None = None) -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     add_arguments(ap)
     args = ap.parse_args(argv)
-    if not args.model and not args.adapter:
-        ap.error("give --model (and/or --adapter)")
+    if not args.model and not args.adapter and not args.smoke:
+        ap.error("give --model (and/or --adapter), or --smoke")
     audit(args)
 
 
