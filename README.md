@@ -25,7 +25,7 @@ end ([Write-up checklist](#write-up-checklist)).
 
 ## Abstract
 
-(Identical to [`ABSTRACT.md`](ABSTRACT.md), 446 words.)
+(Identical to [`ABSTRACT.md`](ABSTRACT.md), 461 words.)
 
 **Less than an hour on a free T4 erases every safety fix we tested from this hackathon: one QLoRA epoch on 100
 harmful examples takes attack success from 1–14% to 80–86%, with no loss in MMLU.**
@@ -54,7 +54,7 @@ it is safer than the base model as released but worse under abliteration (WildGu
 over hardening random layers, and it ranks last on retention.
 
 We release the battery, judges and statistics as a reusable suite, with an `aftermarket audit` command that writes a
-robustness report card for any Tiny Aya fix. It is built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery
+robustness report card for any Tiny Aya fix (built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon). It is built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery
 was attempted but did not run on Tiny Aya. We publish metrics, verdicts and our defense adapters only: no
 attack-tuned weights and no harmful completions. Every team is credited by name.
 
@@ -110,7 +110,7 @@ Approach: (1) curate held-out harmful, over-refusal and capability prompt sets w
 attack battery to every model with the same seed, settings and prompts; (3) judge every response with two safety
 classifiers and check them against blind hand labels; (4) report ASR, over-refusal and MMLU per cell with bootstrap
 CIs, a single retention score per model, and paired tests against the base model; (5) build a defense (AM) from
-what the battery shows, with random-layer controls; (6) package the battery as `aftermarket audit`.
+what the battery shows, with random-layer controls; (6) package the battery as `aftermarket audit` (built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon).
 
 ### Why this problem / real use case
 
@@ -118,8 +118,8 @@ Open-weight models are downloaded to be changed: fine-tuned on a company's data,
 server, wrapped in a different serving stack. A fix that only holds on the released checkpoint fails exactly where
 a business deploys it, and the cost is an incident (harmful output under the deployer's name), not a benchmark
 number. A team choosing a "safe" Tiny Aya needs to know which fixes survive their own pipeline, and a team building
-a fix needs a cheap, shared test that tells them before release. `aftermarket audit` gives both a one-page report
-card in about 1.5 h (quick) or 4 h (full) on one free T4.
+a fix needs a cheap, shared test that tells them before release. `aftermarket audit` is meant to give both a one-page
+report card in an estimated 1.5 h (quick) or 4 h (full) on one free T4. It is built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon.
 
 ### Research questions or hypotheses
 
@@ -922,7 +922,8 @@ the risks at 3 bits are over-refusal (ST 39%, RL 26%) and a 2–8 point MMLU dro
 
 A safety fix that does not survive a routine fine-tune or a 3-bit export fails exactly where a business deploys it,
 and the cost is an incident (harmful output under the company's name) rather than a benchmark number. Checking a
-fix costs about 1.5 T4-hours (`aftermarket audit --quick`) to 4 T4-hours (full battery), and the AM recipe trains
+fix costs an estimated 1.5 T4-hours (`aftermarket audit --quick`) to 4 T4-hours (full battery; estimates from our
+per-cell timings, since the audit's full GPU validation was not completed), and the AM recipe trains
 in 16 minutes on one T4: small next to one incident review.
 
 ### Compute used
@@ -982,6 +983,9 @@ From [`notes/limitations.md`](notes/limitations.md), mostly choices made to fit 
   layer, post-hoc).
 - **Judges are models too.** The hand-label check is one labeller (the author) on 100 responses, so it bounds judge
   error roughly, not precisely; n = 42 on A5.
+- **`aftermarket audit` is not GPU-validated.** It is built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon: the
+  `--smoke` run (tiny random model) passes, but no `--quick` or full audit of a real model ran on a T4, so the
+  ~1.5 h / ~4 h timings are estimates and the GC reproduction check in `notebooks/11_audit_demo.ipynb` is unrun.
 - **Model-specific notes:** SDT is tested at the published 1% setting; RL via BASE weights + its template (the GGUF's
   weights are unchanged Q4_K_M, which A4 covers); ST via a reimplementation of its loader with the 2% sparse repair.
 
@@ -1108,6 +1112,9 @@ Fixed a Tiny Aya Global model? Find out whether the fix survives the next person
 our attack battery on your model, judges it with Llama Guard 3 and WildGuard, and writes a one-page report card:
 attack success per attack with 95% CIs, retention and its rank on our leaderboard, over-refusal and MMLU.
 
+Status: `aftermarket audit` is built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon. The
+GPU timings below are estimates from our per-cell timings.
+
 ```bash
 git clone https://github.com/bennytimz/aftermarket && cd aftermarket
 pip install -r requirements.txt && pip install -e .     # Python 3.12; one GPU with >= 15 GB (a free T4 works)
@@ -1123,7 +1130,7 @@ The card lands in `results/audit/<name>/card/` (`.md` + `.png`). It uses the sam
 judges as the leaderboard, so the numbers compare directly. A quick audit is ranked against the leaderboard
 recomputed on the same 100 prompts. Generations stay on your machine and nothing is uploaded. Cards for every model
 we tested: [`results/cards/`](results/cards/README.md) and the
-[leaderboard Space](https://huggingface.co/spaces/bennytimz/aftermarket). Proof run:
+[leaderboard Space](https://huggingface.co/spaces/bennytimz/aftermarket). Planned proof run (prepared, not executed within the hackathon):
 [`notebooks/11_audit_demo.ipynb`](notebooks/11_audit_demo.ipynb) audits GC from scratch with `--quick` on Kaggle and
 checks whether the card reproduces GC's leaderboard retention on the same 100 prompts.
 
@@ -1205,7 +1212,8 @@ instrument matters as much as the attack: a 1B judge that reads garbled refusals
 ### Implications
 
 - **For fix authors:** test after release, not only at release: at least a 100-example harmful fine-tune,
-  abliteration at the strongest layer, and template removal. `aftermarket audit --quick` does this in ~1.5 h.
+  abliteration at the strongest layer, and template removal. `aftermarket audit --quick` is built to do this in an
+  estimated ~1.5 h (smoke-tested on CPU; full GPU validation not completed).
 - **For deployers:** a "safety-fixed" Tiny Aya is not safe after your own fine-tune; re-evaluate after every change,
   and prefer fixes with high retention (GC, RL) while accounting for their over-refusal.
 - **For evaluators:** report two judges and a hand-label check; Llama-Guard-3-1B alone overstates attack success on
@@ -1318,7 +1326,7 @@ Every item of the official template (* required, ^ optional, " depends on track)
 | \* Title + one-line claim | [top](#aftermarket-does-a-safety-fix-survive-the-next-person-who-downloads-the-model) | yes |
 | \* Tracks + problem statements covered | [Tracks + problem statements covered](#tracks--problem-statements-covered) | yes |
 | ^ Content warning | [Content warning](#content-warning) | yes |
-| \* Abstract | [Abstract](#abstract) | yes (446 words) |
+| \* Abstract | [Abstract](#abstract) | yes (461 words) |
 | \* Headline before → after number | [Headline before → after number](#headline-before--after-number) | yes |
 | \* Base model + method in one line | [Base model + method in one line](#base-model--method-in-one-line) | yes |
 | ^ "For judges: one minute" box | [For judges: one minute](#for-judges-one-minute) | yes |

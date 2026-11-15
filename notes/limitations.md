@@ -131,3 +131,6 @@ write-up as written here.
   comparable). These cells report harmful-prompt ASR and MMLU only. Over-refusal is mainly an A0 question;
   it is still measured at A0, A1, A2, A3 and A4q3. Taken because the measured-rate estimate of the AM battery
   (notebook 02 rates: ~0.6-0.8 prompts/s on harmful/XSTest, ~5 prompts/s on MMLU) was above 6 quota-hours.
+- **`aftermarket audit` is not GPU-validated.** It is built, unit-tested and smoke-tested end-to-end on CPU;
+  full GPU validation not completed within the hackathon. `--smoke` (tiny random model) passes; no `--quick`
+  or full audit of a real model ran on a T4, so its timings are estimates and notebook 11 is unrun.

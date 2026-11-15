@@ -29,6 +29,6 @@ it is safer than the base model as released but worse under abliteration (WildGu
 over hardening random layers, and it ranks last on retention.
 
 We release the battery, judges and statistics as a reusable suite, with an `aftermarket audit` command that writes a
-robustness report card for any Tiny Aya fix. It is built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery
+robustness report card for any Tiny Aya fix (built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon). It is built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery
 was attempted but did not run on Tiny Aya. We publish metrics, verdicts and our defense adapters only: no
 attack-tuned weights and no harmful completions. Every team is credited by name.

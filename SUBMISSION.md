@@ -41,7 +41,7 @@ One line: built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery was a
 - `purvansh01/tiny-aya-global-safetypulse-repaired` @ `d290c316d4e6` (SP, SafetyPulse: SafeTune safety-vector repair): https://huggingface.co/purvansh01/tiny-aya-global-safetypulse-repaired
 - Ours (public, with model cards): AM and its controls AM_rand0, AM_rand1, AM_all: https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59
 
-## Abstract (446 words)
+## Abstract (461 words)
 
 Aftermarket: does a safety fix survive the next person who downloads the model?
 
@@ -55,7 +55,7 @@ Three results stand out. First, the harmful fine-tune is the hardest change: eve
 
 We also built AM, a defense that hardens the six layers with the strongest refusal direction, trains against an ablated refusal direction and keeps those layers at 8 bits under compression. AM is a trade-off: under both judges it is safer than the base model as released but worse under abliteration (WildGuard 90% vs 65%; Llama Guard 79% vs 70%), with no advantage over hardening random layers, and it ranks last on retention.
 
-We release the battery, judges and statistics as a reusable suite, with an aftermarket audit command that writes a robustness report card for any Tiny Aya fix. It is built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery was attempted but did not run on Tiny Aya. We publish metrics, verdicts and our defense adapters only: no attack-tuned weights and no harmful completions. Every team is credited by name.
+We release the battery, judges and statistics as a reusable suite, with an aftermarket audit command that writes a robustness report card for any Tiny Aya fix (built, unit-tested and smoke-tested end-to-end on CPU; full GPU validation not completed within the hackathon). It is built on CuratorKIT, SafeTune and AuditKIT; CircuitKIT discovery was attempted but did not run on Tiny Aya. We publish metrics, verdicts and our defense adapters only: no attack-tuned weights and no harmful completions. Every team is credited by name.
 
 ## Links
 
