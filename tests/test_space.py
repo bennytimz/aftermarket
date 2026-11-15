@@ -1,6 +1,8 @@
-"""Space: the public bundle allowlist, and the app's data functions (gradio itself not needed)."""
+"""Space: the public bundle allowlist, and the static page's data functions (space/app.js, run with node)."""
 
-import importlib.util
+import json
+import shutil
+import subprocess
 from pathlib import Path
 
 import pandas as pd
@@ -11,11 +13,14 @@ from aftermarket import space_push as S
 REPO = Path(__file__).resolve().parents[1]
 
 
-def app():
-    spec = importlib.util.spec_from_file_location("space_app", REPO / "space" / "app.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+def js(expr: str):
+    """Evaluate `expr` with space/app.js loaded as `A`; returns the JSON-decoded result."""
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("node not installed")
+    code = f"const A = require({json.dumps(str(REPO / 'space' / 'app.js'))}); console.log(JSON.stringify({expr}));"
+    r = subprocess.run([node, "-e", code], capture_output=True, text=True, encoding="utf-8", check=True)
+    return json.loads(r.stdout)
 
 
 def ci_rows():
@@ -67,34 +72,78 @@ def test_bundle_needs_results(tmp_path):
         S.build_bundle(tmp_path / "nothing", tmp_path / "data")
 
 
-def test_app_tables_and_filters():
-    a = app()
-    ci = ci_rows()
-    ci = ci[ci["stage"] == "test"]
-    t = a.cell_table(ci, "asr_lg")
-    assert list(t.columns[:1]) == ["model"] and t.iloc[0]["model"] == "BASE"
-    assert t.set_index("model").loc["SDT", "A3"] == "70% [60%–80%]"
-    only = a.cell_table(ci, "asr_lg", runs=["SDT"], attacks=["A3"])
-    assert list(only["model"]) == ["SDT"]
-    assert "No results" in a.cell_table(ci, "mmlu").iloc[0, 0]
-    assert "No judge" in a.judges_table(pd.DataFrame(), pd.DataFrame()).iloc[0, 0]
+CSV = ("stage,run,attack,metric,value,lo,hi,n\r\n"
+       "test,SDT,A3,asr_lg,0.7,0.6,0.8,200\r\ntest,BASE,A0,asr_lg,0.1,0.05,0.15,200\r\n"
+       "test,BASE,A3max,asr_lg,0.7,0.63,0.76,200\r\n")
 
 
-def test_app_loads_missing_data_and_draws(tmp_path):
-    pytest.importorskip("matplotlib")
-    a = app()
-    d = a.load_data(tmp_path)  # no CSVs at all: empty frames, no crash
-    assert all(v.empty for v in d.values())
-    assert a.heatmap(ci_rows(), "asr_lg", True) is not None
-    assert a.retention_figure(d["retention"]) is not None
+def parsed(csv: str) -> str:
+    return f"A.parseCSV({json.dumps(csv)})"
 
 
-def test_report_card_tab_reads_cards(tmp_path):
-    a = app()
-    (tmp_path / "GC.png").write_bytes(b"png")
-    (tmp_path / "GC.md").write_text("# card\n\n![report card](GC.png)\n\nbody\n", encoding="utf-8")
-    (tmp_path / "BASE.md").write_text("no png", encoding="utf-8")
-    assert a.card_runs(tmp_path) == ["GC"]
-    img, md = a.card("GC", tmp_path)
-    assert img.endswith("GC.png") and "![report card]" not in md and "body" in md
-    assert a.card("SP", tmp_path) == (None, "No report card for this model yet.")
+def test_js_parse_csv_quotes_and_crlf():
+    assert js(parsed('a,b,c\n1,"x,y","say ""hi"""\n')) == [{"a": "1", "b": "x,y", "c": 'say "hi"'}]
+    assert js(parsed("")) == []
+    assert len(js(parsed(CSV))) == 3
+
+
+def test_js_matrix_filters_order_and_format():
+    m = js(f"(() => {{ const m = A.cellMatrix({parsed(CSV)}, 'asr_lg'); const c = m.cell('SDT', 'A3'); "
+           "return [m.runs, m.attacks, A.fmtCi(c.value, c.lo, c.hi), m.cell('SDT', 'A0') === undefined]; })()")
+    assert m == [["BASE", "SDT"], ["A0", "A3", "A3max"], "70% [60%–80%]", True]
+    assert js(f"A.cellMatrix({parsed(CSV)}, 'asr_lg', ['SDT'], ['A3']).runs") == ["SDT"]
+    assert js(f"A.cellMatrix({parsed(CSV)}, 'mmlu').runs") == []
+    assert js("A.fmtCi(NaN, 0, 0)") == "-"
+
+
+def test_js_ramp_ends_and_ink():
+    assert js("[A.rampColor(0), A.rampColor(1), A.rampColor(2), A.rampColor(0, 'dark'), A.rampColor(1, 'dark')]") == \
+        ["#f0efec", "#0d366b", "#0d366b", "#262624", "#cde2fb"]
+    assert js("[A.inkOn(0.9), A.inkOn(0.1), A.inkOn(0.9, 'dark'), A.inkOn(0.1, 'dark')]") == \
+        ["#ffffff", "#0b0b0b", "#0b0b0b", "#ffffff"]
+
+
+def test_js_retention_rows_vs_base():
+    ret = ("stage,run,metric,retention,lo,hi,n,families,attacks,partial,ranked\n"
+           'test,GC,asr_lg,0.736,0.71,0.76,200,"A1,A2",x,False,True\n'
+           'test,AM_all,asr_lg,0.56,0.54,0.58,200,"A2,A3",x,True,False\n')
+    rpw = ("stage,metric,attack,run,vs,n,baseline,candidate,delta,p_value,p_holm,significant_holm\n"
+           "test,retention,x,GC,BASE,200,0.59,0.74,0.145,0.0001,0.0011,True\n")
+    rows = js(f"A.retentionRows({parsed(ret)}, {parsed(rpw)})")
+    assert [r["run"] for r in rows] == ["GC", "AM_all"]
+    assert rows[0]["ranked"] and not rows[1]["ranked"] and rows[1]["partial"]
+    assert rows[0]["vsBase"] == "+0.14 (p_holm 0.001)" and rows[0]["families"] == "A1,A2"
+
+
+def test_js_markdown_cards_escape_and_tables():
+    md = ("# Card: GC\n\n![report card](GC.png)\n\n**bold** <script>x</script> [link](https://a.b/c)\n\n"
+          "| a | b |\n|---|---|\n| 1 | `2` |\n")
+    html = js(f"A.mdToHtml({json.dumps(md)})")
+    assert "<h2>Card: GC</h2>" in html and "<img" not in html and "<script>" not in html and "&lt;script&gt;" in html
+    assert "<strong>bold</strong>" in html and '<a href="https://a.b/c"' in html
+    assert "<th>a</th>" in html and "<td><code>2</code></td>" in html and "---" not in html
+
+
+def test_space_page_references_existing_files():
+    html = (REPO / "space" / "index.html").read_text(encoding="utf-8")
+    for f in S.SPACE_FILES:
+        assert (REPO / "space" / f).exists()
+    assert 'src="app.js"' in html and 'href="style.css"' in html
+    assert "sdk: static" in (REPO / "space" / "README.md").read_text(encoding="utf-8")
+
+
+def test_report_cards_index(tmp_path):
+    src, out = tmp_path / "cards", tmp_path / "out"
+    src.mkdir()
+    for f in ("GC.png", "GC.md", "BASE.png", "BASE.md", "SP.md"):
+        (src / f).write_text("x")
+    assert S.build_cards(src, out) == 2
+    assert json.loads((out / "index.json").read_text()) == ["BASE", "GC"]
+
+
+def test_js_pct_matches_python_rounding():
+    import pandas as pd
+
+    vals = pd.read_csv(REPO / "results" / "tables" / "cell_ci.csv")["value"].dropna().tolist()[:300]
+    vals += [0.085, 0.825, 0.745, 0.005, 0.995, 0.0, 1.0]
+    assert js(f"{json.dumps(vals)}.map(A.pct)") == [f"{v:.0%}" for v in vals]

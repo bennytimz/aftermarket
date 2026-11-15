@@ -3,12 +3,11 @@ title: Aftermarket leaderboard
 emoji: 🛡️
 colorFrom: blue
 colorTo: gray
-sdk: gradio
-sdk_version: 6.32.0
-app_file: app.py
+sdk: static
+app_file: index.html
 pinned: false
 license: apache-2.0
-short_description: Do Tiny Aya safety fixes survive fine-tuning, compression and abliteration?
+short_description: Do Tiny Aya safety fixes survive what users do next?
 ---
 
 # Aftermarket leaderboard

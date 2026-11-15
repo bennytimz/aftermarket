@@ -5,6 +5,9 @@ Post-release robustness of safety-fixed Tiny Aya models: Lexsi AI Safety & Align
 Tracks: 2a #1 (red-teaming and robustness, incl. weight-space attacks, primary), 2b #12 (tamper resistance),
 #11 (compression), #9 (locating safety).
 
+**Live leaderboard and report cards: [huggingface.co/spaces/bennytimz/aftermarket](https://huggingface.co/spaces/bennytimz/aftermarket)**
+(heatmap with attack and model filters, retention ranking, judge agreement, one report card per model).
+
 ## Run it on your own model
 
 Fixed a Tiny Aya Global model? Find out whether the fix survives the next person who downloads it. One command
@@ -24,7 +27,10 @@ aftermarket audit --model CohereLabs/tiny-aya-global --adapter your-org/lora   #
 The card lands in `results/audit/<name>/card/` (`.md` + `.png`). It uses the same seed, settings, prompts and
 judges as the leaderboard, so the numbers compare directly. A quick audit is ranked against the leaderboard
 recomputed on the same 100 prompts. Generations stay on your machine and nothing is uploaded. Cards for every model
-we tested: [`results/cards/`](results/cards/README.md).
+we tested: [`results/cards/`](results/cards/README.md) and the
+[leaderboard Space](https://huggingface.co/spaces/bennytimz/aftermarket). Proof run:
+[`notebooks/11_audit_demo.ipynb`](notebooks/11_audit_demo.ipynb) audits GC from scratch with `--quick` on Kaggle and
+checks whether the card reproduces GC's leaderboard retention on the same 100 prompts.
 
 ![GC report card](results/cards/GC.png)
 
@@ -453,11 +459,11 @@ python -m aftermarket.report --from-hub
 # audit your own model: battery + judges + report card (see "Run it on your own model")
 aftermarket audit --model <hf id or path> [--adapter <lora>] [--quick]
 
-# public leaderboard Space (metrics CSVs + report cards only); dry run unless --push
+# public leaderboard Space: static page (no server), metrics CSVs + report cards only; dry run unless --push
 python -m aftermarket.space_push --push
 ```
 
-Notebooks `01`–`10` run the same steps on Kaggle (`07_am_battery.ipynb`: the frozen AM's test battery, Kaggle part;
+Notebooks `01`–`11` run the same steps on Kaggle (`07_am_battery.ipynb`: the frozen AM's test battery, Kaggle part;
 refuses to start unless AM is frozen and pinned on the Hub) and are safe for "Save & Run All": finished work is pulled from
 the private Hub dataset and skipped. Judging (`06_judge.ipynb`) also runs on Google Colab (free T4, one judge
 worker, `HF_TOKEN` in Colab secrets), off the Kaggle GPU quota; re-run it after a disconnect and it resumes from the Hub:

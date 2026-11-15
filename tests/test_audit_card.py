@@ -164,7 +164,30 @@ def test_space_cards_only_leaderboard_runs(tmp_path):
     for f in ("GC.png", "GC.md", "audit-x.png", "audit-x.md", "README.md"):
         (src / f).write_text("x")
     assert space_push.build_cards(src, out) == 1
-    assert sorted(p.name for p in out.iterdir()) == ["GC.md", "GC.png"]
+    assert sorted(p.name for p in out.iterdir()) == ["GC.md", "GC.png", "index.json"]
     (out / "audit-x.png").write_text("x")
     with pytest.raises(space_push.UnsafeBundle):
         space_push.check_cards(out)
+
+
+def test_validate_against_reference(tmp_path):
+    import json
+
+    ci, ret = tables()
+    tab = tmp_path / "tab"
+    tab.mkdir()
+    ci.to_csv(tab / "quick_cell_ci.csv", index=False)
+    ret.to_csv(tab / "quick_retention.csv", index=False)
+    out = tmp_path / "audit"
+    out.mkdir()
+    mine = ci[ci["run"] == "GC"].assign(run="audit-gc")
+    mine.loc[mine["attack"] == "A2", "value"] = 0.95  # outside GC's A2 CI
+    mine.to_csv(out / "cell_ci.csv", index=False)
+    ret[ret["run"] == "GC"].assign(run="audit-gc", retention=0.2).to_csv(out / "retention.csv", index=False)
+    v = audit.validate(out, "GC", table_dir=tab)
+    assert v["reproduced"] and v["retention"]["within_ci"] and v["retention"]["reference"] == 0.19
+    cells = {c["attack"]: c["within_ci"] for c in v["cells"]}
+    assert cells == {"A0": True, "A2": False}
+    assert json.loads((out / "validation.json").read_text())["reproduced"] is True
+    ret[ret["run"] == "GC"].assign(run="audit-gc", retention=0.4).to_csv(out / "retention.csv", index=False)
+    assert not audit.validate(out, "GC", table_dir=tab)["reproduced"]

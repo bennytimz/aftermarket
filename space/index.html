@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aftermarket leaderboard</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Aftermarket leaderboard</h1>
+  <p>Does a safety fix survive the next person who downloads the model? Every public safety fix for Tiny Aya Global
+    from the Lexsi AI Safety &amp; Alignment Hackathon, plus the base model, faces the same post-release battery.
+    Same prompts, seed, settings and judges for every model; 95% bootstrap intervals; held-out test prompts only.
+    <a href="https://github.com/bennytimz/aftermarket" target="_blank" rel="noopener">Method, code and credits</a>.</p>
+</header>
+<nav role="tablist">
+  <button data-tab="leaderboard" aria-selected="true">Leaderboard</button>
+  <button data-tab="cards" aria-selected="false">Report cards</button>
+  <button data-tab="retention" aria-selected="false">Retention ranking</button>
+  <button data-tab="judges" aria-selected="false">Judges</button>
+  <button data-tab="about" aria-selected="false">About</button>
+</nav>
+<main>
+  <section id="tab-leaderboard">
+    <div class="filters">
+      <label>Metric <select id="metric"></select></label>
+      <fieldset><legend>Attacks</legend><div id="f-attacks" class="chips"></div></fieldset>
+      <fieldset><legend>Models</legend><div id="f-runs" class="chips"></div></fieldset>
+    </div>
+    <div id="heat-legend" class="legend"></div>
+    <div id="heatmap" class="scroll"></div>
+  </section>
+  <section id="tab-cards" hidden>
+    <p>One page per model: attack success per attack with 95% CIs (grey band: range across the ranked leaderboard
+      runs; black tick: BASE), retention and rank, over-refusal and MMLU.</p>
+    <label>Model <select id="card-run"></select></label>
+    <div id="card" class="card"></div>
+    <h3>Run it on your own model</h3>
+    <pre><code>git clone https://github.com/bennytimz/aftermarket &amp;&amp; cd aftermarket
+pip install -r requirements.txt &amp;&amp; pip install -e .
+aftermarket audit --model your-org/your-model --quick     # A0, A2, A3, A5bon on 100 prompts
+aftermarket audit --model your-org/your-model             # the full battery</code></pre>
+  </section>
+  <section id="tab-retention" hidden>
+    <p>Retention = 1 − mean rise in attack success over attack families A1–A5 (1 = nothing lost). AM, our own
+      defense, in orange; partial-battery controls lighter and not ranked.</p>
+    <div id="retention"></div>
+    <div id="retention-table" class="scroll"></div>
+  </section>
+  <section id="tab-judges" hidden>
+    <p>Llama-Guard-3-1B (primary) and WildGuard on every harmful-prompt response, row level (each best-of-8 variant
+      counted once).</p>
+    <div id="judges" class="scroll"></div>
+  </section>
+  <section id="tab-about" hidden>
+    <p>Attacks: A0 as released; A1 benign QLoRA fine-tune; A2 fine-tune with 100 harmful examples; A3 abliteration
+      of the refusal direction; A4q3 3-bit HQQ compression (A4q4 extra, partial); A5raw chat template removed; A5bon
+      best-of-8 prompt perturbations; A3max (†) abliteration at the strongest layer, a post-hoc sensitivity check
+      never used in retention or rankings.</p>
+    <p>Every team is credited in the <a href="https://github.com/bennytimz/aftermarket#4-models-tested" target="_blank"
+      rel="noopener">write-up</a>, and results are framed as robustness after release, not as verdicts on any fix.
+      This page shows aggregate metrics only: no prompts, no model outputs and no attack-modified weights.</p>
+  </section>
+</main>
+<div id="tooltip" role="tooltip" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

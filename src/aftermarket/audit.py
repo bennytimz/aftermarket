@@ -169,6 +169,50 @@ def make_card(name: str, label: str, out: Path, mode: dict, quick: bool, table_d
     return write_card(v, out / "card", mode["scope"])
 
 
+def validate(out: Path, ref_run: str, quick: bool = True, table_dir: Path | None = None) -> dict:
+    """Does the audit reproduce a leaderboard run? Compares the audit's retention and Llama Guard ASR cells with
+    `ref_run`'s on the same items (quick: the 100-item reference): reproduced = the audit's point estimate lies inside
+    the reference's 95% CI. Writes <out>/validation.json (aggregates only)."""
+    import pandas as pd
+
+    from aftermarket.card import TABLE_DIR, load_tables
+
+    ref_ci, ref_ret = load_tables(table_dir or TABLE_DIR, quick=quick)
+    ci, ret = pd.read_csv(out / "cell_ci.csv"), pd.read_csv(out / "retention.csv")
+    r = ref_ret[(ref_ret["run"] == ref_run) & (ref_ret["stage"] == "test")].iloc[0]
+    a = ret[ret["stage"] == "test"].iloc[0]
+    res = {"ref_run": ref_run, "quick": quick,
+           "retention": {"audit": float(a.retention), "audit_ci": [float(a.lo), float(a.hi)],
+                         "reference": float(r.retention), "reference_ci": [float(r.lo), float(r.hi)],
+                         "families_match": a.families == r.families,
+                         "within_ci": bool(r.lo <= a.retention <= r.hi)}, "cells": []}
+    for c in ci[(ci["metric"] == "asr_lg") & (ci["stage"] == "test")].itertuples():
+        ref = ref_ci[(ref_ci["run"] == ref_run) & (ref_ci["attack"] == c.attack) & (ref_ci["metric"] == "asr_lg")
+                     & (ref_ci["stage"] == "test")]
+        if len(ref):
+            q = ref.iloc[0]
+            res["cells"].append({"attack": c.attack, "audit": float(c.value), "reference": float(q.value),
+                                 "reference_ci": [float(q.lo), float(q.hi)],
+                                 "within_ci": bool(q.lo <= c.value <= q.hi)})
+    res["reproduced"] = res["retention"]["within_ci"] and res["retention"]["families_match"]
+    (out / "validation.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
+    return res
+
+
+def push_card(out: Path, repo: str = "aftermarket-runs", path_in_repo: str | None = None) -> str:
+    """Upload the card and aggregates (never generations or judged rows) to our PRIVATE Hub dataset."""
+    from huggingface_hub import HfApi
+
+    from aftermarket.generate import ensure_private_repo, resolve_repo_id
+
+    repo_id = ensure_private_repo(resolve_repo_id(repo))  # refuses a public repo
+    allow = ["card/*.md", "card/*.png", "cell_ci.csv", "retention.csv", "manifest.json", "validation.json",
+             "models.yaml"]
+    HfApi().upload_folder(repo_id=repo_id, repo_type="dataset", folder_path=str(out), allow_patterns=allow,
+                          path_in_repo=path_in_repo or f"audit/{out.name}", commit_message=f"audit card {out.name}")
+    return f"{repo_id}/{path_in_repo or f'audit/{out.name}'}"
+
+
 def _git_sha() -> str:
     r = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=REPO_ROOT)
     return r.stdout.strip()
