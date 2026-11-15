@@ -552,7 +552,39 @@ def make_figures(t: dict, out: Path = FIG_DIR) -> list[Path]:
 
 # ----------------------------------------------------------------------------- CLI
 
+def outdated(local_dir: Path, hub_sha: dict[str, str]) -> list[str]:
+    """Local judged parquet names whose Hub copy has a different sha256 (e.g. a WildGuard pass added on the Hub
+    after this machine pulled). Files missing on the Hub are left alone."""
+    import hashlib
+
+    out = []
+    for p in sorted(Path(local_dir).glob("*.parquet")):
+        want = hub_sha.get(p.name)
+        if want and hashlib.sha256(p.read_bytes()).hexdigest() != want:
+            out.append(p.name)
+    return out
+
+
+def hub_parquet_sha(cfg: dict) -> dict[str, str]:
+    """{file name: LFS sha256} of the judged parquet files on the Hub; {} if the listing fails."""
+    try:
+        from huggingface_hub import HfApi
+
+        from aftermarket.generate import resolve_repo_id
+
+        sub = cfg["push"]["path_in_repo"]
+        tree = HfApi().list_repo_tree(resolve_repo_id(cfg["push"]["hf_repo"]), path_in_repo=sub,
+                                      repo_type="dataset")
+        return {Path(f.path).name: f.lfs.sha256 for f in tree
+                if f.path.endswith(".parquet") and getattr(f, "lfs", None) is not None}
+    except Exception as e:
+        print(f"WARNING Hub checksums not listed ({type(e).__name__}: {e}); local judged files not refreshed")
+        return {}
+
+
 def pull_judged(config: str = "configs/judge.yaml", judged_dir: Path | None = None) -> int:
+    """Pull judged files from the Hub, first dropping local copies that differ from the Hub's (pull_from_hub never
+    overwrites, so an updated judgement would otherwise be reported from a stale local copy)."""
     import yaml
 
     from aftermarket.generate import pull_from_hub
@@ -560,6 +592,12 @@ def pull_judged(config: str = "configs/judge.yaml", judged_dir: Path | None = No
     cfg = yaml.safe_load((REPO_ROOT / config).read_text(encoding="utf-8"))
     out = judged_dir or REPO_ROOT / cfg["out_dir"]
     out.mkdir(parents=True, exist_ok=True)
+    stale = outdated(out, hub_parquet_sha(cfg))
+    for name in stale:
+        for f in (out / name, (out / name).with_suffix(".json")):
+            f.unlink(missing_ok=True)
+    if stale:
+        print(f"refreshing {len(stale)} judged files changed on the Hub: {stale}")
     return pull_from_hub(cfg, out, cfg["push"]["path_in_repo"])
 
 

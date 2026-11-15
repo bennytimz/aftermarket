@@ -127,3 +127,13 @@ def test_a3_finding():
     s = report.a3_finding(ci, runs=("BASE", "GC"))
     assert s == "A3 raises Llama Guard ASR from 5% to 50% on average; 1 of 2 runs exceed 50%"  # AM not counted
     assert report.a3_finding(ci).endswith("(6 runs not judged yet)")
+
+
+def test_outdated_flags_local_copies_that_differ_from_the_hub(tmp_path):
+    import hashlib
+
+    (tmp_path / "a.parquet").write_bytes(b"old")
+    (tmp_path / "b.parquet").write_bytes(b"same")
+    (tmp_path / "c.parquet").write_bytes(b"local only")
+    hub = {"a.parquet": hashlib.sha256(b"new").hexdigest(), "b.parquet": hashlib.sha256(b"same").hexdigest()}
+    assert report.outdated(tmp_path, hub) == ["a.parquet"]
