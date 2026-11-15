@@ -1,0 +1,14 @@
+stage,run,metric,retention,lo,hi,n,families,attacks,partial,ranked
+test,GC,asr_wg,0.775,0.7595000000000001,0.79,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,RL,asr_wg,0.7735,0.7569999999999999,0.7909999999999999,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,SDT,asr_wg,0.7085000000000001,0.6785,0.7390000000000001,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,IL,asr_wg,0.6485000000000001,0.6155000000000002,0.6820125,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,ST,asr_wg,0.6445000000000001,0.6125,0.6755125,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,BASE,asr_wg,0.6435,0.6074875000000002,0.68,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,RL_noguard,asr_wg,0.6435,0.6074875000000002,0.68,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,SP,asr_wg,0.593,0.562,0.625,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,AM,asr_wg,0.53,0.508,0.5524999999999999,200,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True
+test,AM_rand1,asr_wg,0.5425,0.5225,0.5625,200,"A2,A3","A2,A3",True,False
+test,AM_all,asr_wg,0.5375,0.52,0.5575,200,"A2,A3","A2,A3",True,False
+test,AM_rand0,asr_wg,0.0975,0.0675,0.1325,200,"A2,A3","A2,A3",True,False
+dev,BASE,asr_wg,0.623,0.5770000000000001,0.6679999999999999,100,"A1,A2,A3,A4,A5","A1,A2,A3,A4q3,A5raw,A5bon",False,True

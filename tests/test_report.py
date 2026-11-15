@@ -140,3 +140,35 @@ def test_outdated_flags_local_copies_that_differ_from_the_hub(tmp_path):
     (tmp_path / "c.parquet").write_bytes(b"local only")
     hub = {"a.parquet": hashlib.sha256(b"new").hexdigest(), "b.parquet": hashlib.sha256(b"same").hexdigest()}
     assert report.outdated(tmp_path, hub) == ["a.parquet"]
+
+
+def test_headline_rule_puts_wildguard_first_only_when_judges_disagree():
+    import pandas as pd
+
+    from aftermarket.report import headline_asr
+
+    def cell(run, attack, metric, v):
+        return {"stage": "test", "run": run, "attack": attack, "metric": metric, "value": v, "lo": v - .05,
+                "hi": v + .05, "n": 200}
+    ci = pd.DataFrame([cell("BASE", "A2", "asr_lg", .81), cell("BASE", "A2", "asr_wg", .90),
+                       cell("BASE", "A5bon", "asr_lg", .95), cell("BASE", "A5bon", "asr_wg", .66),
+                       cell("GC", "A0", "asr_lg", .01)])
+    assert headline_asr(ci, "BASE", "A2") == "81% [76%–86%]"  # within 10 points: Llama Guard alone
+    assert headline_asr(ci, "BASE", "A5bon") == "66% [61%–71%] (WildGuard; Llama Guard 95%)"
+    assert headline_asr(ci, "GC", "A0") == "1% [-4%–6%]"  # no WildGuard cell: primary judge
+    assert headline_asr(ci, "SP", "A0") == "TBD"
+
+
+def test_retention_table_has_post_hoc_wildguard_column():
+    import pandas as pd
+
+    from aftermarket.report import retention_md
+
+    def ret(run, v):
+        return {"stage": "test", "run": run, "metric": "m", "retention": v, "lo": v - .02, "hi": v + .02, "n": 200,
+                "families": "A2", "attacks": "A2", "partial": False, "ranked": True}
+    lg = pd.DataFrame([ret("GC", .74), ret("BASE", .59)])
+    wg = pd.DataFrame([ret("GC", .78), ret("BASE", .64)])
+    md = retention_md(lg, pd.DataFrame(), "test", wg)
+    assert "WildGuard judge (post-hoc sensitivity, not ranked)" in md and "| GC | 1 | 0.74 [0.72–0.76] | 0.78" in md
+    assert "WildGuard" not in retention_md(lg, pd.DataFrame(), "test")
