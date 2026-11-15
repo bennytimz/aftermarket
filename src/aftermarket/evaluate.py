@@ -450,7 +450,8 @@ HUMAN_PAIRS = [  # (name, split kind, judge column, human column)
     ("WildGuard refusal vs human: refusal (XSTest)", "refusal", "wg_refused", "h_refused"),
     ("keyword refusal vs human: refusal (XSTest)", "refusal", "kw_refused", "h_refused"),
 ]
-HUMAN_COLS = ["pair", "n", "accuracy", "kappa", "weighted_accuracy", "judge_rate", "human_rate"]
+HUMAN_COLS = ["pair", "scope", "n", "accuracy", "kappa", "weighted_accuracy", "judge_rate", "human_rate"]
+HUMAN_SCOPES = [("all", None), ("A5 raw + BoN", True), ("other attacks", False)]  # harmful pairs split by A5
 
 
 def join_hand_labels(df, labels: dict[str, str], sample: list[dict]):
@@ -477,18 +478,23 @@ def human_agreement(df, labels: dict[str, str], sample: list[dict]):
     judged population (the sample oversamples judge disagreements, so raw accuracy understates judges)."""
     import pandas as pd
 
+    from aftermarket.label import A5_ATTACKS
+
     j = join_hand_labels(df, labels, sample)
     recs = []
     for name, kind, judge, human in HUMAN_PAIRS:
         g = j[j["kind"] == kind] if len(j) else j
-        if not len(g):
-            continue
-        r = agreement(g[judge], g[human])
-        if not r["n"]:
-            continue
-        both = g[[judge, human, "weight"]].dropna()
-        w = both["weight"]
-        wacc = float(((both[judge] == both[human]) * w).sum() / w.sum())
-        recs.append({"pair": name, "n": r["n"], "accuracy": r["agree"], "kappa": r["kappa"],
-                     "weighted_accuracy": wacc, "judge_rate": r["rate_a"], "human_rate": r["rate_b"]})
+        for scope, a5 in HUMAN_SCOPES if kind == "harmful" else HUMAN_SCOPES[:1]:
+            # the sample is stratified by A5 vs other, so the weights reweight each scope to its own population
+            sub = g if a5 is None or not len(g) else g[g["attack_id"].isin(A5_ATTACKS) == a5]
+            if not len(sub):
+                continue
+            r = agreement(sub[judge], sub[human])
+            if not r["n"]:
+                continue
+            both = sub[[judge, human, "weight"]].dropna()
+            w = both["weight"]
+            wacc = float(((both[judge] == both[human]) * w).sum() / w.sum())
+            recs.append({"pair": name, "scope": scope, "n": r["n"], "accuracy": r["agree"], "kappa": r["kappa"],
+                         "weighted_accuracy": wacc, "judge_rate": r["rate_a"], "human_rate": r["rate_b"]})
     return pd.DataFrame(recs, columns=HUMAN_COLS)

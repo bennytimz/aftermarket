@@ -64,7 +64,8 @@ def human_md(h) -> str:
                       "Cohen's kappa": [f"{v:.2f}" if v == v else "-" for v in h["kappa"]],
                       "accuracy, reweighted": [pct(v, 1) for v in h["weighted_accuracy"]],
                       "judge rate": [pct(v, 1) for v in h["judge_rate"]],
-                      "human rate": [pct(v, 1) for v in h["human_rate"]]}, index=h["pair"].tolist())
+                      "human rate": [pct(v, 1) for v in h["human_rate"]]},
+                     index=[f"{p} ({sc})" if sc != "all" else p for p, sc in zip(h["pair"], h["scope"])])
     return md_table(t, "judge vs human")
 
 
@@ -218,12 +219,22 @@ def headline_values(t: dict, n_rows: int) -> dict[str, str]:
     broken = test_cells[test_cells["broken"] == True] if len(test_cells) else test_cells  # noqa: E712
     v["broken_cells"] = str(len(broken)) if len(test_cells) else TBD
     h = t["human_agreement"]
-    hv = {r.pair.split(" vs ")[0]: r for r in h.itertuples()} if len(h) else {}
-    v["human_n"] = str(int(max(h["n"]))) if len(h) else TBD
-    for key, judge in [("lg", "Llama Guard unsafe"), ("wg", "WildGuard harmful"), ("wgref", "WildGuard refusal")]:
-        r = hv.get(judge)
-        v[f"human_acc_{key}"] = pct(r.weighted_accuracy, 1) if r is not None else TBD
-        v[f"human_kappa_{key}"] = f"{r.kappa:.2f}" if r is not None and r.kappa == r.kappa else TBD
+    v["human_n"] = TBD
+    if len(h):
+        v["human_n"] = str(int(h.loc[h["pair"].str.startswith("Llama Guard") & (h["scope"] == "all"), "n"].sum()
+                               + h.loc[h["pair"].str.startswith("WildGuard refusal"), "n"].sum()))
+    for scope, suffix in [("all", ""), ("A5 raw + BoN", "_a5")]:
+        hv = {r.pair.split(" vs ")[0]: r for r in h.itertuples() if r.scope == scope} if len(h) else {}
+        for key, judge in [("lg", "Llama Guard unsafe"), ("wg", "WildGuard harmful"), ("wgref", "WildGuard refusal")]:
+            r = hv.get(judge)
+            if suffix and key == "wgref":
+                continue
+            v[f"human_acc_{key}{suffix}"] = pct(r.weighted_accuracy, 1) if r is not None else TBD
+            v[f"human_kappa_{key}{suffix}"] = f"{r.kappa:.2f}" if r is not None and r.kappa == r.kappa else TBD
+            v[f"human_rate_{key}{suffix}"] = pct(r.judge_rate, 0) if r is not None else TBD
+            if key == "lg":
+                v[f"human_rate_human{suffix}"] = pct(r.human_rate, 0) if r is not None else TBD
+            v[f"human_n{suffix}_{key}"] = str(r.n) if r is not None else TBD
     return v
 
 
@@ -507,7 +518,7 @@ def fig_agreement(agree, out: Path = FIG_DIR, human=None) -> list[Path]:
     rows = [[r.pair, f"{r.n:,}", pct(r.agree, 1), f"{r.kappa:.2f}" if r.kappa == r.kappa else "-",
              pct(r.rate_a, 1), pct(r.rate_b, 1)] for r in agree.itertuples()]
     if human is not None and len(human):  # human rows: accuracy reweighted to the judged population
-        rows += [[r.pair + " (hand labels)", f"{r.n:,}", pct(r.weighted_accuracy, 1),
+        rows += [[r.pair.split(":")[0] + (" [hand labels]" if r.scope == "all" else f" [hand, {r.scope}]"), f"{r.n:,}", pct(r.weighted_accuracy, 1),
                   f"{r.kappa:.2f}" if r.kappa == r.kappa else "-", pct(r.judge_rate, 1), pct(r.human_rate, 1)]
                  for r in human.itertuples()]
     fig, ax = plt.subplots(figsize=(8.6, 0.3 * (len(rows) + 1) + 0.45))

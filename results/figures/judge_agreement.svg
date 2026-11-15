@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
   "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="592.057891pt" height="135.652297pt" viewBox="0 0 592.057891 135.652297" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="592.057891pt" height="318.604297pt" viewBox="0 0 592.057891 318.604297" xmlns="http://www.w3.org/2000/svg" version="1.1">
  <metadata>
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-11-15T10:08:32.267699</dc:date>
+    <dc:date>2026-11-15T12:06:54.661878</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -21,8 +21,8 @@
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 135.652297 
-L 592.057891 135.652297 
+   <path d="M 0 318.604297 
+L 592.057891 318.604297 
 L 592.057891 0 
 L 0 0 
 z
@@ -31,337 +31,1063 @@ z
   <g id="axes_1">
    <g id="table_1">
     <g id="patch_2">
-     <path d="M 7.2 41.965897 
-L 208.7496 41.965897 
+     <path d="M 7.2 38.535547 
+L 208.7496 38.535547 
 M 208.7496 20.344297 
 M 7.2 20.344297 
-M 7.2 41.965897 
+M 7.2 38.535547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_1">
-     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="27.35496" y="33.196347" transform="rotate(-0 27.35496 33.196347)">labels compared</text>
+     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #52514e" x="27.35496" y="31.481172" transform="rotate(-0 27.35496 31.481172)">labels compared</text>
     </g>
     <g id="patch_3">
-     <path d="M 208.7496 41.965897 
-L 256.7376 41.965897 
+     <path d="M 208.7496 38.535547 
+L 256.7376 38.535547 
 M 256.7376 20.344297 
 M 208.7496 20.344297 
-M 208.7496 41.965897 
+M 208.7496 38.535547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_2">
-     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="251.9388" y="33.225409" transform="rotate(-0 251.9388 33.225409)">n</text>
+     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="251.9388" y="31.510234" transform="rotate(-0 251.9388 31.510234)">n</text>
     </g>
     <g id="patch_4">
-     <path d="M 256.7376 41.965897 
-L 314.3232 41.965897 
+     <path d="M 256.7376 38.535547 
+L 314.3232 38.535547 
 M 314.3232 20.344297 
 M 256.7376 20.344297 
-M 256.7376 41.965897 
+M 256.7376 38.535547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_3">
-     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="308.56464" y="33.127831" transform="rotate(-0 308.56464 33.127831)">agreement</text>
+     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="308.56464" y="31.412656" transform="rotate(-0 308.56464 31.412656)">agreement</text>
     </g>
     <g id="patch_5">
-     <path d="M 314.3232 41.965897 
-L 362.3112 41.965897 
+     <path d="M 314.3232 38.535547 
+L 362.3112 38.535547 
 M 362.3112 20.344297 
 M 314.3232 20.344297 
-M 314.3232 41.965897 
+M 314.3232 38.535547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_4">
-     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="357.5124" y="33.27455" transform="rotate(-0 357.5124 33.27455)">Cohen's κ</text>
+     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="357.5124" y="31.559375" transform="rotate(-0 357.5124 31.559375)">Cohen's κ</text>
     </g>
     <g id="patch_6">
-     <path d="M 362.3112 41.965897 
-L 424.6956 41.965897 
+     <path d="M 362.3112 38.535547 
+L 424.6956 38.535547 
 M 424.6956 20.344297 
 M 362.3112 20.344297 
-M 362.3112 41.965897 
+M 362.3112 38.535547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_5">
-     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="418.45716" y="33.321425" transform="rotate(-0 418.45716 33.321425)">rate (first)</text>
+     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="418.45716" y="31.60625" transform="rotate(-0 418.45716 31.60625)">rate (first)</text>
     </g>
     <g id="patch_7">
-     <path d="M 424.6956 41.965897 
-L 487.08 41.965897 
+     <path d="M 424.6956 38.535547 
+L 487.08 38.535547 
 M 487.08 20.344297 
 M 424.6956 20.344297 
-M 424.6956 41.965897 
+M 424.6956 38.535547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_6">
-     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="480.84156" y="33.27455" transform="rotate(-0 480.84156 33.27455)">rate (second)</text>
+     <text style="font-weight: 700; font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #52514e" x="480.84156" y="31.559375" transform="rotate(-0 480.84156 31.559375)">rate (second)</text>
     </g>
     <g id="patch_8">
-     <path d="M 7.2 63.587497 
-L 208.7496 63.587497 
-M 208.7496 41.965897 
-M 7.2 41.965897 
-M 7.2 63.587497 
+     <path d="M 7.2 56.726797 
+L 208.7496 56.726797 
+M 208.7496 38.535547 
+M 7.2 38.535547 
+M 7.2 56.726797 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_7">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="54.93865" transform="rotate(-0 27.35496 54.93865)">LlamaGuard unsafe vs WildGuard harmful</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="49.793125" transform="rotate(-0 27.35496 49.793125)">LlamaGuard unsafe vs WildGuard harmful</text>
     </g>
     <g id="patch_9">
-     <path d="M 208.7496 63.587497 
-L 256.7376 63.587497 
-M 256.7376 41.965897 
-M 208.7496 41.965897 
-M 208.7496 63.587497 
+     <path d="M 208.7496 56.726797 
+L 256.7376 56.726797 
+M 256.7376 38.535547 
+M 208.7496 38.535547 
+M 208.7496 56.726797 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_8">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="54.847009" transform="rotate(-0 251.9388 54.847009)">33,100</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="49.701484" transform="rotate(-0 251.9388 49.701484)">33,100</text>
     </g>
     <g id="patch_10">
-     <path d="M 256.7376 63.587497 
-L 314.3232 63.587497 
-M 314.3232 41.965897 
-M 256.7376 41.965897 
-M 256.7376 63.587497 
+     <path d="M 256.7376 56.726797 
+L 314.3232 56.726797 
+M 314.3232 38.535547 
+M 256.7376 38.535547 
+M 256.7376 56.726797 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_9">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="54.847009" transform="rotate(-0 308.56464 54.847009)">81.3%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="49.701484" transform="rotate(-0 308.56464 49.701484)">81.3%</text>
     </g>
     <g id="patch_11">
-     <path d="M 314.3232 63.587497 
-L 362.3112 63.587497 
-M 362.3112 41.965897 
-M 314.3232 41.965897 
-M 314.3232 63.587497 
+     <path d="M 314.3232 56.726797 
+L 362.3112 56.726797 
+M 362.3112 38.535547 
+M 314.3232 38.535547 
+M 314.3232 56.726797 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_10">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="54.847009" transform="rotate(-0 357.5124 54.847009)">0.58</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="49.701484" transform="rotate(-0 357.5124 49.701484)">0.58</text>
     </g>
     <g id="patch_12">
-     <path d="M 362.3112 63.587497 
-L 424.6956 63.587497 
-M 424.6956 41.965897 
-M 362.3112 41.965897 
-M 362.3112 63.587497 
+     <path d="M 362.3112 56.726797 
+L 424.6956 56.726797 
+M 424.6956 38.535547 
+M 362.3112 38.535547 
+M 362.3112 56.726797 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_11">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="54.847009" transform="rotate(-0 418.45716 54.847009)">37.9%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="49.701484" transform="rotate(-0 418.45716 49.701484)">37.9%</text>
     </g>
     <g id="patch_13">
-     <path d="M 424.6956 63.587497 
-L 487.08 63.587497 
-M 487.08 41.965897 
-M 424.6956 41.965897 
-M 424.6956 63.587497 
+     <path d="M 424.6956 56.726797 
+L 487.08 56.726797 
+M 487.08 38.535547 
+M 424.6956 38.535547 
+M 424.6956 56.726797 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_12">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="54.847009" transform="rotate(-0 480.84156 54.847009)">26.0%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="49.701484" transform="rotate(-0 480.84156 49.701484)">26.0%</text>
     </g>
     <g id="patch_14">
-     <path d="M 7.2 85.209097 
-L 208.7496 85.209097 
-M 208.7496 63.587497 
-M 7.2 63.587497 
-M 7.2 85.209097 
+     <path d="M 7.2 74.918047 
+L 208.7496 74.918047 
+M 208.7496 56.726797 
+M 7.2 56.726797 
+M 7.2 74.918047 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_13">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="76.460797" transform="rotate(-0 27.35496 76.460797)">LlamaGuard unsafe vs keyword complied</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="67.884922" transform="rotate(-0 27.35496 67.884922)">LlamaGuard unsafe vs keyword complied</text>
     </g>
     <g id="patch_15">
-     <path d="M 208.7496 85.209097 
-L 256.7376 85.209097 
-M 256.7376 63.587497 
-M 208.7496 63.587497 
-M 208.7496 85.209097 
+     <path d="M 208.7496 74.918047 
+L 256.7376 74.918047 
+M 256.7376 56.726797 
+M 208.7496 56.726797 
+M 208.7496 74.918047 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_14">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="76.468609" transform="rotate(-0 251.9388 76.468609)">33,100</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="67.892734" transform="rotate(-0 251.9388 67.892734)">33,100</text>
     </g>
     <g id="patch_16">
-     <path d="M 256.7376 85.209097 
-L 314.3232 85.209097 
-M 314.3232 63.587497 
-M 256.7376 63.587497 
-M 256.7376 85.209097 
+     <path d="M 256.7376 74.918047 
+L 314.3232 74.918047 
+M 314.3232 56.726797 
+M 256.7376 56.726797 
+M 256.7376 74.918047 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_15">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="76.468609" transform="rotate(-0 308.56464 76.468609)">63.8%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="67.892734" transform="rotate(-0 308.56464 67.892734)">63.8%</text>
     </g>
     <g id="patch_17">
-     <path d="M 314.3232 85.209097 
-L 362.3112 85.209097 
-M 362.3112 63.587497 
-M 314.3232 63.587497 
-M 314.3232 85.209097 
+     <path d="M 314.3232 74.918047 
+L 362.3112 74.918047 
+M 362.3112 56.726797 
+M 314.3232 56.726797 
+M 314.3232 74.918047 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_16">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="76.468609" transform="rotate(-0 357.5124 76.468609)">0.35</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="67.892734" transform="rotate(-0 357.5124 67.892734)">0.35</text>
     </g>
     <g id="patch_18">
-     <path d="M 362.3112 85.209097 
-L 424.6956 85.209097 
-M 424.6956 63.587497 
-M 362.3112 63.587497 
-M 362.3112 85.209097 
+     <path d="M 362.3112 74.918047 
+L 424.6956 74.918047 
+M 424.6956 56.726797 
+M 362.3112 56.726797 
+M 362.3112 74.918047 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_17">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="76.468609" transform="rotate(-0 418.45716 76.468609)">37.9%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="67.892734" transform="rotate(-0 418.45716 67.892734)">37.9%</text>
     </g>
     <g id="patch_19">
-     <path d="M 424.6956 85.209097 
-L 487.08 85.209097 
-M 487.08 63.587497 
-M 424.6956 63.587497 
-M 424.6956 85.209097 
+     <path d="M 424.6956 74.918047 
+L 487.08 74.918047 
+M 487.08 56.726797 
+M 424.6956 56.726797 
+M 424.6956 74.918047 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_18">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="76.468609" transform="rotate(-0 480.84156 76.468609)">73.7%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="67.892734" transform="rotate(-0 480.84156 67.892734)">73.7%</text>
     </g>
     <g id="patch_20">
-     <path d="M 7.2 106.830697 
-L 208.7496 106.830697 
-M 208.7496 85.209097 
-M 7.2 85.209097 
-M 7.2 106.830697 
+     <path d="M 7.2 93.109297 
+L 208.7496 93.109297 
+M 208.7496 74.918047 
+M 7.2 74.918047 
+M 7.2 93.109297 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_19">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="98.082397" transform="rotate(-0 27.35496 98.082397)">WildGuard harmful vs keyword complied</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="86.076172" transform="rotate(-0 27.35496 86.076172)">WildGuard harmful vs keyword complied</text>
     </g>
     <g id="patch_21">
-     <path d="M 208.7496 106.830697 
-L 256.7376 106.830697 
-M 256.7376 85.209097 
-M 208.7496 85.209097 
-M 208.7496 106.830697 
+     <path d="M 208.7496 93.109297 
+L 256.7376 93.109297 
+M 256.7376 74.918047 
+M 208.7496 74.918047 
+M 208.7496 93.109297 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_20">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="98.090209" transform="rotate(-0 251.9388 98.090209)">33,100</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="86.083984" transform="rotate(-0 251.9388 86.083984)">33,100</text>
     </g>
     <g id="patch_22">
-     <path d="M 256.7376 106.830697 
-L 314.3232 106.830697 
-M 314.3232 85.209097 
-M 256.7376 85.209097 
-M 256.7376 106.830697 
+     <path d="M 256.7376 93.109297 
+L 314.3232 93.109297 
+M 314.3232 74.918047 
+M 256.7376 74.918047 
+M 256.7376 93.109297 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_21">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="98.090209" transform="rotate(-0 308.56464 98.090209)">52.2%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="86.083984" transform="rotate(-0 308.56464 86.083984)">52.2%</text>
     </g>
     <g id="patch_23">
-     <path d="M 314.3232 106.830697 
-L 362.3112 106.830697 
-M 362.3112 85.209097 
-M 314.3232 85.209097 
-M 314.3232 106.830697 
+     <path d="M 314.3232 93.109297 
+L 362.3112 93.109297 
+M 362.3112 74.918047 
+M 314.3232 74.918047 
+M 314.3232 93.109297 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_22">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="98.090209" transform="rotate(-0 357.5124 98.090209)">0.22</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="86.083984" transform="rotate(-0 357.5124 86.083984)">0.22</text>
     </g>
     <g id="patch_24">
-     <path d="M 362.3112 106.830697 
-L 424.6956 106.830697 
-M 424.6956 85.209097 
-M 362.3112 85.209097 
-M 362.3112 106.830697 
+     <path d="M 362.3112 93.109297 
+L 424.6956 93.109297 
+M 424.6956 74.918047 
+M 362.3112 74.918047 
+M 362.3112 93.109297 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_23">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="98.090209" transform="rotate(-0 418.45716 98.090209)">26.0%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="86.083984" transform="rotate(-0 418.45716 86.083984)">26.0%</text>
     </g>
     <g id="patch_25">
-     <path d="M 424.6956 106.830697 
-L 487.08 106.830697 
-M 487.08 85.209097 
-M 424.6956 85.209097 
-M 424.6956 106.830697 
+     <path d="M 424.6956 93.109297 
+L 487.08 93.109297 
+M 487.08 74.918047 
+M 424.6956 74.918047 
+M 424.6956 93.109297 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_24">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="98.090209" transform="rotate(-0 480.84156 98.090209)">73.7%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="86.083984" transform="rotate(-0 480.84156 86.083984)">73.7%</text>
     </g>
     <g id="patch_26">
-     <path d="M 7.2 128.452297 
-L 208.7496 128.452297 
-M 208.7496 106.830697 
-M 7.2 106.830697 
-M 7.2 128.452297 
+     <path d="M 7.2 111.300547 
+L 208.7496 111.300547 
+M 208.7496 93.109297 
+M 7.2 93.109297 
+M 7.2 111.300547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_25">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="119.703997" transform="rotate(-0 27.35496 119.703997)">WildGuard refusal vs keyword refusal</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="104.267422" transform="rotate(-0 27.35496 104.267422)">WildGuard refusal vs keyword refusal</text>
     </g>
     <g id="patch_27">
-     <path d="M 208.7496 128.452297 
-L 256.7376 128.452297 
-M 256.7376 106.830697 
-M 208.7496 106.830697 
-M 208.7496 128.452297 
+     <path d="M 208.7496 111.300547 
+L 256.7376 111.300547 
+M 256.7376 93.109297 
+M 208.7496 93.109297 
+M 208.7496 111.300547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_26">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="119.711809" transform="rotate(-0 251.9388 119.711809)">17,000</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="104.275234" transform="rotate(-0 251.9388 104.275234)">17,000</text>
     </g>
     <g id="patch_28">
-     <path d="M 256.7376 128.452297 
-L 314.3232 128.452297 
-M 314.3232 106.830697 
-M 256.7376 106.830697 
-M 256.7376 128.452297 
+     <path d="M 256.7376 111.300547 
+L 314.3232 111.300547 
+M 314.3232 93.109297 
+M 256.7376 93.109297 
+M 256.7376 111.300547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_27">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="119.711809" transform="rotate(-0 308.56464 119.711809)">95.2%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="104.275234" transform="rotate(-0 308.56464 104.275234)">95.2%</text>
     </g>
     <g id="patch_29">
-     <path d="M 314.3232 128.452297 
-L 362.3112 128.452297 
-M 362.3112 106.830697 
-M 314.3232 106.830697 
-M 314.3232 128.452297 
+     <path d="M 314.3232 111.300547 
+L 362.3112 111.300547 
+M 362.3112 93.109297 
+M 314.3232 93.109297 
+M 314.3232 111.300547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_28">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="119.711809" transform="rotate(-0 357.5124 119.711809)">0.60</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="104.275234" transform="rotate(-0 357.5124 104.275234)">0.60</text>
     </g>
     <g id="patch_30">
-     <path d="M 362.3112 128.452297 
-L 424.6956 128.452297 
-M 424.6956 106.830697 
-M 362.3112 106.830697 
-M 362.3112 128.452297 
+     <path d="M 362.3112 111.300547 
+L 424.6956 111.300547 
+M 424.6956 93.109297 
+M 362.3112 93.109297 
+M 362.3112 111.300547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_29">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="119.711809" transform="rotate(-0 418.45716 119.711809)">8.7%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="104.275234" transform="rotate(-0 418.45716 104.275234)">8.7%</text>
     </g>
     <g id="patch_31">
-     <path d="M 424.6956 128.452297 
-L 487.08 128.452297 
-M 487.08 106.830697 
-M 424.6956 106.830697 
-M 424.6956 128.452297 
+     <path d="M 424.6956 111.300547 
+L 487.08 111.300547 
+M 487.08 93.109297 
+M 424.6956 93.109297 
+M 424.6956 111.300547 
 " style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
     </g>
     <g id="text_30">
-     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="119.711809" transform="rotate(-0 480.84156 119.711809)">4.1%</text>
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="104.275234" transform="rotate(-0 480.84156 104.275234)">4.1%</text>
+    </g>
+    <g id="patch_32">
+     <path d="M 7.2 129.491797 
+L 208.7496 129.491797 
+M 208.7496 111.300547 
+M 7.2 111.300547 
+M 7.2 129.491797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_31">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="122.558125" transform="rotate(-0 27.35496 122.558125)">Llama Guard unsafe vs human [hand labels]</text>
+    </g>
+    <g id="patch_33">
+     <path d="M 208.7496 129.491797 
+L 256.7376 129.491797 
+M 256.7376 111.300547 
+M 208.7496 111.300547 
+M 208.7496 129.491797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_32">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="122.466484" transform="rotate(-0 251.9388 122.466484)">77</text>
+    </g>
+    <g id="patch_34">
+     <path d="M 256.7376 129.491797 
+L 314.3232 129.491797 
+M 314.3232 111.300547 
+M 256.7376 111.300547 
+M 256.7376 129.491797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_33">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="122.466484" transform="rotate(-0 308.56464 122.466484)">72.7%</text>
+    </g>
+    <g id="patch_35">
+     <path d="M 314.3232 129.491797 
+L 362.3112 129.491797 
+M 362.3112 111.300547 
+M 314.3232 111.300547 
+M 314.3232 129.491797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_34">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="122.466484" transform="rotate(-0 357.5124 122.466484)">0.09</text>
+    </g>
+    <g id="patch_36">
+     <path d="M 362.3112 129.491797 
+L 424.6956 129.491797 
+M 424.6956 111.300547 
+M 362.3112 111.300547 
+M 362.3112 129.491797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_35">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="122.466484" transform="rotate(-0 418.45716 122.466484)">62.3%</text>
+    </g>
+    <g id="patch_37">
+     <path d="M 424.6956 129.491797 
+L 487.08 129.491797 
+M 487.08 111.300547 
+M 424.6956 111.300547 
+M 424.6956 129.491797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_36">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="122.466484" transform="rotate(-0 480.84156 122.466484)">20.8%</text>
+    </g>
+    <g id="patch_38">
+     <path d="M 7.2 147.683047 
+L 208.7496 147.683047 
+M 208.7496 129.491797 
+M 7.2 129.491797 
+M 7.2 147.683047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_37">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="140.749375" transform="rotate(-0 27.35496 140.749375)">Llama Guard unsafe vs human [hand, A5 raw + BoN]</text>
+    </g>
+    <g id="patch_39">
+     <path d="M 208.7496 147.683047 
+L 256.7376 147.683047 
+M 256.7376 129.491797 
+M 208.7496 129.491797 
+M 208.7496 147.683047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_38">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="140.657734" transform="rotate(-0 251.9388 140.657734)">42</text>
+    </g>
+    <g id="patch_40">
+     <path d="M 256.7376 147.683047 
+L 314.3232 147.683047 
+M 314.3232 129.491797 
+M 256.7376 129.491797 
+M 256.7376 147.683047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_39">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="140.657734" transform="rotate(-0 308.56464 140.657734)">62.8%</text>
+    </g>
+    <g id="patch_41">
+     <path d="M 314.3232 147.683047 
+L 362.3112 147.683047 
+M 362.3112 129.491797 
+M 314.3232 129.491797 
+M 314.3232 147.683047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_40">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="140.657734" transform="rotate(-0 357.5124 140.657734)">0.05</text>
+    </g>
+    <g id="patch_42">
+     <path d="M 362.3112 147.683047 
+L 424.6956 147.683047 
+M 424.6956 129.491797 
+M 362.3112 129.491797 
+M 362.3112 147.683047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_41">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="140.657734" transform="rotate(-0 418.45716 140.657734)">71.4%</text>
+    </g>
+    <g id="patch_43">
+     <path d="M 424.6956 147.683047 
+L 487.08 147.683047 
+M 487.08 129.491797 
+M 424.6956 129.491797 
+M 424.6956 147.683047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_42">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="140.657734" transform="rotate(-0 480.84156 140.657734)">14.3%</text>
+    </g>
+    <g id="patch_44">
+     <path d="M 7.2 165.874297 
+L 208.7496 165.874297 
+M 208.7496 147.683047 
+M 7.2 147.683047 
+M 7.2 165.874297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_43">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="158.940625" transform="rotate(-0 27.35496 158.940625)">Llama Guard unsafe vs human [hand, other attacks]</text>
+    </g>
+    <g id="patch_45">
+     <path d="M 208.7496 165.874297 
+L 256.7376 165.874297 
+M 256.7376 147.683047 
+M 208.7496 147.683047 
+M 208.7496 165.874297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_44">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="158.848984" transform="rotate(-0 251.9388 158.848984)">35</text>
+    </g>
+    <g id="patch_46">
+     <path d="M 256.7376 165.874297 
+L 314.3232 165.874297 
+M 314.3232 147.683047 
+M 256.7376 147.683047 
+M 256.7376 165.874297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_45">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="158.848984" transform="rotate(-0 308.56464 158.848984)">84.2%</text>
+    </g>
+    <g id="patch_47">
+     <path d="M 314.3232 165.874297 
+L 362.3112 165.874297 
+M 362.3112 147.683047 
+M 314.3232 147.683047 
+M 314.3232 165.874297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_46">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="158.848984" transform="rotate(-0 357.5124 158.848984)">0.21</text>
+    </g>
+    <g id="patch_48">
+     <path d="M 362.3112 165.874297 
+L 424.6956 165.874297 
+M 424.6956 147.683047 
+M 362.3112 147.683047 
+M 362.3112 165.874297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_47">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="158.848984" transform="rotate(-0 418.45716 158.848984)">51.4%</text>
+    </g>
+    <g id="patch_49">
+     <path d="M 424.6956 165.874297 
+L 487.08 165.874297 
+M 487.08 147.683047 
+M 424.6956 147.683047 
+M 424.6956 165.874297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_48">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="158.848984" transform="rotate(-0 480.84156 158.848984)">28.6%</text>
+    </g>
+    <g id="patch_50">
+     <path d="M 7.2 184.065547 
+L 208.7496 184.065547 
+M 208.7496 165.874297 
+M 7.2 165.874297 
+M 7.2 184.065547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_49">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="177.131875" transform="rotate(-0 27.35496 177.131875)">WildGuard harmful vs human [hand labels]</text>
+    </g>
+    <g id="patch_51">
+     <path d="M 208.7496 184.065547 
+L 256.7376 184.065547 
+M 256.7376 165.874297 
+M 208.7496 165.874297 
+M 208.7496 184.065547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_50">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="177.040234" transform="rotate(-0 251.9388 177.040234)">77</text>
+    </g>
+    <g id="patch_52">
+     <path d="M 256.7376 184.065547 
+L 314.3232 184.065547 
+M 314.3232 165.874297 
+M 256.7376 165.874297 
+M 256.7376 184.065547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_51">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="177.040234" transform="rotate(-0 308.56464 177.040234)">83.7%</text>
+    </g>
+    <g id="patch_53">
+     <path d="M 314.3232 184.065547 
+L 362.3112 184.065547 
+M 362.3112 165.874297 
+M 314.3232 165.874297 
+M 314.3232 184.065547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_52">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="177.040234" transform="rotate(-0 357.5124 177.040234)">0.42</text>
+    </g>
+    <g id="patch_54">
+     <path d="M 362.3112 184.065547 
+L 424.6956 184.065547 
+M 424.6956 165.874297 
+M 362.3112 165.874297 
+M 362.3112 184.065547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_53">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="177.040234" transform="rotate(-0 418.45716 177.040234)">37.7%</text>
+    </g>
+    <g id="patch_55">
+     <path d="M 424.6956 184.065547 
+L 487.08 184.065547 
+M 487.08 165.874297 
+M 424.6956 165.874297 
+M 424.6956 184.065547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_54">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="177.040234" transform="rotate(-0 480.84156 177.040234)">20.8%</text>
+    </g>
+    <g id="patch_56">
+     <path d="M 7.2 202.256797 
+L 208.7496 202.256797 
+M 208.7496 184.065547 
+M 7.2 184.065547 
+M 7.2 202.256797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_55">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="195.323125" transform="rotate(-0 27.35496 195.323125)">WildGuard harmful vs human [hand, A5 raw + BoN]</text>
+    </g>
+    <g id="patch_57">
+     <path d="M 208.7496 202.256797 
+L 256.7376 202.256797 
+M 256.7376 184.065547 
+M 208.7496 184.065547 
+M 208.7496 202.256797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_56">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="195.231484" transform="rotate(-0 251.9388 195.231484)">42</text>
+    </g>
+    <g id="patch_58">
+     <path d="M 256.7376 202.256797 
+L 314.3232 202.256797 
+M 314.3232 184.065547 
+M 256.7376 184.065547 
+M 256.7376 202.256797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_57">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="195.231484" transform="rotate(-0 308.56464 195.231484)">79.9%</text>
+    </g>
+    <g id="patch_59">
+     <path d="M 314.3232 202.256797 
+L 362.3112 202.256797 
+M 362.3112 184.065547 
+M 314.3232 184.065547 
+M 314.3232 202.256797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_58">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="195.231484" transform="rotate(-0 357.5124 195.231484)">0.18</text>
+    </g>
+    <g id="patch_60">
+     <path d="M 362.3112 202.256797 
+L 424.6956 202.256797 
+M 424.6956 184.065547 
+M 362.3112 184.065547 
+M 362.3112 202.256797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_59">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="195.231484" transform="rotate(-0 418.45716 195.231484)">28.6%</text>
+    </g>
+    <g id="patch_61">
+     <path d="M 424.6956 202.256797 
+L 487.08 202.256797 
+M 487.08 184.065547 
+M 424.6956 184.065547 
+M 424.6956 202.256797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_60">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="195.231484" transform="rotate(-0 480.84156 195.231484)">14.3%</text>
+    </g>
+    <g id="patch_62">
+     <path d="M 7.2 220.448047 
+L 208.7496 220.448047 
+M 208.7496 202.256797 
+M 7.2 202.256797 
+M 7.2 220.448047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_61">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="213.514375" transform="rotate(-0 27.35496 213.514375)">WildGuard harmful vs human [hand, other attacks]</text>
+    </g>
+    <g id="patch_63">
+     <path d="M 208.7496 220.448047 
+L 256.7376 220.448047 
+M 256.7376 202.256797 
+M 208.7496 202.256797 
+M 208.7496 220.448047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_62">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="213.422734" transform="rotate(-0 251.9388 213.422734)">35</text>
+    </g>
+    <g id="patch_64">
+     <path d="M 256.7376 220.448047 
+L 314.3232 220.448047 
+M 314.3232 202.256797 
+M 256.7376 202.256797 
+M 256.7376 220.448047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_63">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="213.422734" transform="rotate(-0 308.56464 213.422734)">88.1%</text>
+    </g>
+    <g id="patch_65">
+     <path d="M 314.3232 220.448047 
+L 362.3112 220.448047 
+M 362.3112 202.256797 
+M 314.3232 202.256797 
+M 314.3232 220.448047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_64">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="213.422734" transform="rotate(-0 357.5124 213.422734)">0.60</text>
+    </g>
+    <g id="patch_66">
+     <path d="M 362.3112 220.448047 
+L 424.6956 220.448047 
+M 424.6956 202.256797 
+M 362.3112 202.256797 
+M 362.3112 220.448047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_65">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="213.422734" transform="rotate(-0 418.45716 213.422734)">48.6%</text>
+    </g>
+    <g id="patch_67">
+     <path d="M 424.6956 220.448047 
+L 487.08 220.448047 
+M 487.08 202.256797 
+M 424.6956 202.256797 
+M 424.6956 220.448047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_66">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="213.422734" transform="rotate(-0 480.84156 213.422734)">28.6%</text>
+    </g>
+    <g id="patch_68">
+     <path d="M 7.2 238.639297 
+L 208.7496 238.639297 
+M 208.7496 220.448047 
+M 7.2 220.448047 
+M 7.2 238.639297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_67">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="231.563672" transform="rotate(-0 27.35496 231.563672)">keyword complied vs human [hand labels]</text>
+    </g>
+    <g id="patch_69">
+     <path d="M 208.7496 238.639297 
+L 256.7376 238.639297 
+M 256.7376 220.448047 
+M 208.7496 220.448047 
+M 208.7496 238.639297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_68">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="231.613984" transform="rotate(-0 251.9388 231.613984)">77</text>
+    </g>
+    <g id="patch_70">
+     <path d="M 256.7376 238.639297 
+L 314.3232 238.639297 
+M 314.3232 220.448047 
+M 256.7376 220.448047 
+M 256.7376 238.639297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_69">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="231.613984" transform="rotate(-0 308.56464 231.613984)">53.5%</text>
+    </g>
+    <g id="patch_71">
+     <path d="M 314.3232 238.639297 
+L 362.3112 238.639297 
+M 362.3112 220.448047 
+M 314.3232 220.448047 
+M 314.3232 238.639297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_70">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="231.613984" transform="rotate(-0 357.5124 231.613984)">0.18</text>
+    </g>
+    <g id="patch_72">
+     <path d="M 362.3112 238.639297 
+L 424.6956 238.639297 
+M 424.6956 220.448047 
+M 362.3112 220.448047 
+M 362.3112 238.639297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_71">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="231.613984" transform="rotate(-0 418.45716 231.613984)">87.0%</text>
+    </g>
+    <g id="patch_73">
+     <path d="M 424.6956 238.639297 
+L 487.08 238.639297 
+M 487.08 220.448047 
+M 424.6956 220.448047 
+M 424.6956 238.639297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_72">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="231.613984" transform="rotate(-0 480.84156 231.613984)">40.3%</text>
+    </g>
+    <g id="patch_74">
+     <path d="M 7.2 256.830547 
+L 208.7496 256.830547 
+M 208.7496 238.639297 
+M 7.2 238.639297 
+M 7.2 256.830547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_73">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="249.754922" transform="rotate(-0 27.35496 249.754922)">keyword complied vs human [hand, A5 raw + BoN]</text>
+    </g>
+    <g id="patch_75">
+     <path d="M 208.7496 256.830547 
+L 256.7376 256.830547 
+M 256.7376 238.639297 
+M 208.7496 238.639297 
+M 208.7496 256.830547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_74">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="249.805234" transform="rotate(-0 251.9388 249.805234)">42</text>
+    </g>
+    <g id="patch_76">
+     <path d="M 256.7376 256.830547 
+L 314.3232 256.830547 
+M 314.3232 238.639297 
+M 256.7376 238.639297 
+M 256.7376 256.830547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_75">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="249.805234" transform="rotate(-0 308.56464 249.805234)">39.2%</text>
+    </g>
+    <g id="patch_77">
+     <path d="M 314.3232 256.830547 
+L 362.3112 256.830547 
+M 362.3112 238.639297 
+M 314.3232 238.639297 
+M 314.3232 256.830547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_76">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="249.805234" transform="rotate(-0 357.5124 249.805234)">0.07</text>
+    </g>
+    <g id="patch_78">
+     <path d="M 362.3112 256.830547 
+L 424.6956 256.830547 
+M 424.6956 238.639297 
+M 362.3112 238.639297 
+M 362.3112 256.830547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_77">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="249.805234" transform="rotate(-0 418.45716 249.805234)">92.9%</text>
+    </g>
+    <g id="patch_79">
+     <path d="M 424.6956 256.830547 
+L 487.08 256.830547 
+M 487.08 238.639297 
+M 424.6956 238.639297 
+M 424.6956 256.830547 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_78">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="249.805234" transform="rotate(-0 480.84156 249.805234)">31.0%</text>
+    </g>
+    <g id="patch_80">
+     <path d="M 7.2 275.021797 
+L 208.7496 275.021797 
+M 208.7496 256.830547 
+M 7.2 256.830547 
+M 7.2 275.021797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_79">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="267.946172" transform="rotate(-0 27.35496 267.946172)">keyword complied vs human [hand, other attacks]</text>
+    </g>
+    <g id="patch_81">
+     <path d="M 208.7496 275.021797 
+L 256.7376 275.021797 
+M 256.7376 256.830547 
+M 208.7496 256.830547 
+M 208.7496 275.021797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_80">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="267.996484" transform="rotate(-0 251.9388 267.996484)">35</text>
+    </g>
+    <g id="patch_82">
+     <path d="M 256.7376 275.021797 
+L 314.3232 275.021797 
+M 314.3232 256.830547 
+M 256.7376 256.830547 
+M 256.7376 275.021797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_81">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="267.996484" transform="rotate(-0 308.56464 267.996484)">70.2%</text>
+    </g>
+    <g id="patch_83">
+     <path d="M 314.3232 275.021797 
+L 362.3112 275.021797 
+M 362.3112 256.830547 
+M 314.3232 256.830547 
+M 314.3232 275.021797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_82">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="267.996484" transform="rotate(-0 357.5124 267.996484)">0.42</text>
+    </g>
+    <g id="patch_84">
+     <path d="M 362.3112 275.021797 
+L 424.6956 275.021797 
+M 424.6956 256.830547 
+M 362.3112 256.830547 
+M 362.3112 275.021797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_83">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="267.996484" transform="rotate(-0 418.45716 267.996484)">80.0%</text>
+    </g>
+    <g id="patch_85">
+     <path d="M 424.6956 275.021797 
+L 487.08 275.021797 
+M 487.08 256.830547 
+M 424.6956 256.830547 
+M 424.6956 275.021797 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_84">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="267.996484" transform="rotate(-0 480.84156 267.996484)">51.4%</text>
+    </g>
+    <g id="patch_86">
+     <path d="M 7.2 293.213047 
+L 208.7496 293.213047 
+M 208.7496 275.021797 
+M 7.2 275.021797 
+M 7.2 293.213047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_85">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="286.279375" transform="rotate(-0 27.35496 286.279375)">WildGuard refusal vs human [hand labels]</text>
+    </g>
+    <g id="patch_87">
+     <path d="M 208.7496 293.213047 
+L 256.7376 293.213047 
+M 256.7376 275.021797 
+M 208.7496 275.021797 
+M 208.7496 293.213047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_86">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="286.187734" transform="rotate(-0 251.9388 286.187734)">23</text>
+    </g>
+    <g id="patch_88">
+     <path d="M 256.7376 293.213047 
+L 314.3232 293.213047 
+M 314.3232 275.021797 
+M 256.7376 275.021797 
+M 256.7376 293.213047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_87">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="286.187734" transform="rotate(-0 308.56464 286.187734)">99.3%</text>
+    </g>
+    <g id="patch_89">
+     <path d="M 314.3232 293.213047 
+L 362.3112 293.213047 
+M 362.3112 275.021797 
+M 314.3232 275.021797 
+M 314.3232 293.213047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_88">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="286.187734" transform="rotate(-0 357.5124 286.187734)">0.91</text>
+    </g>
+    <g id="patch_90">
+     <path d="M 362.3112 293.213047 
+L 424.6956 293.213047 
+M 424.6956 275.021797 
+M 362.3112 275.021797 
+M 362.3112 293.213047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_89">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="286.187734" transform="rotate(-0 418.45716 286.187734)">47.8%</text>
+    </g>
+    <g id="patch_91">
+     <path d="M 424.6956 293.213047 
+L 487.08 293.213047 
+M 487.08 275.021797 
+M 424.6956 275.021797 
+M 424.6956 293.213047 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_90">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="286.187734" transform="rotate(-0 480.84156 286.187734)">43.5%</text>
+    </g>
+    <g id="patch_92">
+     <path d="M 7.2 311.404297 
+L 208.7496 311.404297 
+M 208.7496 293.213047 
+M 7.2 293.213047 
+M 7.2 311.404297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_91">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="27.35496" y="304.371172" transform="rotate(-0 27.35496 304.371172)">keyword refusal vs human [hand labels]</text>
+    </g>
+    <g id="patch_93">
+     <path d="M 208.7496 311.404297 
+L 256.7376 311.404297 
+M 256.7376 293.213047 
+M 208.7496 293.213047 
+M 208.7496 311.404297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_92">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="251.9388" y="304.378984" transform="rotate(-0 251.9388 304.378984)">23</text>
+    </g>
+    <g id="patch_94">
+     <path d="M 256.7376 311.404297 
+L 314.3232 311.404297 
+M 314.3232 293.213047 
+M 256.7376 293.213047 
+M 256.7376 311.404297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_93">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="308.56464" y="304.378984" transform="rotate(-0 308.56464 304.378984)">95.0%</text>
+    </g>
+    <g id="patch_95">
+     <path d="M 314.3232 311.404297 
+L 362.3112 311.404297 
+M 362.3112 293.213047 
+M 314.3232 293.213047 
+M 314.3232 311.404297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_94">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="357.5124" y="304.378984" transform="rotate(-0 357.5124 304.378984)">0.33</text>
+    </g>
+    <g id="patch_96">
+     <path d="M 362.3112 311.404297 
+L 424.6956 311.404297 
+M 424.6956 293.213047 
+M 362.3112 293.213047 
+M 362.3112 311.404297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_95">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="418.45716" y="304.378984" transform="rotate(-0 418.45716 304.378984)">13.0%</text>
+    </g>
+    <g id="patch_97">
+     <path d="M 424.6956 311.404297 
+L 487.08 311.404297 
+M 487.08 293.213047 
+M 424.6956 293.213047 
+M 424.6956 311.404297 
+" style="fill: #fcfcfb; stroke: #e1e0d9; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_96">
+     <text style="font-size: 8px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: end; fill: #0b0b0b" x="480.84156" y="304.378984" transform="rotate(-0 480.84156 304.378984)">43.5%</text>
     </g>
    </g>
-   <g id="text_31">
+   <g id="text_97">
     <text style="font-weight: 700; font-size: 9.5px; font-family: 'Segoe UI', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #0b0b0b" x="7.2" y="14.344297" transform="rotate(-0 7.2 14.344297)">Judge agreement, row level (each best-of-N variant counts once); hand-label rows: accuracy reweighted to the judged population</text>
    </g>
   </g>

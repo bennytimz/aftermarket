@@ -28,7 +28,11 @@ base model's attack success went from <!--v:base_asr_a0-->8% [5%–12%]<!--/v-->
 <!--v:base_asr_a2-->81% [76%–86%]<!--/v--> after the harmful fine-tune and <!--v:base_asr_a3-->70% [63%–76%]<!--/v--> after abliteration.
 The most robust public fix by retention (1 − mean rise in attack success over the five attack families) was
 <!--v:top_retention_run-->GC<!--/v--> at <!--v:top_retention-->0.74<!--/v-->. The two judges agreed on
-<!--v:agree_lg_wg-->81.3%<!--/v--> of responses (Cohen's κ <!--v:kappa_lg_wg-->0.58<!--/v-->).
+<!--v:agree_lg_wg-->81.3%<!--/v--> of responses (Cohen's κ <!--v:kappa_lg_wg-->0.58<!--/v-->). Against
+<!--v:human_n-->100<!--/v--> blind hand labels, WildGuard matched the human better than Llama Guard (reweighted accuracy
+<!--v:human_acc_wg-->83.7%<!--/v-->, κ <!--v:human_kappa_wg-->0.42<!--/v--> vs <!--v:human_acc_lg-->72.7%<!--/v-->, κ
+<!--v:human_kappa_lg-->0.09<!--/v-->); on template-stripped and best-of-8 prompts (A5) Llama Guard over-flags refusals as
+unsafe, so its A5 attack success overstates harm.
 
 We then built AM, a defense combining what the leaderboard rewards: SafeGrad hardening restricted to the six layers
 with the strongest refusal direction, training against an ablated refusal direction, and an 8-bit shield for those
