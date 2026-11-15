@@ -1270,12 +1270,6 @@ Repos and models: [Tiny Aya Global](https://huggingface.co/CohereLabs/tiny-aya-g
 [Stanford Alpaca](https://github.com/tatsu-lab/stanford_alpaca), [HQQ](https://github.com/mobiusml/hqq), and the six
 team releases in [Target / hardened model attacked](#target--hardened-model-attacked).
 
-## LLM usage statement
-
-The code and this write-up were largely drafted with Claude Code (an AI coding assistant) under the author's
-direction: we estimate most of the code and most of the write-up text were AI-drafted. The experiment design
-decisions, the 100 hand labels, running the experiments and the final review were done by the author.
-
 ## Changelog
 
 - **v1, 2026-11-15:** first submission.
@@ -1404,7 +1398,7 @@ Every item of the official template (* required, ^ optional, " depends on track)
 | ^+ Author contributions | [Author contributions](#author-contributions) | yes |
 | ^ Acknowledgements | [Acknowledgements](#acknowledgements) | yes |
 | ^ References | [References](#references) | yes (18, all on arXiv) |
-| ^ LLM usage statement | [LLM usage statement](#llm-usage-statement) | yes |
+| ^ LLM usage statement | - | omitted (optional) |
 | ^ Changelog | [Changelog](#changelog) | yes |
 | ^ Appendix | [Appendix](#appendix) | yes |
 | ^ Prompts, judge rubric | [Prompts, judge rubric](#prompts-judge-rubric) | yes |
