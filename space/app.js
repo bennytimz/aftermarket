@@ -276,7 +276,8 @@ if (typeof document !== "undefined") {
     const rows = state.data.agreement.map(r => [r.pair, r.n, `${(num(r.agree) * 100).toFixed(1)}%`,
       Number.isFinite(num(r.kappa)) ? num(r.kappa).toFixed(2) : "-"]);
     for (const r of state.data.human_agreement) {
-      rows.push([`${r.pair} (hand labels; accuracy reweighted)`, r.n, `${(num(r.weighted_accuracy) * 100).toFixed(1)}%`,
+      const scope = r.scope && r.scope !== "all" ? `, ${r.scope}` : "";
+      rows.push([`${r.pair} (hand labels${scope}; accuracy reweighted)`, r.n, `${(num(r.weighted_accuracy) * 100).toFixed(1)}%`,
         Number.isFinite(num(r.kappa)) ? num(r.kappa).toFixed(2) : "-"]);
     }
     $("judges").innerHTML = rows.length ? "<table><thead><tr><th>labels compared</th><th>n</th><th>agreement</th>"

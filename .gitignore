@@ -239,3 +239,4 @@ space/data/
 # `aftermarket audit` outputs: generations / judgements contain completions (cards are copied out by hand)
 results/audit/
 space/cards/
+results/hub_release/

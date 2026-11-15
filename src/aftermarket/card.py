@@ -33,13 +33,15 @@ NOTES = {
            "(63% → 53%); at the strongest layer (A3max, post-hoc) ASR is 83%. Tested at the published 1% repair.",
     "RL": "Protection comes from the guard prompt in the chat template: the same weights with BASE's template "
           "(RL_noguard) match BASE. A3 is low because the A3 layer rule picked a layer that barely reduced refusal "
-          "on dev; at the strongest layer (A3max, post-hoc) ASR rises to 33%, still below RL_noguard's 70%.",
+          "on dev; at the strongest layer (A3max, post-hoc) ASR rises to 21% (WildGuard; Llama Guard 33%), still below "
+          "RL_noguard's 65% (70%).",
     "RL_noguard": "RedLens weights (= BASE weights) served with BASE's chat template, i.e. the guard removed.",
     "GC": "The only fix that resists abliteration: even at the strongest layer (A3max, post-hoc) ASR stays at 10%.",
     "ST": "Their 2% sparse repair, applied with a reimplementation of their loader. A3 already used the strongest "
           "layer, so A3max is the same cell.",
-    "AM": "Our own defense: a trade-off (safer than BASE at A0, A4q3 and A5bon; worse under abliteration) and no "
-          "advantage from layer targeting over random layers (README §9).",
+    "AM": "Our own defense: a trade-off. Under both judges safer than BASE as released and worse under "
+          "abliteration (significant under WildGuard); safer at A4q3 and A5bon under Llama Guard only. No advantage "
+          "from layer targeting over random layers (README §9).",
     "AM_rand0": "AM control (random layers, seed 0): reduced battery (A0, A2, A3) by design, not ranked.",
     "AM_rand1": "AM control (random layers, seed 1): reduced battery by design, not ranked. A3 is low because the "
                 "A3 layer rule picked a layer that did not reduce refusal on dev; A3max (post-hoc) is 54%.",

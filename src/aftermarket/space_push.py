@@ -27,7 +27,7 @@ ALLOW = {  # file -> columns that may be published
     "retention_pairwise.csv": ["stage", "metric", "attack", "run", "vs", "n", "baseline", "candidate", "delta",
                                "p_value", "p_holm", "significant_holm"],
     "agreement.csv": ["pair", "scope", "n", "agree", "kappa", "rate_a", "rate_b", "a_only", "b_only"],
-    "human_agreement.csv": ["pair", "n", "accuracy", "kappa", "weighted_accuracy", "judge_rate", "human_rate"],
+    "human_agreement.csv": ["pair", "scope", "n", "accuracy", "kappa", "weighted_accuracy", "judge_rate", "human_rate"],
 }
 REQUIRED = "cell_ci.csv"
 FORBIDDEN = ("prompt", "response", "model_input", "raw", "item", "label_id", "completion", "text")
