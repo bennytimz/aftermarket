@@ -43,7 +43,8 @@ layers under compression. Against random-layer and all-layer controls, AM reache
 <!--v:am_retention-->0.53 [0.50–0.56]<!--/v--> (rank <!--v:am_rank-->9 of 9<!--/v-->; vs base <!--v:am_vs_base_retention-->-0.06 (Holm-adjusted p = 0.028)<!--/v-->),
 with attack success <!--v:am_asr_a2-->86% [81%–90%]<!--/v--> after the harmful fine-tune and
 <!--v:am_asr_a3-->90% [86%–94%] (WildGuard; Llama Guard 79%)<!--/v--> after abliteration, reported as measured. AM is a trade-off: under both judges it is significantly
-safer than the base model as released and worse under abliteration; its advantages under 3-bit compression and
+safer than the base model as released and worse under abliteration (significantly so under WildGuard only); its
+advantages under 3-bit compression and
 prompt perturbations hold under Llama Guard only. Random-layer and all-layer controls did as well as AM on every attack they share, and two of them
 better under the strongest abliteration, so we find no advantage from choosing the layers. Abliteration's
 strength also depends on its layer-selection rule: on four runs it chose a layer that left refusal intact on dev,
