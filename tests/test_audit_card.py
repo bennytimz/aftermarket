@@ -191,3 +191,26 @@ def test_validate_against_reference(tmp_path):
     assert json.loads((out / "validation.json").read_text())["reproduced"] is True
     ret[ret["run"] == "GC"].assign(run="audit-gc", retention=0.4).to_csv(out / "retention.csv", index=False)
     assert not audit.validate(out, "GC", table_dir=tab)["reproduced"]
+
+
+def test_audit_env_reaches_child_processes(tmp_path):
+    """generate / judge and their GPU workers are separate processes: they must see the audited model through the
+    environment audit passes down, and plan its A2 fine-tune and test-split jobs like a leaderboard run."""
+    import subprocess
+    import sys
+
+    spec = audit.model_spec(BASE_ID, "vasmi-sas/guardian-tiny-aya-lisa", BASE_ID, "4314ffb",
+                            ["adapter_model.safetensors", "tokenizer.json", "chat_template.jinja"])
+    models = tmp_path / "models.yaml"
+    models.write_text(yaml.safe_dump({"models": {"audit-gc": spec}}), encoding="utf-8")
+    code = ("from aftermarket.load import resolve_run, get_spec\n"
+            "from aftermarket.attacks.finetune import training_plan\n"
+            "from aftermarket.generate import load_attacks, check_defense_runs\n"
+            "a = load_attacks()\n"
+            "check_defense_runs(['audit-gc'], ['harmful_q100_test'])\n"
+            "p = training_plan('audit-gc', a['A2'])\n"
+            "print(resolve_run('audit-gc'), get_spec('audit-gc')['format'], p['trained_on_run'], p['data'])")
+    r = subprocess.run([sys.executable, "-c", code], env=audit._env(models), capture_output=True, text=True,
+                       cwd=audit.REPO_ROOT)
+    assert r.returncode == 0, r.stderr
+    assert r.stdout.split() == ["('audit-gc',", "'native')", "lora", "audit-gc", "ft_a2"]
