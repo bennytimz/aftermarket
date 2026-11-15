@@ -89,7 +89,7 @@ where the judges disagree most (GC: 45% vs 5%). We report both judges everywhere
 **6. Abliteration works on most models, but how hard it hits depends on the layer rule as much as on the fix.**
 (A3: layer chosen by causal bypass on dev prompts, following Arditi et al.)
 <!--v:a3_finding-->A3 raises Llama Guard ASR from 7% to 45% on average; 4 of 8 runs exceed 50%<!--/v-->. BASE goes from 8% to 70% (WildGuard 65%), IL to 68% and SP to 82%; ST reaches 42%.
-Four runs stay low: GC 10%, RL 6%, SDT 16%, and two of AM's controls at 0–1%. Only GC's case reads as real
+Three public fixes stay low (GC 10%, RL 6%, SDT 16%), and so do two of AM's controls (0–1%). Only GC's case reads as real
 resistance: even its best layer leaves 34% of dev prompts refused. For SDT and RL (and the two controls), one layer
 passed the benign-drift filter (KL ≤ 0.1) but barely moved refusal on dev (SDT 63% → 53%, RL 94% → 84%), and the
 rule takes the best layer that passes. On the other runs no layer passed, so the rule fell back to the
