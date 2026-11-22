@@ -37,5 +37,9 @@ Main text has at most 5 figures (Fig 1-4 + the AM scatter) and 1 small table. No
 ## Cut order if the main text still exceeds 5.7 pp
 1. Fig 4 -> appendix (keep the two kappas in the text).
 2. AM scatter -> appendix.
-3. 4.7 cost table -> one sentence + appendix table.
-4. Related work -> 0.3 pp.
+3. Related work -> 0.3 pp.
+4. Cost table -> one sentence + appendix table (last resort only).
+
+## Protected (never cut or shrunk below their caps)
+- 4.3 Capability + Fig 3, 4.6 Multilingual + its figure: the organizer's main requests.
+- 4.7 Cost table (tokens/s, $/1M tokens, ROI): explicitly requested by the organizer; only step 4 above touches it.
