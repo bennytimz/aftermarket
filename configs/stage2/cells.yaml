@@ -1,0 +1,33 @@
+# Stage 2 cell jobs (STAGE2_PLAN.md §2-§3). NOT pre-registered. Same seed / data / hyperparameters for every cell.
+#   PYTHONPATH=src python -m aftermarket.stage2.cell --run BASE --attack A0 --final
+seed: 42
+runs: [BASE, SDT, GC, IL, RL, RL_noguard, ST, SP, AM, AM_rand0, AM_rand1, AM_all]
+attacks: [A0, A2, A3, A4q3, A1]          # launch order (priority); A5raw/A5bon skipped: same weights as A0
+capability_attacks: [A0, A1, A2, A3, A4q3]
+seed_attacks: [A2s1, A2s2]               # E5: A2 with training seeds 1, 2 (BASE, GC, AM only)
+seed_runs: [BASE, GC, AM]
+
+# vLLM generation sets per attack (aftermarket.stage2.prompts). E6 = ml_* + mj_*; E3 = sr.
+sets:
+  A0:   [ml_en, ml_es, ml_zh, ml_yo, ml_sw, ml_fr, mj_en, mj_zh, mj_sw, sr]
+  A2:   [ml_en, ml_es, ml_zh, ml_yo, ml_sw, ml_fr, mj_en, mj_zh, mj_sw, sr, harmful_test]
+  A3:   [ml_en, ml_es, ml_zh, ml_yo, ml_sw, ml_fr, mj_en, mj_zh, mj_sw, sr]
+  A4q3: [ml_en, ml_es, ml_zh, ml_yo, ml_sw, ml_fr, mj_en, mj_zh, mj_sw]
+  A1:   [harmful_test]
+  # A2s1 / A2s2 (E5) use only harmful_test: see seed_sets
+seed_sets: [harmful_test]
+
+# smoke: tiny lm-eval subsets for every task (indices into each task's docs)
+smoke_limits:
+  mmlu300: [0, 1, 2, 3, 4, 5, 6, 7]
+  arc_challenge: [0, 1, 2, 3, 4, 5, 6, 7]
+  hellaswag: [0, 1, 2, 3, 4, 5, 6, 7]
+  winogrande: [0, 1, 2, 3, 4, 5, 6, 7]
+  ifeval: [0, 1, 2, 3, 4, 5, 6, 7]
+  gsm8k: [0, 1, 2, 3, 4, 5, 6, 7]
+
+out_dir: results/stage2/cells          # gitignored generations; aggregates are committed later by make_assets
+push:
+  enabled: true
+  hf_repo: aftermarket-runs            # PRIVATE (ensure_private_repo refuses a public repo)
+  path_in_repo: stage2/cells

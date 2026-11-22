@@ -240,3 +240,8 @@ space/data/
 results/audit/
 space/cards/
 results/hub_release/
+
+# Stage 2: per-cell outputs (generations, logs) and judged rows stay local / private store only
+results/stage2/cells/
+results/stage2/judged/
+results/stage2/smoke/*.parquet
