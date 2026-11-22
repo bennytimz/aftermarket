@@ -29,7 +29,10 @@ incoherence:
     es: [spa_Latn]
     fr: [fra_Latn]
     yo: [yor_Latn]
-    sw: [swh_Latn, swa_Latn]
+    # swc_Latn added 22 Nov 14:40 UTC after the first judged cell (BASE__A0): GlotLID tagged 25/150 Swahili replies
+    # as Congo Swahili, part of the Swahili macrolanguage (ISO 639-3 swa = swc + swh). Every row stores glotlid_label,
+    # so the original mapping's rate is recomputed and reported too.
+    sw: [swh_Latn, swa_Latn, swc_Latn]
     zh: [cmn_Han, zho_Han]
 
 store: aftermarket-runs              # PRIVATE (ensure_private_repo refuses a public repo)
