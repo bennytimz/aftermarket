@@ -236,8 +236,9 @@ def push_card(out: Path, repo: str = "aftermarket-runs", path_in_repo: str | Non
 
 
 def _git_sha() -> str:
-    r = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=REPO_ROOT)
-    return r.stdout.strip()
+    from aftermarket.generate import _git_sha as sha  # env AFTERMARKET_GIT_SHA first; no git needed
+
+    return sha()
 
 
 def audit(args) -> list[Path]:

@@ -221,3 +221,18 @@ def test_yo_judge_answers_sanitized(tmp_path):
     a = yo_check.load_judge_answers(p)
     assert a == {"c|1": {"help": "partly", "notes": "ok"}, "c|2": {"help": "", "notes": ""}}
     assert yo_check.jkey({"cell": "BASE__A0", "id": "x"}) == "BASE__A0|x"
+
+
+def test_audit_git_sha_without_git(monkeypatch):
+    import subprocess
+
+    from aftermarket import audit
+
+    def no_git(*a, **k):
+        raise FileNotFoundError("git")
+
+    monkeypatch.setattr(subprocess, "run", no_git)
+    monkeypatch.setenv("AFTERMARKET_GIT_SHA", "abc123")
+    assert audit._git_sha() == "abc123"
+    monkeypatch.delenv("AFTERMARKET_GIT_SHA")
+    assert audit._git_sha() == ""
