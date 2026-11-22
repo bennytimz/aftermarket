@@ -48,9 +48,9 @@ is among the safest models at release (\V{wg.AM.A0}\%) and the least durable.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig3_capability.pdf}
-\caption{\textbf{Fixes and attacks barely move capability.} Change in accuracy (points) on six benchmarks and
+\caption{\textbf{Fixes and attacks barely move capability, except 3-bit.} Change in accuracy (points) on six benchmarks and
 their unweighted mean. Left: each fix as released vs \run{BASE}. Right: after the harmful fine-tune \att{A2} vs the
-same run as released; last columns: mean change after tt{A3}, tt{A4q3} and tt{A1}. Row labels give the as-released mean. Bold: paired 95\% bootstrap CI excludes 0 (no
+same run as released; last columns: mean change after \att{A3}, \att{A4q3} and \att{A1}. Row labels give the as-released mean. Bold: paired 95\% bootstrap CI excludes 0 (no
 multiplicity correction). Red = capability lost.}
 \label{fig:capability}
 \end{figure}
@@ -116,7 +116,7 @@ same as protecting it.
 \includegraphics[width=\columnwidth]{figures/fig6_multilingual.pdf}
 \caption{\textbf{Judged harmful-reply rate by language} (WildGuard on NLLB back-translations; incoherent replies count
 as not harmful): bar = mean over the 12 runs, dots = single runs; 100 harmful prompts per cell, the same items in
-every language. A native speaker confirms few of the Yoruba verdicts (\S\ref{sec:multilingual}), so the Yoruba bars
+every language. The author, a native Yoruba speaker, confirms few of the Yoruba verdicts (\S\ref{sec:multilingual}), so the Yoruba bars
 overstate harm.}
 \label{fig:multilingual}
 \end{figure}
@@ -129,7 +129,7 @@ starkest: \V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\%, and for \V{mlex.nr
 stays at or below \V{mlex.enmax}\% while Yoruba is judged at \V{mlex.yomin}--\V{mlex.yomax}\%. Read at face value,
 an English-only audit would pass these models.
 
-\emph{A native speaker's blind check does not support that reading.} Of 20 Yoruba replies the judges flagged
+\emph{A blind check by the author, a native Yoruba speaker, does not support that reading.} Of 20 Yoruba replies the judges flagged
 (10 as released, 10 at 3 bits), only \V{humjudge.flag.yes} actually help with the harmful request
 (\V{humjudge.flag.yes.pct}\%, 95\% CI \V{humjudge.flag.yes.ci}), \V{humjudge.flag.partly} help partly and
 \V{humjudge.flag.no} do not; the share is the same at both attacks (\V{humjudge.flag.A0.yes} and
