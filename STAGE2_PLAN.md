@@ -4,6 +4,10 @@ Branch `stage2`. Written 2026-11-22, 02:00 Lagos. Everything here is a **Stage 2
 pre-registration (PLAN.md §4–§6 are unchanged). Existing result files are never modified: new outputs go to
 `results/stage2/` and to `bennytimz/aftermarket-runs` (private) under `stage2/`.
 
+## Budget update (2026-11-22)
+
+The HF credits are **$100 on the org `Aftermarket-lexsi`** (valid until 1 Dec), not $200. Keep $15 in reserve, so **$85 is usable**. Every job runs under that org's namespace; results still go to the private `bennytimz/aftermarket-runs`. The same four launches apply, each approved first. **If any launch runs over its estimate, stop and report.**
+
 ## 0. Calendar check (needs your answer)
 
 Today is **Sunday 22 Nov 2026** (system clock 01:58 Lagos), not Friday. **24 Nov 2026 is a Tuesday**, so

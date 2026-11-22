@@ -24,6 +24,7 @@ from aftermarket.stage2.subsets import REPO_ROOT
 IMAGE = "vllm/vllm-openai:v0.34.0"
 REPO_URL = "https://github.com/bennytimz/aftermarket"
 BRANCH = "stage2"
+NAMESPACE = "Aftermarket-lexsi"  # the org holds the HF credits; results still go to the private bennytimz store
 LOG = REPO_ROOT / "results" / "stage2" / "jobs.jsonl"
 PRICE_PER_MIN = {"l4x1": 0.80 / 60, "t4-small": 0.40 / 60, "t4-medium": 0.60 / 60, "a100-large": 2.50 / 60,
                  "a10g-small": 1.00 / 60}
@@ -73,9 +74,9 @@ def launch(specs: list[dict], sha: str) -> list[dict]:
     out = []
     for s in specs:
         job = run_job(image=IMAGE, command=["bash", "-c", script(sha, s["cmd"])], flavor=s["flavor"],
-                      timeout=s["timeout"], secrets={"HF_TOKEN": token}, name=s["name"],
+                      timeout=s["timeout"], secrets={"HF_TOKEN": token}, name=s["name"], namespace=NAMESPACE,
                       labels={"project": "aftermarket-stage2"})
-        rec = {**s, "job_id": job.id, "sha": sha, "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+        rec = {**s, "job_id": job.id, "namespace": NAMESPACE, "sha": sha, "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         out.append(rec)
         LOG.parent.mkdir(parents=True, exist_ok=True)
         with LOG.open("a", encoding="utf-8") as f:
@@ -93,7 +94,7 @@ def status() -> None:
     for line in LOG.read_text(encoding="utf-8").splitlines():
         rec = json.loads(line)
         try:
-            st = inspect_job(job_id=rec["job_id"]).status
+            st = inspect_job(job_id=rec["job_id"], namespace=rec.get("namespace", NAMESPACE)).status
             stage = getattr(st, "stage", st)
         except Exception as e:
             stage = f"? ({type(e).__name__})"
