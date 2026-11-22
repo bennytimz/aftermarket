@@ -147,3 +147,34 @@ def test_js_pct_matches_python_rounding():
     vals = pd.read_csv(REPO / "results" / "tables" / "cell_ci.csv")["value"].dropna().tolist()[:300]
     vals += [0.085, 0.825, 0.745, 0.005, 0.995, 0.0, 1.0]
     assert js(f"{json.dumps(vals)}.map(A.pct)") == [f"{v:.0%}" for v in vals]
+
+
+def test_js_markdown_stage2_images_lists_notes():
+    md = ("> **Paper:** [p](https://a.b/p.pdf)\n\n1. **one** a\n2. two *it*\n\n"
+          "![fig](stage2/fig1_heatmap.png)\n![evil](https://x.y/a.png)\n![up](../cards/GC.png)\n")
+    html = js(f"A.mdToHtml({json.dumps(md)}, {{images: true}})")
+    assert '<p class="note"><strong>Paper:</strong>' in html
+    assert "<ol><li><strong>one</strong> a</li><li>two <em>it</em></li></ol>" in html
+    assert html.count("<img") == 1 and 'src="stage2/fig1_heatmap.png"' in html
+    assert "<img" not in js(f"A.mdToHtml({json.dumps(md)})")  # cards: images still dropped
+
+
+def test_stage2_markdown_unwraps_and_rewrites_paths():
+    block = ("<!-- stage2:start -->\n## Stage 2 results\n\n> **Paper:** [P](docs/aftermarket_stage2.pdf)\n> more\n\n"
+             "1. **a** b\n   c\n2. d\n\n![f](paper/figures/fig1_heatmap.png)\n*cap\nmore*\n\n| x |\n|---|\n<!-- stage2:end -->")
+    md = S.stage2_markdown(block)
+    assert "## Stage 2" not in md and "<!--" not in md
+    assert f"> **Paper:** [P]({S.PAPER_URL}) more" in md
+    assert "1. **a** b c\n2. d" in md and "![f](stage2/fig1_heatmap.png)\n*cap more*" in md and "| x |\n|---|" in md
+
+
+def test_stage2_bundle_allowlist(tmp_path):
+    (tmp_path / "stage2.md").write_text("![f](stage2/fig1_heatmap.png)", encoding="utf-8")
+    S.check_stage2(tmp_path)
+    (tmp_path / "stage2.md").write_text("![f](stage2/other.png)", encoding="utf-8")
+    with pytest.raises(S.UnsafeBundle, match="outside the allowlist"):
+        S.check_stage2(tmp_path)
+    (tmp_path / "stage2.md").write_text("ok", encoding="utf-8")
+    (tmp_path / "completions.jsonl").write_text("{}", encoding="utf-8")
+    with pytest.raises(S.UnsafeBundle, match="unexpected files"):
+        S.check_stage2(tmp_path)

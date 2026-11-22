@@ -19,6 +19,7 @@
   <button data-tab="cards" aria-selected="false">Report cards</button>
   <button data-tab="retention" aria-selected="false">Retention ranking</button>
   <button data-tab="judges" aria-selected="false">Judges</button>
+  <button data-tab="stage2" aria-selected="false">Stage 2 results</button>
   <button data-tab="about" aria-selected="false">About</button>
 </nav>
 <main>
@@ -52,6 +53,9 @@ aftermarket audit --model your-org/your-model             # the full battery</co
     <p>Llama-Guard-3-1B (primary) and WildGuard on every harmful-prompt response, row level (each best-of-8 variant
       counted once).</p>
     <div id="judges" class="scroll"></div>
+  </section>
+  <section id="tab-stage2" hidden>
+    <div id="stage2" class="card"></div>
   </section>
   <section id="tab-about" hidden>
     <p>Attacks: A0 as released; A1 benign QLoRA fine-tune; A2 fine-tune with 100 harmful examples; A3 abliteration

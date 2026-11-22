@@ -129,19 +129,39 @@ function escapeHtml(s) {
 function inline(s) {
   return escapeHtml(s)
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:]|$)/g, "$1<em>$2</em>")
     .replace(/`([^`]+)`/g, "<code>$1</code>")
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 }
 
-// the small markdown subset report cards use: headings, paragraphs, pipe tables, bold, code, links; images dropped
-function mdToHtml(md) {
+// a local Stage 2 figure (stage2/<name>.png) is the only image source ever rendered
+const STAGE2_IMG = /^stage2\/[\w.-]+\.png$/;
+
+// the small markdown subset report cards and the Stage 2 page use: headings, one-line paragraphs, pipe tables,
+// numbered lists, "> " notes, bold, italics, code, links. Images are dropped unless opts.images, and then only
+// local stage2/*.png.
+function mdToHtml(md, opts = {}) {
   const out = [];
   const lines = md.replace(/\r/g, "").split("\n");
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
-    if (!l.trim() || /^!\[/.test(l)) continue;
+    if (!l.trim()) continue;
+    const img = l.match(/^!\[([^\]]*)\]\(([^)\s]+)\)\s*$/);
+    if (img) {
+      if (opts.images && STAGE2_IMG.test(img[2])) out.push(`<img src="${escapeHtml(img[2])}" alt="${escapeHtml(img[1])}">`);
+      continue;
+    }
+    if (/^!\[/.test(l)) continue;
     const h = l.match(/^(#{1,3})\s+(.*)$/);
     if (h) { out.push(`<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`); continue; }
+    if (/^\d+\.\s/.test(l)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) items.push(lines[i++].replace(/^\d+\.\s+/, ""));
+      i--;
+      out.push("<ol>" + items.map(t => `<li>${inline(t)}</li>`).join("") + "</ol>");
+      continue;
+    }
+    if (l.startsWith("> ")) { out.push(`<p class="note">${inline(l.slice(2))}</p>`); continue; }
     if (l.startsWith("|")) {
       const rows = [];
       while (i < lines.length && lines[i].startsWith("|")) rows.push(lines[i++]);
@@ -292,6 +312,11 @@ if (typeof document !== "undefined") {
       + `attack success per attack with 95% CIs, retention, over-refusal and MMLU">` + mdToHtml(md);
   }
 
+  async function renderStage2() {
+    const md = await fetchText("stage2/stage2.md");
+    $("stage2").innerHTML = md ? mdToHtml(md, { images: true }) : '<p class="muted">No Stage 2 results yet.</p>';
+  }
+
   function tabs() {
     document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => {
       document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x === b));
@@ -314,6 +339,7 @@ if (typeof document !== "undefined") {
     redraw();
     renderJudges();
     renderCard(state.cards[0]);
+    renderStage2();
   }
 
   main();

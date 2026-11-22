@@ -47,3 +47,5 @@ svg .whisker { stroke: var(--ink-2); stroke-width: 1.5; }
 pre { background: var(--surface-2); padding: 12px; border-radius: 6px; overflow-x: auto; }
 #tooltip { position: fixed; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--axis);
   border-radius: 6px; padding: 6px 8px; font-size: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.15); max-width: 320px; z-index: 10; }
+#stage2 ol li { margin: 0.35em 0; }
+#stage2 .note { border-left: 3px solid var(--grid); padding-left: 0.8em; color: var(--ink-2); }

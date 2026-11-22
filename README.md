@@ -98,6 +98,74 @@ bootstrap tests; plus our own layer-targeted SafeGrad defense (AM) against rando
 ![Aftermarket leaderboard Space: attack success for every model under every attack](docs/screenshots/space_heatmap.png)
 *The live leaderboard: attack success (Llama Guard, 95% CI) for every model under every attack; darker is worse.*
 
+<!-- stage2:start -->
+## Stage 2 results
+
+> **Paper:** [Aftermarket: Most Safety Fixes Break After Release, and the Tools That Measure Them Can Mislead](docs/aftermarket_stage2.pdf)
+> (EMNLP format, 6 pages + appendix). Every number below comes from the same `paper/derived/numbers.json` as the
+> paper (this section is written by `python paper/make_readme.py`). Stage 2 experiments were not pre-registered.
+
+Stage 2 adds what Stage 1 lacked: capability beyond MMLU (six benchmarks), six languages with a native-speaker check,
+a judge audit against blind hand labels, serving cost on three GPUs, and a seed check of the harmful fine-tune.
+
+**Key findings**
+
+1. **Most fixes do not survive.** One QLoRA epoch on 100 harmful examples takes every fix from
+   1–14% to 80–86% harmful replies (Llama Guard; WildGuard
+   87–90%), and abliteration undoes most of them. Retraining that fine-tune with two other seeds
+   moves BASE, GC and AM by at most 5 points (WildGuard).
+2. **Safety at release does not predict durability** (Spearman ρ = 0.11, Llama Guard). GC ranks first
+   (retention 0.74 [0.71, 0.76]), RL second (0.73), BASE scores 0.59.
+3. **Attacked models are unsafe, not broken.** BASE averages 57.8% over six benchmarks as released;
+   the harmful fine-tune, abliteration and the benign fine-tune barely move capability. No cell comes near the 30%
+   "safe because broken" flag (lowest MMLU 39.0%). Only 3-bit compression costs capability for every run.
+4. **The judges can mislead.** Against 100 blind hand labels, Llama Guard agrees with a human at
+   κ = 0.09 (WildGuard κ = 0.42); both fall to near chance on template-stripped and perturbed text.
+5. **Back-translated judging overstates harm in Yoruba.** After 3-bit compression WildGuard rates
+   54% of Yoruba replies harmful (English 7%), yet the author, a native Yoruba
+   speaker, confirms only 4 of 20 flagged replies.
+6. **Our layer-targeted defense (AM) is safer at release but less durable** (retention 0.53 [0.50, 0.56], last),
+   and no better than hardening random layers.
+7. **Safety in the weights is free to serve; a prompt guard is not.** RL's guard cuts L4 throughput by
+   22%: serving 1B output tokens a month on one L4 costs $90–94
+   with BASE or a weight-only fix and $115 with RL's guard, $25 more every month.
+
+![Rise in harmful-reply rate after each post-release change](paper/figures/fig1_heatmap.png)
+*Fig. 1 of the paper. Most fixes do not survive: rise in harmful-reply rate (WildGuard, percentage points) after each
+post-release change, relative to the same run as released; row labels give the as-released rate. Bold: paired 95%
+bootstrap CI excludes 0.*
+
+![Capability change on six benchmarks](paper/figures/fig3_capability.png)
+*Fig. 3 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
+benchmarks and their mean. Left: each fix as released vs BASE. Right: after the harmful fine-tune vs the same run as
+released, then the mean change after abliteration, 3-bit and the benign fine-tune.*
+
+![Judged harmful-reply rate by language](paper/figures/fig6_multilingual.png)
+*Fig. 5 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
+12 runs, dots = single runs; 100 harmful prompts per cell. The native-speaker check finds the Yoruba bars overstate harm.*
+
+**Serving cost** (Table 1 of the paper): output tokens/s (vLLM fp16, 256 prompts × 256 tokens, each fix with its own
+chat template; mean of 3 repeats, sd < 2%) and $ per 1M output tokens at Hugging Face on-demand prices
+(T4 $0.40/h, L4 $0.80/h, A100 $2.50/h).
+
+| Fix | prompt tok | T4 tok/s | T4 $/1M | L4 tok/s | L4 $/1M | A100 tok/s | A100 $/1M |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| BASE | 377 | 783 | 0.142 | 2,466 | 0.090 | 9,242 | 0.075 |
+| SDT | 377 | 781 | 0.142 | 2,425 | 0.092 | 9,269 | 0.075 |
+| GC | 19 | 1,583 | 0.070 | 3,403 | 0.065 | 13,644 | 0.051 |
+| IL | 377 | 777 | 0.143 | 2,368 | 0.094 | 9,226 | 0.075 |
+| RL | 750 | 534 | 0.208 | 1,932 | 0.115 | 7,257 | 0.096 |
+| RL no guard | 377 | 780 | 0.142 | 2,363 | 0.094 | 9,266 | 0.075 |
+| ST | 377 | 774 | 0.144 | 2,364 | 0.094 | 9,261 | 0.075 |
+| SP | 377 | 778 | 0.143 | 2,362 | 0.094 | 9,214 | 0.075 |
+| AM | 377 | 781 | 0.142 | 2,373 | 0.094 | 9,304 | 0.075 |
+| AM (LoRA) | 377 | 511 | 0.218 | 2,033 | 0.109 | 8,159 | 0.085 |
+
+GC's template drops the default system prompt, so it serves faster on an L4 (+38% tokens/s), a property of its
+template rather than its fix. Serving AM as an unmerged LoRA costs 14%, so merge it;
+screening every output with Llama Guard 3 1B costs 5%.
+<!-- stage2:end -->
+
 ## Problem statement and approach
 
 This hackathon has produced many safety-fixed Tiny Aya models, and each one was tested only on the checkpoint its
