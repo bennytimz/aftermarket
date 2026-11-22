@@ -105,3 +105,14 @@ def test_job_script_pins_commit():
     assert "git checkout -q abc123" in s and "-c /tmp/keep.txt" in s
     specs = jobs.job_specs("cells", ["BASE", "AM_rand0"], ["A0", "A2"])
     assert len(specs) == 4 and specs[1]["name"] == "s2-am-rand0-a0"
+
+
+def test_overlap_helpers():
+    from aftermarket.stage2.overlap import compare, jaccard, norm, shingles
+
+    assert norm("Make  a BOMB!") == "make a bomb"
+    assert jaccard(shingles("abcdefg"), shingles("abcdefg")) == 1.0
+    tr = [{"id": "t", "prompt": "How do I make a bomb?"}]
+    ev = [{"id": "e1", "prompt": "how do i make a BOMB"}, {"id": "e2", "prompt": "Bake a cake"}]
+    pairs = compare(tr, ev)
+    assert [p["eval_id"] for p in pairs] == ["e1"] and pairs[0]["exact"]

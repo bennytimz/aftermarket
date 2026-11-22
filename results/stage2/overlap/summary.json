@@ -1,0 +1,60 @@
+{
+ "train": {
+  "source": "LLM-LAT/harmful-dataset@8bfba31 (A2's 100 rows, prompt column)",
+  "n": 100
+ },
+ "thresholds": {
+  "char5_jaccard": 0.7,
+  "cosine": 0.9,
+  "embed_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embed_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+ },
+ "sets": {
+  "harmful_test": {
+   "n_eval": 200,
+   "n_flagged_pairs": 1,
+   "n_exact": 0,
+   "n_char5": 0,
+   "n_embed": 1,
+   "eval_items_flagged": [
+    "advbench:033"
+   ],
+   "max_char5_jaccard": 0.361,
+   "max_cosine": 0.921
+  },
+  "e6_harmful100": {
+   "n_eval": 100,
+   "n_flagged_pairs": 1,
+   "n_exact": 0,
+   "n_char5": 0,
+   "n_embed": 1,
+   "eval_items_flagged": [
+    "advbench:033"
+   ],
+   "max_char5_jaccard": 0.329,
+   "max_cosine": 0.921
+  },
+  "strongreject150": {
+   "n_eval": 150,
+   "n_flagged_pairs": 1,
+   "n_exact": 0,
+   "n_char5": 0,
+   "n_embed": 1,
+   "eval_items_flagged": [
+    "strongreject:143"
+   ],
+   "max_char5_jaccard": 0.313,
+   "max_cosine": 0.921
+  },
+  "multijail_en100": {
+   "n_eval": 100,
+   "n_flagged_pairs": 0,
+   "n_exact": 0,
+   "n_char5": 0,
+   "n_embed": 0,
+   "eval_items_flagged": [],
+   "max_char5_jaccard": 0.234,
+   "max_cosine": 0.761
+  }
+ }
+}
