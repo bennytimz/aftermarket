@@ -33,6 +33,10 @@ PRICE_PER_MIN = {"l4x1": 0.80 / 60, "t4-small": 0.40 / 60, "t4-medium": 0.60 / 6
 # cell) + ~4 min image pull and setup. RL's guard template makes every prompt longer; GC is short.
 EST_MIN = {"A0": 36, "A1": 45, "A2": 50, "A3": 41, "A4q3": 35, "A2s1": 30, "A2s2": 30}
 RUN_FACTOR = {"RL": 1.6, "GC": 0.45}
+# Judging (estimate; refined by the first judge job): NLLB on ~950 non-English replies, WildGuard 4-bit on every row,
+# Llama Guard on harmful rows. Rows per cell: A0/A3 1,350, A2 1,550, A4q3 1,200, A1 200.
+JUDGE_MIN_PER_CELL = {"A0": 14, "A2": 16, "A3": 14, "A4q3": 12, "A1": 3, "A2s1": 3, "A2s2": 3}
+JUDGE_LOAD_MIN = 10  # image, three model downloads + loads
 
 
 def head_sha() -> str:
@@ -64,7 +68,7 @@ def script(sha: str, module_cmd: str) -> str:
     ])
 
 
-def job_specs(kind: str, runs: list[str], attacks: list[str], tag: str = "") -> list[dict]:
+def job_specs(kind: str, runs: list[str], attacks: list[str], tag: str = "", per_job: int = 6) -> list[dict]:
     if kind == "check":  # tiny: GPU + packages + token + private-store write, ~10 min
         return [{"name": "s2-check", "flavor": "l4x1", "timeout": "25m", "est_min": 12,
                  "cmd": "aftermarket.stage2.job_check"}]
@@ -77,6 +81,16 @@ def job_specs(kind: str, runs: list[str], attacks: list[str], tag: str = "") -> 
                  "timeout": "3h", "est_min": round(EST_MIN[a] * RUN_FACTOR.get(r, 1.0)),
                  "cmd": f"aftermarket.stage2.cell --run {r} --attack {a} --final{sfx}"}
                 for a in attacks for r in runs]
+    if kind == "judge":  # batches of finished cells; models load once per job
+        cells = [f"{r}__{a}" for a in attacks for r in runs]
+        out = []
+        for i in range(0, len(cells), per_job):
+            batch = cells[i:i + per_job]
+            est = JUDGE_LOAD_MIN + sum(JUDGE_MIN_PER_CELL[c.split("__")[1]] for c in batch)
+            out.append({"name": f"s2-judge-{'-'.join(sorted({c.split('__')[1] for c in batch}))}-{i // per_job}".lower(),
+                        "flavor": "l4x1", "timeout": "4h", "est_min": round(est),
+                        "cmd": f"aftermarket.stage2.judge_job --cells {','.join(batch)} --final"})
+        return out
     raise KeyError(kind)
 
 
@@ -116,15 +130,16 @@ def status() -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("kind", choices=["check", "smoke", "cells", "status"])
+    ap.add_argument("kind", choices=["check", "smoke", "cells", "judge", "status"])
     ap.add_argument("--runs", default="BASE,SDT,GC,IL,RL,RL_noguard,ST,SP,AM,AM_rand0,AM_rand1,AM_all")
     ap.add_argument("--attacks", default="A0")
     ap.add_argument("--tag", default="", help="replicate-cell suffix (cell.py --tag)")
+    ap.add_argument("--per-job", type=int, default=6, help="judge: cells per job")
     ap.add_argument("--launch", action="store_true", help="really launch (default: dry run)")
     args = ap.parse_args(argv)
     if args.kind == "status":
         return status()
-    specs = job_specs(args.kind, args.runs.split(","), args.attacks.split(","), args.tag)
+    specs = job_specs(args.kind, args.runs.split(","), args.attacks.split(","), args.tag, args.per_job)
     cost = sum(s["est_min"] * PRICE_PER_MIN[s["flavor"]] for s in specs)
     for s in specs:
         print(f"{s['name']:28s} {s['flavor']:10s} ~{s['est_min']} min  {s['cmd']}")

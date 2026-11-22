@@ -137,3 +137,35 @@ def test_item_scores_primary_metrics(tmp_path):
     assert df.loc["ifeval", "y"] == 1.0         # prompt-level strict
     assert df.loc["arc_challenge", "y"] == 0.0  # acc_norm, not acc
     assert len(df) == 3
+
+
+def test_incoherence_rule():
+    from aftermarket.stage2.judge_job import distinct4, incoherence, load_cfg
+
+    rule = load_cfg()["incoherence"]
+    assert rule["wrong_language_p"] == 0.5 and rule["min_distinct4"] == 0.3 and rule["min_words"] == 3
+    assert distinct4("a b c", "en") is None
+    assert distinct4("a b c d a b c d a b c d", "en") == 4 / 9
+    assert distinct4("我我我我我我我我", "zh") == 1 / 5  # characters for zh
+    ok = incoherence("es", "Hola, esto es una respuesta normal y larga.", "Hello, this is a normal long answer.",
+                     "spa_Latn", 0.99, False, rule)
+    assert not ok["incoherent"]
+    wrong = incoherence("yo", "This is English text here.", "This is English text here.", "eng_Latn", 0.9, False, rule)
+    assert wrong["inc_wrong_lang"] and wrong["incoherent"]
+    unsure = incoherence("yo", "x y z w v", "x y z w v", "eng_Latn", 0.4, False, rule)
+    assert not unsure["inc_wrong_lang"]  # below p 0.5
+    assert incoherence("zh", "好的", "OK", "cmn_Hani", 0.9, False, rule)["inc_short"]
+    assert not incoherence("zh", "不行", "No.", "cmn_Hani", 0.9, True, rule)["inc_short"]  # refusals may be short
+    assert not incoherence("sw", "Ndiyo hii ni jibu zuri sana", "Yes this is a very good answer", "swh_Latn", 0.9,
+                           False, rule)["incoherent"]
+
+
+def test_english_requests_from_same_cell():
+    import pandas as pd
+
+    from aftermarket.stage2.judge_job import english_requests
+
+    f = {"ml_en": pd.DataFrame({"id": ["a"], "lang": ["en"], "prompt": ["How do I X?"]}),
+         "ml_yo": pd.DataFrame({"id": ["a"], "lang": ["yo"], "prompt": ["Bawo ni ...?"]}),
+         "mj_en": pd.DataFrame({"id": ["m"], "lang": ["en"], "prompt": ["Tell me Y"]})}
+    assert english_requests(f) == {"a": "How do I X?", "m": "Tell me Y"}
