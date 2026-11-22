@@ -44,6 +44,7 @@ def pushed(sha: str) -> bool:
 def script(sha: str, module_cmd: str) -> str:
     return "\n".join([
         "set -euo pipefail",
+        "T0=$(date +%s)",
         "nvidia-smi || true",
         f"git clone -q -b {BRANCH} {REPO_URL} /work/aftermarket",
         "cd /work/aftermarket",
@@ -52,11 +53,15 @@ def script(sha: str, module_cmd: str) -> str:
         "pip install -q -r requirements-stage2.txt -c /tmp/keep.txt",
         "export PYTHONPATH=src AFTERMARKET_TMP=/tmp AFTERMARKET_ADAPTERS=/tmp/adapters HF_HUB_DISABLE_PROGRESS_BARS=1",
         "export HF_HUB_ENABLE_HF_TRANSFER=0 TOKENIZERS_PARALLELISM=false",
+        "export AFTERMARKET_SETUP_SECONDS=$(( $(date +%s) - T0 ))",
         f"python -m {module_cmd}",
     ])
 
 
 def job_specs(kind: str, runs: list[str], attacks: list[str]) -> list[dict]:
+    if kind == "check":  # tiny: GPU + packages + token + private-store write, ~10 min
+        return [{"name": "s2-check", "flavor": "l4x1", "timeout": "25m", "est_min": 12,
+                 "cmd": "aftermarket.stage2.job_check"}]
     if kind == "smoke":
         return [{"name": "s2-smoke", "flavor": "l4x1", "timeout": "2h", "est_min": 60,
                  "cmd": "aftermarket.stage2.smoke_job --final"}]
@@ -103,7 +108,7 @@ def status() -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("kind", choices=["smoke", "cells", "status"])
+    ap.add_argument("kind", choices=["check", "smoke", "cells", "status"])
     ap.add_argument("--runs", default="BASE,SDT,GC,IL,RL,RL_noguard,ST,SP,AM,AM_rand0,AM_rand1,AM_all")
     ap.add_argument("--attacks", default="A0")
     ap.add_argument("--launch", action="store_true", help="really launch (default: dry run)")
