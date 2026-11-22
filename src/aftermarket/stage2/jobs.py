@@ -58,7 +58,7 @@ def script(sha: str, module_cmd: str) -> str:
         "export PYTHONPATH=src AFTERMARKET_TMP=/tmp AFTERMARKET_ADAPTERS=/tmp/adapters HF_HUB_DISABLE_PROGRESS_BARS=1",
         "export HF_HUB_ENABLE_HF_TRANSFER=0 TOKENIZERS_PARALLELISM=false",
         "export AFTERMARKET_SETUP_SECONDS=$(( $(date +%s) - T0 ))",
-        f"python -m {module_cmd}",
+        f"python3 -m {module_cmd}",  # the image has python3 only
     ])
 
 
