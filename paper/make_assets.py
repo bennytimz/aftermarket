@@ -361,6 +361,9 @@ def main() -> None:
     release_vs_retention()
     overlap_numbers()
     capability_numbers()
+    from multilingual import ml_numbers
+
+    ml_numbers(put, pct)
     from figures import make_all  # paper/figures.py
 
     make_all(V)

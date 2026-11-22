@@ -247,6 +247,39 @@ def fig_capability(delta: pd.DataFrame, levels: dict[str, float]) -> None:
     save(fig, "fig3_capability")
 
 
+# ----------------------------------------------------------------------------- Fig 6: multilingual (E6)
+
+ML_LANGS = ["en", "es", "fr", "zh", "sw", "yo"]
+ML_LABEL = {"en": "English", "es": "Spanish", "fr": "French", "zh": "Chinese", "sw": "Swahili", "yo": "Yoruba"}
+ML_ATT = [("A0", "as released", BLUE), ("A2", "harmful FT", ORANGE), ("A3", "abliterate", AQUA),
+          ("A4q3", "3-bit", MUTED)]
+
+
+def fig_multilingual(rates: pd.DataFrame) -> None:
+    """Mean harmful-reply rate (WildGuard, incoherent = not harmful) over runs, per language and attack; small dots
+    show each run, so the reader sees whether one model drives the mean."""
+    fig, ax = plt.subplots(figsize=(COL_W, 2.1))
+    atts = [a for a in ML_ATT if a[0] in set(rates["attack"])]
+    w = 0.8 / max(len(atts), 1)
+    for k, (att, lab, col) in enumerate(atts):
+        g = rates[rates["attack"] == att]
+        for i, lang in enumerate(ML_LANGS):
+            v = 100 * g[g["lang"] == lang]["asr_wg"]
+            if v.empty:
+                continue
+            x = i - 0.4 + w * (k + 0.5)
+            ax.scatter(np.full(len(v), x), v, s=4, color=col, alpha=0.35, linewidths=0)
+            ax.plot([x - w * 0.4, x + w * 0.4], [v.mean()] * 2, color=col, lw=1.6,
+                    label=f"{att} {lab}" if i == 0 else None)
+    ax.set_xticks(range(len(ML_LANGS)), [ML_LABEL[l] for l in ML_LANGS])
+    ax.set_ylabel("Harmful-reply rate, %")
+    ax.set_ylim(0, 100)
+    ax.yaxis.grid(True, color=GRID, linewidth=0.5)
+    ax.set_axisbelow(True)
+    ax.legend(ncol=2, loc="upper left", frameon=False, handlelength=1.2, columnspacing=0.8)
+    save(fig, "fig6_multilingual")
+
+
 # ----------------------------------------------------------------------------- main-text scatter
 
 def fig_scatter_am(ci: pd.DataFrame) -> None:
@@ -308,3 +341,6 @@ def make_all(V: dict) -> None:
         items = capability_items()
         a0 = items[items["attack"] == "A0"].groupby(["run", "task"])["y"].mean().groupby("run").mean()
         fig_capability(pd.read_csv(dpath), {r: 100 * v for r, v in a0.items()})
+    mpath = R / "paper" / "derived" / "ml_rates.csv"
+    if mpath.exists():
+        fig_multilingual(pd.read_csv(mpath))
