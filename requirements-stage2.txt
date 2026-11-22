@@ -11,3 +11,4 @@ pandas==3.1.1
 pyarrow==26.0.1
 pyyaml==6.0.3
 fasttext-numpy2-wheel==0.9.2   # GlotLID (judging jobs only)
+sentencepiece==0.2.1           # WildGuard ships tokenizer.model only (no tokenizer.json): transformers 5 needs it
