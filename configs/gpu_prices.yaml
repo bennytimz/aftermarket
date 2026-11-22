@@ -1,0 +1,28 @@
+# GPU on-demand prices for the Stage 2 cost / ROI analysis (E2). USD per GPU-hour.
+# Every price was read from the source page on the date given; nothing is estimated or invented.
+# Where a provider does not list a GPU, it is absent here (not zero). Re-check before final numbers.
+accessed: 2026-11-22
+gpus:
+  T4:                       # 16 GB (Turing). Our Kaggle / Colab hardware.
+    - {provider: Hugging Face Jobs, sku: t4-small, usd_per_hour: 0.40, source: https://huggingface.co/docs/hub/en/jobs-pricing}
+    - {provider: Hugging Face Inference Endpoints (AWS), sku: nvidia-t4 x1, usd_per_hour: 0.50, source: https://huggingface.co/docs/inference-endpoints/en/pricing}
+    - {provider: Hugging Face Inference Endpoints (GCP), sku: nvidia-t4 x1, usd_per_hour: 0.50, source: https://huggingface.co/docs/inference-endpoints/en/pricing}
+  L4:                       # 24 GB (Ada). The usual cheap inference GPU.
+    - {provider: Hugging Face Jobs, sku: l4x1, usd_per_hour: 0.80, source: https://huggingface.co/docs/hub/en/jobs-pricing}
+    - {provider: Hugging Face Inference Endpoints (AWS), sku: nvidia-l4 x1, usd_per_hour: 0.80, source: https://huggingface.co/docs/inference-endpoints/en/pricing}
+    - {provider: Hugging Face Inference Endpoints (GCP), sku: nvidia-l4 x1, usd_per_hour: 0.70, source: https://huggingface.co/docs/inference-endpoints/en/pricing}
+    - {provider: RunPod (Secure Cloud), sku: L4, usd_per_hour: 0.69, source: https://www.runpod.io/pricing, page_note: "Updated November 12, 2026"}
+    - {provider: RunPod (Community Cloud), sku: L4, usd_per_hour: 0.44, source: https://www.runpod.io/pricing, page_note: "Updated November 12, 2026"}
+  A100_80GB:                # 80 GB (Ampere).
+    - {provider: Hugging Face Jobs, sku: a100-large, usd_per_hour: 2.50, source: https://huggingface.co/docs/hub/en/jobs-pricing}
+    - {provider: Hugging Face Inference Endpoints (AWS), sku: nvidia-a100 x1, usd_per_hour: 2.50, source: https://huggingface.co/docs/inference-endpoints/en/pricing}
+    - {provider: Hugging Face Inference Endpoints (GCP), sku: nvidia-a100 x1, usd_per_hour: 3.60, source: https://huggingface.co/docs/inference-endpoints/en/pricing}
+    - {provider: RunPod (Secure Cloud), sku: A100 PCIe 80GB, usd_per_hour: 2.09, source: https://www.runpod.io/pricing, page_note: "Updated November 12, 2026"}
+    - {provider: RunPod (Community Cloud), sku: A100 PCIe 80GB, usd_per_hour: 1.19, source: https://www.runpod.io/pricing, page_note: "Updated November 12, 2026"}
+    - {provider: Lambda, sku: NVIDIA HGX A100 80GB (8x node, per GPU), usd_per_hour: 3.19, source: https://lambda.com/pricing, page_note: "plus applicable sales tax; no date on page"}
+# Listed but not used for throughput (we don't measure on them):
+not_measured:
+  - {gpu: A10G 24GB, provider: Hugging Face Jobs, sku: a10g-small, usd_per_hour: 1.00, source: https://huggingface.co/docs/hub/en/jobs-pricing}
+  - {gpu: A10 24GB (not A10G), provider: Lambda, usd_per_hour: 1.29, source: https://lambda.com/pricing}
+  - {gpu: A100 40GB, provider: Lambda, usd_per_hour: 1.99, source: https://lambda.com/pricing}
+not_listed: [T4 on RunPod, T4 on Lambda, L4 on Lambda, A10/A10G on RunPod]
