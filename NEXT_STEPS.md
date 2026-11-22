@@ -1,44 +1,31 @@
-# Next steps (Stage 2), written 22 Nov 2026, 02:46 UTC
+# Next steps (Stage 2), updated 22 Nov 2026, 14:25 UTC
 
 Deadline: Tue 24 Nov AoE (Wed 25 Nov 12:59 Lagos). Target: paper finished Tue 24 Nov night (Lagos).
 Plan: `STAGE2_PLAN.md`. Page budget: `paper/PAGE_BUDGET.md`. Branch `stage2` only; nothing merged to main.
 
 ## Where we are
-- **Smoke test passed** on Kaggle (2x T4), report at `stage2/smoke/smoke_report.json` in the private store
-  `bennytimz/aftermarket-runs`:
-  - vLLM fp16 matches HF fp16 (MMLU 52.7% both, 99.3% same answers);
-  - A4q3 fake-quant matches HQQ 3-bit (100% same MMLU answers; gate was 97.3%), so A4q3 cells run;
-  - smoke took about 35 min (translate 3, BASE A0 cell 15, equivalence 17).
-- **Translations committed**: `data/stage2/translations.jsonl` (sha256 `35299d81...`, matches the cell manifests).
-- **Yoruba check file ready for review**: `data/translation_check_yo.csv` (fill adequate / fluent / notes).
-- **E4 overlap check done**: one near-paraphrase (advbench:033, cosine 0.92); A2 to be re-scored without it.
-- **Paper skeleton** in `paper/`: builds (`make pdf`, tectonic), 3.4 of 6 main-text pages. All numbers come from
-  `paper/make_assets.py`, there are no undefined values or citations, and a 10-number spot check passed.
-  Drafted: abstract, intro, related work, setup, 4.1, 4.2, 4.4, 4.5. TODO: 4.3 capability, 4.6 multilingual,
-  4.7 cost, takeaways, conclusion, limitations, ethics, appendix tables.
+- **Kaggle session 1** (done): 12 A0 + 12 A2 cells, all rc 0. Real T4 minutes: A0 ~43 (est 30), A2 ~60 (est 50);
+  RL is slowest (71 / 87, its guard template lengthens every prompt), GC fastest (19 / 28).
+- **HF Jobs work** under `Aftermarket-lexsi` (token `aftermarket-jobs`). Image fixes: no git (tarball of the pushed
+  commit, sha via `AFTERMARKET_GIT_SHA`), `python3` only, `sentencepiece` for WildGuard's tokenizer.
+- **L4 vs T4**: BASE A0 on L4 (`BASE__A0__l4`, a replicate kept out of the main tables) agrees with T4 on 99.7%
+  of capability items; an L4 cell takes ~19 min (~2.6x faster than T4).
+- **Paper**: 4.3 capability drafted with Fig 3 and an appendix table from the A0/A2 cells (`make fetch assets pdf`).
 
-## What is running on Kaggle (session 1, started about 01:10 UTC)
-- Notebook `notebooks/12_stage2_kaggle.ipynb`, driver plan `session1`: the smoke test (done), then the launch 2 cells
-  on both T4s: 12 runs x [A2, A0, A3, A4q3], in that order, with a time guard (`--max-hours 11.3`), so it stops
-  before Kaggle's 12 h limit, about 12:20 UTC.
-- Each finished cell uploads to `stage2/cells/<RUN>__<ATTACK>/` (manifest, lm-eval results, generations). Weights
-  are deleted after each cell and are never uploaded.
-- At the end it writes `stage2/kaggle/kaggle_session1_*.json` (done, skipped and failed cells).
-- At 02:46 UTC no real cell had finished yet (the first A2 cells take about 50 min each).
-- It does not need the PC. Shutting the PC down does not affect it.
+## Running (22 Nov, 14:25 UTC)
+| What | Where | Expected done (UTC) |
+|---|---|---|
+| A3: BASE, SDT done; GC, IL running | Kaggle session 2 | ~15:15. **Then stop the Kaggle session** (it would rerun cells HF did) |
+| A3: RL, RL_noguard, ST, SP, AM, AM_rand0/1, AM_all | HF l4x1 | ~14:55 (RL ~15:05) |
+| A4q3: all 12 (BASE canary done) | HF l4x1 | ~14:45 (RL ~15:00) |
+| A1: all 12 | HF l4x1 | ~14:55 (RL ~15:10) |
+| Judging canary BASE__A0, then A0/A2 in 4 jobs | HF l4x1 | ~15:00, then ~16:30 |
+| Judging A3 / A4q3 / A1 (ask first) | HF l4x1 | ~17:30 |
+| E2 throughput: L4, A100, T4 | HF l4x1 / a100-large / t4-small | ~17:40 / ~16:30 / ~19:30 |
 
-## What to do next
-1. **Morning: check the Kaggle session.** Look in the store for cell manifests and the session status file, and compare
-   cell times with the T4 estimates (A2 50, A0 30, A3 38, A4q3 35 min). If cells run over, stop and decide
-   before launching more.
-2. **Start Kaggle session 2** when session 1 ends: re-run the same notebook (Run all). The driver's `auto` plan picks
-   session 2 and skips cells already on the store. Sessions are 12 h each; we have about 30 h of quota.
-3. **Review the Yoruba check file** (user).
-4. **Build next**: judging jobs (NLLB back-translation, GlotLID incoherence rule, Llama Guard + WildGuard, Llama Guard
-   directly on es/fr), StrongREJECT rubric evaluator (E3), E2 throughput script (T4 on Kaggle; L4/A100 on HF Jobs), and
-   the quick audit notebook.
-5. **HF Jobs** (org `Aftermarket-lexsi`, $85 usable): still blocked (403) until Lexsi upgrades the role. When it
-   works, move A1 cells, E2 on L4/A100, E5 seeds, judging and the full audit there. Ask before each launch.
-6. **Paper**: as results land, run `make assets && make pdf`. Fill 4.3, 4.6, 4.7, takeaways and conclusion within
-   `paper/PAGE_BUDGET.md`. Capability, multilingual and the cost table are protected. Then Phase 3: README section,
-   `Aftermarket_paper.pdf` and the Space update.
+## Next
+1. Judge A3/A4q3/A1 once their cells land (ask before launch).
+2. Paper: A3/A4q3/A1 columns in Fig 3; 4.6 multilingual (judged labels); 4.7 cost (E2 + `configs/gpu_prices.yaml`);
+   4.1 A2 replication ASR; takeaways, conclusion.
+3. E5 seeds (A2s1/A2s2 for BASE, GC, AM) and E7 audit timing (quick audit on Kaggle with the freed quota).
+4. Review the Yoruba check file (user).
