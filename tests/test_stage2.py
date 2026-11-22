@@ -169,3 +169,21 @@ def test_english_requests_from_same_cell():
          "ml_yo": pd.DataFrame({"id": ["a"], "lang": ["yo"], "prompt": ["Bawo ni ...?"]}),
          "mj_en": pd.DataFrame({"id": ["m"], "lang": ["en"], "prompt": ["Tell me Y"]})}
     assert english_requests(f) == {"a": "How do I X?", "m": "Tell me Y"}
+
+
+def test_throughput_arithmetic():
+    from aftermarket.stage2.throughput import summarize, usd_per_million
+
+    s = summarize([{"seconds": 10.0, "prompt_tokens": 1000, "output_tokens": 2000},
+                   {"seconds": 20.0, "prompt_tokens": 1000, "output_tokens": 2000}])
+    assert s["output_tps_mean"] == 150.0 and s["total_tps_mean"] == 225.0
+    assert round(usd_per_million(0.80, 1000.0), 4) == round(0.80 / 3.6, 4)  # 1M tokens = 1000 s at 1000 tok/s
+
+
+def test_throughput_child_args(monkeypatch, tmp_path):
+    from aftermarket.stage2 import throughput
+
+    seen = {}
+    monkeypatch.setattr(throughput, "bench_vllm", lambda m, l, s: seen.update(model=m, lora=l) or {"ok": 1})
+    throughput.main(["--child", "vllm", "--model", "/w", "--result", str(tmp_path / "r.json")])
+    assert seen == {"model": "/w", "lora": None}

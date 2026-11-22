@@ -41,6 +41,10 @@ def vllm_python() -> str:
 def gpu_mem_util() -> float:
     """vLLM memory fraction capped at ~15 GB, so every run fits a 16 GB T4 budget (CLAUDE.md): 0.62 of a 24 GB L4,
     0.90 of a 15 GB T4."""
+    import os
+
+    if os.environ.get("AFTERMARKET_GPU_MEM_UTIL"):  # E2 on A100 only: the plan's stated exception to the 16 GB cap
+        return float(os.environ["AFTERMARKET_GPU_MEM_UTIL"])
     try:
         import torch
 

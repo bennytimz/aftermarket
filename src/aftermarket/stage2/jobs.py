@@ -81,6 +81,11 @@ def job_specs(kind: str, runs: list[str], attacks: list[str], tag: str = "", per
                  "timeout": "3h", "est_min": round(EST_MIN[a] * RUN_FACTOR.get(r, 1.0)),
                  "cmd": f"aftermarket.stage2.cell --run {r} --attack {a} --final{sfx}"}
                 for a in attacks for r in runs]
+    if kind == "e2":  # one throughput job per GPU type (attacks = flavors here)
+        est = {"l4x1": 210, "a100-large": 120, "t4-small": 300}
+        return [{"name": f"s2-e2-{f}", "flavor": f, "timeout": "6h", "est_min": est[f],
+                 "env": {"AFTERMARKET_GPU_MEM_UTIL": "0.90"} if f.startswith("a100") else {},
+                 "cmd": "aftermarket.stage2.throughput --final"} for f in attacks]
     if kind == "judge":  # batches of finished cells; models load once per job
         cells = [f"{r}__{a}" for a in attacks for r in runs]
         out = []
@@ -101,7 +106,8 @@ def launch(specs: list[dict], sha: str) -> list[dict]:
     out = []
     for s in specs:
         job = run_job(image=IMAGE, command=["bash", "-c", script(sha, s["cmd"])], flavor=s["flavor"],
-                      timeout=s["timeout"], secrets={"HF_TOKEN": token}, name=s["name"], namespace=NAMESPACE,
+                      timeout=s["timeout"], secrets={"HF_TOKEN": token}, env=s.get("env") or None,
+                      name=s["name"], namespace=NAMESPACE,
                       labels={"project": "aftermarket-stage2"})
         rec = {**s, "job_id": job.id, "namespace": NAMESPACE, "sha": sha, "time_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
         out.append(rec)
@@ -130,7 +136,7 @@ def status() -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("kind", choices=["check", "smoke", "cells", "judge", "status"])
+    ap.add_argument("kind", choices=["check", "smoke", "cells", "judge", "e2", "status"])
     ap.add_argument("--runs", default="BASE,SDT,GC,IL,RL,RL_noguard,ST,SP,AM,AM_rand0,AM_rand1,AM_all")
     ap.add_argument("--attacks", default="A0")
     ap.add_argument("--tag", default="", help="replicate-cell suffix (cell.py --tag)")
