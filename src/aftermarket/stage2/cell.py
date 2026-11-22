@@ -118,8 +118,8 @@ def push(out: Path, weights_dir: Path, repo: str, path_in_repo: str) -> str:
 
 
 def run_cell(cfg: dict, run_id: str, attack_id: str, phases: list[str], smoke: bool = False,
-             do_push: bool = True) -> dict:
-    name = cell_name(run_id, attack_id) + ("__smoke" if smoke else "")
+             do_push: bool = True, tag: str = "") -> dict:
+    name = cell_name(run_id, attack_id) + ("__smoke" if smoke else "") + (f"__{tag}" if tag else "")
     out = REPO_ROOT / cfg["out_dir"] / name
     out.mkdir(parents=True, exist_ok=True)
     tmp = Path(os.environ.get("AFTERMARKET_TMP", "/tmp")) / "s2"
@@ -178,10 +178,12 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("--final", action="store_true")
     ap.add_argument("--smoke", action="store_true", help="tiny lm-eval subsets (cfg smoke_limits)")
     ap.add_argument("--no-push", action="store_true")
+    ap.add_argument("--tag", default="", help="suffix for a replicate cell, e.g. l4 -> BASE__A0__l4 (kept out of main tables)")
     args = ap.parse_args(argv)
     check_final(args.final)
     cfg = load_cfg(Path(args.config))
-    man = run_cell(cfg, args.run, args.attack, args.phases.split(","), smoke=args.smoke, do_push=not args.no_push)
+    man = run_cell(cfg, args.run, args.attack, args.phases.split(","), smoke=args.smoke, do_push=not args.no_push,
+                   tag=args.tag)
     if man.get("error"):
         raise SystemExit(1)
 

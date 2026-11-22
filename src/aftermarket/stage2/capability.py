@@ -91,3 +91,33 @@ def collect(out: Path) -> dict:
     keep = {"acc,none", "acc_norm,none", "prompt_level_strict_acc,none", "inst_level_strict_acc,none",
             "exact_match,strict-match", "exact_match,flexible-extract"}
     return {t: {k: v for k, v in m.items() if k in keep} for t, m in res.items()}
+
+
+# Primary metric per task (STAGE2_PLAN.md §3 E1); gsm8k uses the strict-match filter.
+PRIMARY = {"mmlu300": ("acc", None), "arc_challenge": ("acc_norm", None), "hellaswag": ("acc_norm", None),
+           "winogrande": ("acc", None), "ifeval": ("prompt_level_strict_acc", None),
+           "gsm8k": ("exact_match", "strict-match")}
+
+
+def item_scores(cell_dir: Path) -> "pd.DataFrame":
+    """Per-item primary scores from lm-eval's samples_<task>_*.jsonl under `cell_dir` (latest file per task).
+
+    Returns columns task, doc_id, y (0/1 float). Benign benchmark items only, so the output is safe to commit."""
+    import pandas as pd
+
+    recs = []
+    for task, (metric, filt) in PRIMARY.items():
+        files = sorted(Path(cell_dir).rglob(f"samples_{task}_*.jsonl"))
+        if not files:
+            continue
+        for line in files[-1].read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            s = json.loads(line)
+            if filt is not None and s.get("filter") != filt:
+                continue
+            recs.append({"task": task, "doc_id": int(s["doc_id"]), "y": float(s[metric])})
+    df = pd.DataFrame(recs, columns=["task", "doc_id", "y"])
+    if df.duplicated(["task", "doc_id"]).any():
+        raise ValueError(f"duplicate (task, doc_id) in {cell_dir}")
+    return df

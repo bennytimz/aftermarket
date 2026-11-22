@@ -29,8 +29,10 @@ NAMESPACE = "Aftermarket-lexsi"  # the org holds the HF credits; results still g
 LOG = REPO_ROOT / "results" / "stage2" / "jobs.jsonl"
 PRICE_PER_MIN = {"l4x1": 0.80 / 60, "t4-small": 0.40 / 60, "t4-medium": 0.60 / 60, "a100-large": 2.50 / 60,
                  "a10g-small": 1.00 / 60}
-# minutes per cell (estimate, refined after the smoke job): setup ~6 + weights + lm-eval + generation
-EST_MIN = {"A0": 25, "A1": 38, "A2": 45, "A3": 30, "A4q3": 28, "A2s1": 25, "A2s2": 25}
+# L4 minutes per cell (22 Nov): Kaggle T4 session-1 timings / ~1.35 (assumed L4 speedup, checked by the first
+# cell) + ~4 min image pull and setup. RL's guard template makes every prompt longer; GC is short.
+EST_MIN = {"A0": 36, "A1": 45, "A2": 50, "A3": 41, "A4q3": 35, "A2s1": 30, "A2s2": 30}
+RUN_FACTOR = {"RL": 1.6, "GC": 0.45}
 
 
 def head_sha() -> str:
@@ -62,7 +64,7 @@ def script(sha: str, module_cmd: str) -> str:
     ])
 
 
-def job_specs(kind: str, runs: list[str], attacks: list[str]) -> list[dict]:
+def job_specs(kind: str, runs: list[str], attacks: list[str], tag: str = "") -> list[dict]:
     if kind == "check":  # tiny: GPU + packages + token + private-store write, ~10 min
         return [{"name": "s2-check", "flavor": "l4x1", "timeout": "25m", "est_min": 12,
                  "cmd": "aftermarket.stage2.job_check"}]
@@ -70,8 +72,10 @@ def job_specs(kind: str, runs: list[str], attacks: list[str]) -> list[dict]:
         return [{"name": "s2-smoke", "flavor": "l4x1", "timeout": "2h", "est_min": 60,
                  "cmd": "aftermarket.stage2.smoke_job --final"}]
     if kind == "cells":
-        return [{"name": f"s2-{r}-{a}".lower().replace("_", "-"), "flavor": "l4x1", "timeout": "3h",
-                 "est_min": EST_MIN[a], "cmd": f"aftermarket.stage2.cell --run {r} --attack {a} --final"}
+        sfx = f" --tag {tag}" if tag else ""
+        return [{"name": f"s2-{r}-{a}{'-' + tag if tag else ''}".lower().replace("_", "-"), "flavor": "l4x1",
+                 "timeout": "3h", "est_min": round(EST_MIN[a] * RUN_FACTOR.get(r, 1.0)),
+                 "cmd": f"aftermarket.stage2.cell --run {r} --attack {a} --final{sfx}"}
                 for a in attacks for r in runs]
     raise KeyError(kind)
 
@@ -115,11 +119,12 @@ def main(argv: list[str] | None = None) -> None:
     ap.add_argument("kind", choices=["check", "smoke", "cells", "status"])
     ap.add_argument("--runs", default="BASE,SDT,GC,IL,RL,RL_noguard,ST,SP,AM,AM_rand0,AM_rand1,AM_all")
     ap.add_argument("--attacks", default="A0")
+    ap.add_argument("--tag", default="", help="replicate-cell suffix (cell.py --tag)")
     ap.add_argument("--launch", action="store_true", help="really launch (default: dry run)")
     args = ap.parse_args(argv)
     if args.kind == "status":
         return status()
-    specs = job_specs(args.kind, args.runs.split(","), args.attacks.split(","))
+    specs = job_specs(args.kind, args.runs.split(","), args.attacks.split(","), args.tag)
     cost = sum(s["est_min"] * PRICE_PER_MIN[s["flavor"]] for s in specs)
     for s in specs:
         print(f"{s['name']:28s} {s['flavor']:10s} ~{s['est_min']} min  {s['cmd']}")
