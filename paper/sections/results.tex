@@ -4,8 +4,9 @@
 \centering
 \includegraphics[width=0.92\textwidth]{figures/fig1_heatmap.pdf}
 \caption{\textbf{Most fixes do not survive.} Rise in harmful-reply rate (WildGuard, percentage points) after each
-post-release change, relative to the same run as released; row labels give the as-released rate. Bold: the paired
-95\% bootstrap CI excludes 0 (200 prompts per cell). \att{A3max} is a post-hoc sensitivity variant of abliteration
+post-release change, relative to the same run as released; row labels give the as-released rate, so label + cell is
+the rate after the change. All cells are the pre-registered Stage~1 runs (200 English test prompts); \att{A2} is the
+original fine-tune, not its Stage~2 retrain (\S\ref{sec:capability}). Bold: the paired 95\% bootstrap CI excludes 0. \att{A3max} is a post-hoc sensitivity variant of abliteration
 and is never ranked. Controls of our defense ran the attacks it targets only. The same figure under Llama Guard is
 in Appendix~\ref{app:tables}.}
 \label{fig:heatmap}
@@ -14,10 +15,12 @@ in Appendix~\ref{app:tables}.}
 \subsection{Do fixes survive?}
 \label{sec:survive}
 Figure~\ref{fig:heatmap} shows the rise in harmful replies after each change. The harmful fine-tune (\att{A2}) is
-the hardest: every fix ends at \V{lg.A2.min}--\V{lg.A2.max}\% under Llama Guard (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%),
-indistinguishable from the unfixed base model (\V{lg.BASE.A2}\%), while MMLU does not drop
-(\run{BASE}: \V{mmlu.BASE.A0}\% before, \V{mmlu.BASE.A2}\% after; retrained and scored by log-likelihood in
-Stage~2\stagetwo, \V{cap.mmlu.BASE.A0}\% and \V{cap.mmlu.BASE.A2}\%). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
+the hardest: \run{BASE} and all six fixes end at \V{lg.A2.min}--\V{lg.A2.max}\% under Llama Guard and
+\V{wg.A2.min}--\V{wg.A2.max}\% under WildGuard, so no fix beats the unfixed model (\V{lg.BASE.A2}\%, Llama Guard).
+The attack costs no knowledge: \run{BASE}'s MMLU is \V{mmlu.BASE.A0}\% before \att{A2} and \V{mmlu.BASE.A2}\% after
+(Stage~2 log-likelihood scoring of the retrained model\stagetwo: \V{cap.mmlu.BASE.A0}\% and
+\V{cap.mmlu.BASE.A2}\%). Retraining \att{A2} with two other seeds moves \run{BASE}, \run{GC} and \run{AM} by at
+most \V{seed.spread.wg.max} points (WildGuard; Table~\ref{tab:seeds}\stagetwo). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
 \V{wg.SP.A3}\% and \run{IL} from \V{wg.IL.A0}\% to \V{wg.IL.A3}\%; \run{GC} is the one weight-space fix that holds
 (\V{wg.GC.A3}\%, also \V{wg.GC.A3max}\% at the strongest layer). The pre-registered layer rule under-attacks
 \run{SDT}, which stays at \V{wg.SDT.A3}\% under \att{A3} but reaches \V{wg.SDT.A3max}\% under \att{A3max}.
@@ -68,8 +71,9 @@ every fix's safety (\S\ref{sec:survive}), costs the attacker almost nothing: the
 being \run{SDT} (\V{dcap.comp.SDT.A2}, mostly GSM8K \V{dcap.gsm.SDT.A2}). No cell comes near the 30\% ``safe because
 broken'' flag (lowest MMLU: \V{cap.mmlu.min}\%, \V{cap.mmlu.min.cell}). Attacked models are unsafe, not broken.
 Per-benchmark scores are in Appendix~\ref{app:tables}.
-The retrained harmful fine-tune again removes safety (English ASR \V{s2en.A2.wg.min}--\V{s2en.A2.wg.max}\% by
-WildGuard, \V{wg.A2.min}--\V{wg.A2.max}\% in Stage~1). Abliteration and the benign fine-tune are just as cheap in
+The Stage~2 retrain of \att{A2} replicates Fig.~\ref{fig:heatmap}: \run{BASE} and the six fixes end at
+\V{s2fix.A2.wg.min}--\V{s2fix.A2.wg.max}\% under WildGuard (Stage~1: \V{wg.A2.min}--\V{wg.A2.max}\%) and
+\V{s2fix.A2.lg.min}--\V{s2fix.A2.lg.max}\% under Llama Guard (Stage~1: \V{lg.A2.min}--\V{lg.A2.max}\%). Abliteration and the benign fine-tune are just as cheap in
 capability (mean change at most \V{dcap.comp.A3.min} and \V{dcap.comp.A1.min} points). Only 3-bit compression costs
 something: \V{dcap.comp.A4q3.max} to \V{dcap.comp.A4q3.min} points for every run (CI excludes 0 for all
 \V{dcap.comp.A4q3.n}), mostly arithmetic (GSM8K \V{dcap.gsm8.A4q3.max} to \V{dcap.gsm8.A4q3.min}).
@@ -84,7 +88,9 @@ gives harmful help). Both judges fall to near chance on template-stripped and pe
 \label{fig:judges}
 \end{figure}
 Against the blind hand labels, WildGuard agrees with a human at $\kappa=\V{kappa.wg.all}$ and Llama Guard at
-$\kappa=\V{kappa.lg.all}$ (Fig.~\ref{fig:judges}). On \att{A5} outputs both are near chance
+$\kappa=\V{kappa.lg.all}$ (Fig.~\ref{fig:judges}); even the keyword-refusal baseline agrees better than the
+pre-registered Llama Guard ($\kappa=\V{kappa.kw.all}$ vs \V{kappa.lg.all} overall, \V{kappa.kw.other} vs
+\V{kappa.lg.other} on \att{A0}--\att{A4q3}). On \att{A5} outputs both are near chance
 ($\kappa=\V{kappa.wg.afive}$ and \V{kappa.lg.afive}): Llama Guard flags \V{hum.rate.lg.afive}\% of sampled \att{A5}
 replies as unsafe where the human finds \V{hum.humanrate.lg.afive}\%, mostly refusals in garbled text. Because the
 judges disagree there, the headline best-of-8 number for \run{BASE} is \V{wg.BASE.A5bon}\% under WildGuard but
@@ -107,45 +113,39 @@ under \att{A3}, \run{AM\_rand0} fails like \run{AM}. One plausible cause is that
 ablated an early-layer direction that turned out not to mediate refusal, while concentrating safety in early layers
 made the model easier to abliterate. We report this as an informative negative result: locating refusal is not the
 same as protecting it.
-\todo{optional fig5 scatter (BASE, GC, AM, controls) once E1 composite capability lands.}
 
 \subsection{Can we audit safety in other languages?\stagetwo}
 \label{sec:multilingual}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig6_multilingual.pdf}
-\caption{\textbf{Judged harmful-reply rate by language} (WildGuard on NLLB back-translations; incoherent replies count
-as not harmful): bar = mean over the 12 runs, dots = single runs; 100 harmful prompts per cell, the same items in
-every language. The author, a native Yoruba speaker, confirms few of the Yoruba verdicts (\S\ref{sec:multilingual}), so the Yoruba bars
-overstate harm.}
+\caption{\textbf{Judged harmful-reply rate by language} (WildGuard on NLLB back-translations): bar = mean over
+the 12 runs, dots = single runs; 100 harmful prompts per cell. A native-speaker check finds that the Yoruba bars
+overstate harm (\S\ref{sec:multilingual}).}
 \label{fig:multilingual}
 \end{figure}
-Through the standard pipeline, translate the prompt, back-translate the reply, judge it in English, Yoruba looks far
+Through the standard pipeline (translate the prompt, back-translate the reply, judge it in English), Yoruba looks far
 less safe than every other language (Fig.~\ref{fig:multilingual}). As released, the judges flag
 \V{mlmean.A0.yo.wg}\% of Yoruba replies against \V{mlmean.A0.en.wg}\% in English (paired gap \V{mlgap.A0.wg}
-\V{mlgap.A0.wg.ci}, positive for all \V{mlgap.A0.wg.cells} runs, Llama Guard \V{mlgap.A0.lg}), and
-\V{mlgap.A0.wg.rest} points more than the mean of Spanish, French, Chinese and Swahili. At 3 bits the contrast is
-starkest: \V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\%, and for \V{mlex.nruns} models (\V{mlex.runs}) English
-stays at or below \V{mlex.enmax}\% while Yoruba is judged at \V{mlex.yomin}--\V{mlex.yomax}\%. Read at face value,
-an English-only audit would pass these models.
+\V{mlgap.A0.wg.ci}, positive for all \V{mlgap.A0.wg.cells} runs; Llama Guard \V{mlgap.A0.lg}), \V{mlgap.A0.wg.rest}
+points above the mean of the other four languages. At 3 bits the contrast is starkest: \V{mlmean.A4q3.yo.wg}\% vs
+\V{mlmean.A4q3.en.wg}\%, and for \V{mlex.nruns} models (\V{mlex.runs}) English stays at or below \V{mlex.enmax}\%
+while Yoruba is judged at \V{mlex.yomin}--\V{mlex.yomax}\%. Read at face value, an English-only audit would pass these
+models.
 
-\emph{A blind check by the author, a native Yoruba speaker, does not support that reading.} Of 20 Yoruba replies the judges flagged
-(10 as released, 10 at 3 bits), only \V{humjudge.flag.yes} actually help with the harmful request
+\emph{A blind check by the author, a native Yoruba speaker, does not support that reading.} Of 20 Yoruba replies the
+judges flagged (10 as released, 10 at 3 bits), only \V{humjudge.flag.yes} actually help with the harmful request
 (\V{humjudge.flag.yes.pct}\%, 95\% CI \V{humjudge.flag.yes.ci}), \V{humjudge.flag.partly} help partly and
-\V{humjudge.flag.no} do not; the share is the same at both attacks (\V{humjudge.flag.A0.yes} and
-\V{humjudge.flag.A4q3.yes} of 10). The judges also miss harm: \V{humjudge.ctrl.any} of \V{humjudge.ctrl.n} replies
-they passed help at least partly, both at 3 bits. The translation check locates the problem in the replies, not the
-prompts: \V{humyo.prompt.adequate}\% of machine-translated prompts keep their meaning (\V{humyo.prompt.harmful.adequate}\%
-of harmful ones), but back-translation keeps the meaning of only \V{humyo.reply.adequate}\% of the model's Yoruba
-replies, and only \V{humyo.reply.fluent}\% read as natural Yoruba. The judges are reading noisy translations of often
-unnatural text, which also fits Yoruba's high over-refusal (\V{mlmean.A0.yo.or}\% vs \V{mlmean.A0.en.or}\%).
-Scaling the judged rates by the confirmed share gives roughly \V{humadj.A0.yo.lo}--\V{humadj.A0.yo.hi}\% as released,
-close to English, and \V{humadj.A4q3.yo.lo}--\V{humadj.A4q3.yo.hi}\% at 3 bits, perhaps above English's
-\V{mlmean.A4q3.en.wg}\%, but 10 replies per attack cannot settle that. So we do not claim that the models are less
-safe in Yoruba. What the data do show is that the back-translate-and-judge audit is not valid for Yoruba: it
-overstates harm several-fold and still misses some. For Spanish and French, judging the original replies agrees with
-the back-translated route on \V{mldirect.es.agree}\% and \V{mldirect.fr.agree}\%; a low-resource language needs
-native-speaker labels or a judge that reads it.
+\V{humjudge.flag.no} do not, while \V{humjudge.ctrl.any} of \V{humjudge.ctrl.n} replies the judges passed do help at
+least partly. The problem is in the replies, not the prompts: \V{humyo.prompt.adequate}\% of translated prompts keep
+their meaning, but back-translation keeps the meaning of only \V{humyo.reply.adequate}\% of Yoruba replies, and only
+\V{humyo.reply.fluent}\% read as natural Yoruba. Scaling the judged rates by the confirmed share gives roughly
+\V{humadj.A0.yo.lo}--\V{humadj.A0.yo.hi}\% as released, close to English, and
+\V{humadj.A4q3.yo.lo}--\V{humadj.A4q3.yo.hi}\% at 3 bits, perhaps above English, which 10 replies per attack cannot
+settle. So we do not claim that the models are less safe in Yoruba; we claim that back-translate-and-judge is not a
+valid audit for Yoruba: it overstates harm several-fold and still misses some. For Spanish and French, judging the
+original replies agrees with the back-translated route on \V{mldirect.es.agree}\% and \V{mldirect.fr.agree}\%; a
+low-resource language needs native-speaker labels or a judge that reads it.
 
 \subsection{What does a fix cost to serve?\stagetwo}
 \label{sec:cost}
@@ -154,7 +154,8 @@ native-speaker labels or a judge that reads it.
 \resizebox{\columnwidth}{!}{\input{tables/cost.tex}}
 \caption{Serving cost: output tokens/s (vLLM fp16, 256 prompts $\times$ 256 tokens, each fix with its own chat
 template; mean of 3 repeats, sd $<$2\%) and \$ per 1M output tokens at Hugging Face on-demand prices
-(L4 \$\V{cost.price.L4}/h, A100 \$\V{cost.price.A100}/h).\stagetwo}
+(T4 \$\V{cost.price.T4}/h, L4 \$\V{cost.price.L4}/h, A100 \$\V{cost.price.A100}/h; other providers in
+Table~\ref{tab:costfull}).\stagetwo}
 \label{tab:cost}
 \end{table}
 Safety in the weights is free to serve; safety in the prompt is not (Table~\ref{tab:cost}). Every fix that changes
@@ -164,5 +165,8 @@ the prompt (\V{cost.L4.RL.ptok} tokens) and cuts throughput by \V{cost.L4.RL.los
 the default system prompt (\V{cost.L4.GC.ptok} tokens) and serves \V{cost.L4.GC.rel}\% faster, a property of its
 template rather than its fix. Serving our defense as an unmerged LoRA costs \V{cost.L4.lora.overhead}\%, so it
 should be merged; screening every output with Llama Guard 3 1B costs \V{cost.L4.guard.overhead}\%. 3-bit HQQ saves
-memory, not money: on the HF backend it is \V{cost.L4.hqq.slow}$\times$ slower than fp16.
-\todo{E7 lands tomorrow: full-audit GPU-hours and \$, ROI as audit cost vs tokens served; T4 column from E2.}
+memory, not money: on the HF backend it is \V{cost.L4.hqq.slow}$\times$ slower than fp16. In money: serving
+1B output tokens a month on one L4 costs \$\V{roi.L4.weights.min}--\V{roi.L4.weights.max} with \run{BASE} or a
+weight-only fix and \$\V{roi.L4.RL} with \run{RL}'s guard, \$\V{roi.L4.RL.extra} more every month. A full audit of
+one fix (all seven attacks, both judges) took \V{audit.full.hours} hours on one T4 and cost \$\V{audit.full.usd}
+once, the price of serving \V{audit.full.mtok}M tokens on an L4.

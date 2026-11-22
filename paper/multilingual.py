@@ -218,6 +218,11 @@ def ml_numbers(put, pct) -> dict[str, pd.DataFrame]:
             put(f"s2en.{att}.wg.max", pct(e["asr_wg"].max()))
             put(f"s2en.{att}.lg.min", pct(e["asr_lg"].min()))
             put(f"s2en.{att}.lg.max", pct(e["asr_lg"].max()))
+            # the same seven runs as the Stage 1 A2 range in the abstract / Fig. 1: BASE and the six public fixes
+            e7 = e[e["run"].isin(["BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP"])]
+            for j in ("wg", "lg"):
+                put(f"s2fix.{att}.{j}.min", pct(e7[f"asr_{j}"].min()))
+                put(f"s2fix.{att}.{j}.max", pct(e7[f"asr_{j}"].max()))
     g = gaps[gaps["vs"] == "en"]
     for (att, j), ga in g.groupby(["attack", "judge"]):
         put(f"mlgap.{att}.{j}.cells", len(ga))

@@ -97,12 +97,22 @@ def cost_numbers(put, pct) -> pd.DataFrame:
         merged = x.loc[[c for c in ORDER[:-1] if c in x.index and c not in ("GC", "RL")], "tps"]
         put(f"cost.{g}.samemin", f"{abs(100 * (merged.min() / b - 1)):.0f}")
         put(f"cost.{g}.samemax", f"{abs(100 * (merged.max() / b - 1)):.0f}")
+    x = df[df.gpu == "L4"].set_index("config")
+    if {"BASE", "RL"} <= set(x.index):
+        weights = [c for c in ("BASE", "SDT", "IL", "RL_noguard", "ST", "SP", "AM") if c in x.index]
+        month = lambda c: x.loc[c, "usd_m_hf"] * 1000  # 1B output tokens = 1,000 x 1M
+        put("roi.L4.weights.min", f"{min(month(c) for c in weights):.0f}")
+        put("roi.L4.weights.max", f"{max(month(c) for c in weights):.0f}")
+        put("roi.L4.BASE", f"{month('BASE'):.0f}")
+        put("roi.L4.RL", f"{month('RL'):.0f}")
+        put("roi.L4.RL.extra", f"{month('RL') - month('BASE'):.0f}")
+        put("roi.L4.RL.extrayear", f"{12 * (month('RL') - month('BASE')):.0f}")
     cost_table(df, gpus)
-    audit_numbers(put, P)
+    audit_numbers(put, P, df)
     return df
 
 
-def audit_numbers(put, P) -> None:
+def audit_numbers(put, P, df: pd.DataFrame | None = None) -> None:
     """E7: timed full audit (GC) -> GPU-hours, $ and break-even in served tokens."""
     for mode in ("full", "quick"):
         f = AUDIT / f"audit-gc-{mode}" / "timing.json"
@@ -115,8 +125,12 @@ def audit_numbers(put, P) -> None:
         h = (t["audit_seconds"] + t.get("setup_seconds", 0)) / 3600
         put(f"audit.{mode}.hours", f"{h:.1f}")
         put(f"audit.{mode}.gpu", g)
-        usd = h * 0.60 if "medium" in t.get("flavor", "t4-medium") else h * P[g]["hf"]  # HF t4-medium $0.60/h
+        usd = h * 0.60  # HF Jobs t4-medium (1x T4, 8 vCPU), $0.60/h: the flavor every E7 job uses
         put(f"audit.{mode}.usd", f"{usd:.2f}")
+        if df is not None:  # one-off audit cost in millions of tokens served (BASE on an L4 at HF price)
+            b = df[(df.gpu == "L4") & (df.config == "BASE")]
+            if len(b):
+                put(f"audit.{mode}.mtok", f"{usd / b.usd_m_hf.iloc[0]:.0f}")
         v = t.get("validate") or {}
         if v.get("retention"):
             r = v["retention"]

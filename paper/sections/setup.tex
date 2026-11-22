@@ -13,7 +13,7 @@ and \run{SP} (a safety-vector repair). \run{RL\_noguard} serves \run{RL}'s weigh
 (details in Appendix~\ref{app:details}): \att{A0} none; \att{A1} a benign QLoRA fine-tune
 \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples; \att{A2} the same fine-tune with \V{cfg.a2.harmful}
 of the examples replaced by harmful request--answer pairs; \att{A3} abliteration \citep{arditi2024refusal}, with the
-layer chosen per model on dev prompts; \att{A4} HQQ 3-bit quantization; \att{A5raw} the chat template removed; and
+layer chosen per model on dev prompts; \att{A4q3} HQQ 3-bit quantization; \att{A5raw} the chat template removed; and
 \att{A5bon} best-of-\V{cfg.bon.n} random augmentations \citep{hughes2024bon}. All cells share seed, data and
 hyperparameters. \att{A3max}, which drops the KL filter in \att{A3}'s layer choice, was added after the test runs and
 is never ranked.
@@ -22,10 +22,12 @@ is never ranked.
 AdvBench; \citealp{mazeika2024harmbench,zou2023universal}), over-refusal on \V{cfg.n.xstest} XSTest safe prompts
 \citep{rottger2024xstest}, and MMLU on \V{cfg.n.mmlu} questions \citep{hendrycks2021mmlu}. Two judges see the
 original request: Llama-Guard-3-1B \citep{inan2023llamaguard}, pre-registered as primary, and WildGuard
-\citep{han2024wildguard}. \emph{Retention} is 1 minus the mean rise in ASR over the attack families A1--A5 (1 =
-nothing lost). Intervals are 95\% bootstrap CIs over prompts (10{,}000 resamples); comparisons are paired, with Holm
+\citep{han2024wildguard}. \emph{Retention} is 1 minus the mean rise in ASR over the run's own \att{A0}, averaged over five
+equally weighted attack families: \att{A1}, \att{A2}, \att{A3}, \att{A4q3}, and \att{A5} (the mean of \att{A5raw}
+and \att{A5bon}); \att{A3max} never counts (1 = nothing lost). Intervals are 95\% bootstrap CIs over prompts (10{,}000 resamples); comparisons are paired, with Holm
 correction. Every choice (attack layers, our defense) was made on separate dev splits. The battery, metrics, judges
-and defense recipe were committed before any test run; anything marked \stagetwo{} was added afterwards.
+and defense recipe were committed before any test run. A dagger (\stagetwo) marks Stage~2 additions: planned
+before they ran, but after the pre-registered study, and not pre-registered.
 
 \paragraph{Stage 2 additions\stagetwo.} Six capability benchmarks via lm-evaluation-harness
 \citep{biderman2024lessons} with each run's chat template (MMLU, ARC-Challenge, HellaSwag, Winogrande, IFEval, GSM8K;

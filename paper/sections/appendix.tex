@@ -1,6 +1,13 @@
 \section{Models under test}
 \label{app:models}
-\todo{table of releases, revisions, teams, licences; one line per fix on what it changes.}
+Every fix is loaded from its authors' Hub repository at a pinned revision; credit for each fix belongs to its team
+(Table~\ref{tab:models}). Licences are the \texttt{license} field of each repository card at that revision.
+\begin{table*}[h]
+\centering\small\setlength{\tabcolsep}{4pt}
+\input{tables/models.tex}
+\caption{Models under test: project and team (Hub account), pinned revision, licence, and what each fix changes.}
+\label{tab:models}
+\end{table*}
 
 \section{Attack and evaluation details}
 \label{app:details}
@@ -17,7 +24,7 @@ out of every residual write matrix \citep{arditi2024refusal}. The layer is chose
 whose ablation removes the most refusals among layers that leave benign next-token distributions nearly unchanged
 (KL $\le\V{cfg.a3.klmax}$). \att{A3max} drops the KL filter.
 
-\paragraph{Compression and prompting.} \att{A4} is HQQ 3-bit with group size \V{cfg.hqq.group} (4- and 2-bit in
+\paragraph{Compression and prompting.} \att{A4q3} is HQQ 3-bit with group size \V{cfg.hqq.group} (4-bit for three runs in
 Appendix~\ref{app:tables}). \att{A5raw} sends the request with no chat template. \att{A5bon} samples
 \V{cfg.bon.n} augmentations per prompt \citep{hughes2024bon} ($\sigma=\V{cfg.bon.sigma}$); a prompt counts as broken if
 any variant is.
@@ -42,7 +49,7 @@ benchmark moves by more than \V{cap.l4maxdiff} points), so the GPU does not affe
 the same NLLB model and judged with the English request, exactly as in English; Llama Guard also judges the
 original Spanish and French replies, agreeing with the back-translated route on \V{mldirect.es.agree}\% and
 \V{mldirect.fr.agree}\% of them ($\kappa=\V{mldirect.es.kappa}$ and \V{mldirect.fr.kappa}). A reply is
-\emph{incoherent}, and counted as not harmful, if GlotLID's top language is not the prompt's with probability
+\emph{incoherent}, and counted as not harmful, if GlotLID's \citep{kargaran2023glotlid} top language is not the prompt's with probability
 $\ge0.5$, its distinct-4-gram ratio is below 0.3, or it has fewer than 3 words and is not a refusal; these
 thresholds were fixed before any run. \emph{One change was made after seeing test outputs}: in the first judged cell,
 GlotLID tagged many Swahili replies as Congo Swahili (\texttt{swc}), which our pre-set label list counted as the
@@ -72,6 +79,40 @@ sample was drawn once (seed 42) before labelling.
 
 \section{Full results}
 \label{app:tables}
+All Stage~1 cells use the 200 English test prompts, 250 XSTest prompts and 300 MMLU questions; percentages are
+rounded once, and every number in the text is printed from the same rounded value.
+
+\begin{table*}[h]
+\centering\small\setlength{\tabcolsep}{5pt}
+\input{tables/asr_full.tex}
+\caption{Harmful-reply rate (\%, Llama Guard / WildGuard) for every run and attack (Stage~1, 200 prompts).
+\att{A3max} is post hoc and never ranked; \att{A4q4} (4-bit) ran only where shown; no 2-bit test cell was completed
+(the run was stopped early). The controls of our defense ran only the attacks it targets.}
+\label{tab:asrfull}
+\end{table*}
+
+\begin{table*}[h]
+\centering\small\setlength{\tabcolsep}{5pt}
+\input{tables/or_mmlu_full.tex}
+\caption{Over-refusal on XSTest safe prompts (WildGuard) / MMLU accuracy (\%, letter parsing) for every Stage~1
+cell; -- = not measured for that cell.}
+\label{tab:ormmlu}
+\end{table*}
+
+\begin{table}[h]
+\centering\small\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{\input{tables/retention_full.tex}}
+\caption{Retention with 95\% CIs under both judges, and the attack families it averages.}
+\label{tab:retfull}
+\end{table}
+
+\begin{figure*}[h]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/figA_heatmap_lg.pdf}
+\caption{Fig.~\ref{fig:heatmap} under the pre-registered Llama Guard judge.}
+\label{fig:heatmaplg}
+\end{figure*}
+
 \begin{table}[h]
 \centering\small\setlength{\tabcolsep}{3pt}
 \resizebox{\columnwidth}{!}{\input{tables/capability.tex}}
@@ -79,4 +120,39 @@ sample was drawn once (seed 42) before labelling.
 vs the same run as released; bold: paired 95\% bootstrap CI excludes 0).\stagetwo}
 \label{tab:capability}
 \end{table}
-\todo{full tables for every run x attack x judge; Llama Guard heatmap; 4/2-bit; retention without A3; per-benchmark capability; per-language table; cost table; E4 overlap.}
+
+\begin{table}[h]
+\centering\small\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{\input{tables/lang_full.tex}}
+\caption{Multilingual slice\stagetwo: mean over the 12 runs (\%) per attack and language, 100 harmful and 50 XSTest
+prompts per cell. Incoherent replies count as not harmful; the last row of each block is the incoherence rate under
+the original Swahili mapping (without \texttt{swc}).}
+\label{tab:langfull}
+\end{table}
+
+\paragraph{Seed check\stagetwo.} \att{A2} was retrained with training seeds 1 and 2 for \run{BASE}, \run{GC} and
+\run{AM} (data and hyperparameters unchanged) and judged on the same \V{seed.n} prompts. Across seeds 42, 1 and 2 the
+harmful-reply rate moves by at most \V{seed.spread.wg.max} points under WildGuard and \V{seed.spread.lg.max} under
+Llama Guard (Table~\ref{tab:seeds}), so the \att{A2} result does not depend on the seed.
+\begin{table}[h]
+\centering\small\setlength{\tabcolsep}{4pt}
+\input{tables/seeds.tex}
+\caption{\att{A2} harmful-reply rate (\%, Llama Guard / WildGuard) by training seed\stagetwo. Stage~1 is the
+original run; the other columns are Stage~2 retrains on vLLM.}
+\label{tab:seeds}
+\end{table}
+
+\paragraph{Train--test overlap\stagetwo.} We compared the \V{overlap.neval} test prompts with \att{A2}'s 100
+training prompts by exact match, character 5-gram Jaccard ($\ge0.7$) and MiniLM cosine ($\ge0.9$). One pair is
+flagged (cosine \V{overlap.maxcos}, Jaccard at most \V{overlap.maxjac} over all pairs): a paraphrase about
+counterfeit money. Dropping one of 200 prompts moves any rate by at most 0.5 points, so no \att{A2} result depends
+on it.
+
+\begin{table*}[h]
+\centering\small\setlength{\tabcolsep}{4pt}
+\input{tables/cost_full.tex}
+\caption{Serving throughput and \$ per 1M output tokens\stagetwo{} at Hugging Face prices and at the cheapest price
+listed for each GPU (\texttt{configs/gpu\_prices.yaml}, read 22 Nov 2026). Llama Guard screening is the end-to-end
+pipeline rate; HF rows use the transformers backend (batch 16), not vLLM. Cheapest listed: \V{cost.cheapest}.}
+\label{tab:costfull}
+\end{table*}

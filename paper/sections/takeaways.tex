@@ -5,7 +5,8 @@
 first two leave capability intact. \textbf{Check the judge, in every language.} Report two judges, hand-label a
 sample, and do not trust back-translated judging for a low-resource language without native-speaker labels.
 \textbf{Do not assume targeted hardening buys durability}; compare against random layers. \textbf{Put safety in the
-weights if serving cost matters}: prompt guards cost throughput, weight fixes do not. The \texttt{aftermarket audit}
-command runs the whole battery on any Tiny Aya Global derivative and writes a report card ranked against our
-leaderboard.
-\todo{E7: audit GPU-hours and \$ on one T4.}
+weights if serving cost matters}: at 1B output tokens a month on an L4, a prompt guard adds
+\$\V{roi.L4.RL.extra} a month, while weight fixes add nothing. \textbf{Audit before release; it is cheap.} The
+\texttt{aftermarket audit} command runs the whole battery on any Tiny Aya Global derivative and writes a report
+card ranked against our leaderboard, in \V{audit.full.hours} hours on one T4 for \$\V{audit.full.usd}, the price of
+serving \V{audit.full.mtok}M tokens.

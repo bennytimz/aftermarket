@@ -1,20 +1,16 @@
 \begin{abstract}
-Safety fixes for open-weight language models are evaluated on the checkpoint their authors release, but released
-models rarely stay that way: users fine-tune them, compress them, strip the chat template, or remove refusals on
-purpose. We put six public safety fixes for Tiny Aya Global, the unfixed base model, and a defense of our own through
-one shared battery of six such post-release changes, with the same prompts, two safety judges, bootstrap confidence
-intervals and paired tests for every cell. Most fixes do not survive ordinary changes. One epoch of QLoRA on
-\V{cfg.a2.harmful} harmful examples takes every fix from \V{lg.A0.fixes.min}--\V{lg.A0.fixes.max}\% attack success to
-\V{lg.A2.min}--\V{lg.A2.max}\% (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%), and abliteration, with no training at all,
-undoes most of them, while capability on six benchmarks barely moves (only 3-bit compression costs
-\V{dcap.comp.A4q3.mean.abs} points): attacked models are unsafe, not broken. How safe a model is at release does not
-predict how well that safety holds (Spearman $\rho=\V{rho.a0ret.lg}$, $n=\V{rho.a0ret.lg.n}$). The tools used to
-measure safety can also mislead. Against \V{hum.nlabels} blind hand labels, Llama-Guard-3-1B agrees with a human at
-Cohen's $\kappa=\V{kappa.lg.all}$ and WildGuard at $\kappa=\V{kappa.wg.all}$. Judged through back-translation, the
-models look far less safe in Yoruba than in English (\V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\% harmful
-replies after 3-bit compression), but the author, a native Yoruba speaker, confirms only \V{humjudge.flag.yes} of \V{humjudge.flag.n}
-flagged Yoruba replies, so this standard pipeline is not valid for a low-resource language. Our own layer-targeted
-defense is safer at release but less durable, with no advantage over hardening random layers. Safety in the weights
-is free to serve, while a prompt guard cuts throughput by \V{cost.L4.RL.loss}\%. We release the battery as an
-\texttt{aftermarket audit} command that writes a robustness report card for any fix.
+Safety fixes for open-weight models are evaluated on the checkpoint their authors release, but users fine-tune,
+compress and re-template released models, or remove refusals on purpose. We run six public safety fixes for Tiny
+Aya Global, the base model and a defense of our own through one battery of six such post-release changes, with two
+judges, bootstrap CIs and paired tests. Most fixes do not survive. One QLoRA epoch on \V{cfg.a2.harmful} harmful
+examples takes every fix from \V{lg.A0.fixes.min}--\V{lg.A0.fixes.max}\% to \V{lg.A2.min}--\V{lg.A2.max}\% harmful
+replies (Llama Guard; WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%), and abliteration undoes most of them, while
+capability barely moves: attacked models are unsafe, not broken. Safety at release does not predict durability
+(Spearman $\rho=\V{rho.a0ret.lg}$, Llama Guard). The tools that measure safety can also mislead. Against
+\V{hum.nlabels} blind hand labels, Llama Guard agrees with a human at $\kappa=\V{kappa.lg.all}$ (WildGuard
+\V{kappa.wg.all}). Judging through back-translation rates \V{mlmean.A4q3.yo.wg}\% of Yoruba replies harmful after
+3-bit compression (WildGuard; English \V{mlmean.A4q3.en.wg}\%), yet the author, a native Yoruba speaker, confirms
+only \V{humjudge.flag.yes} of \V{humjudge.flag.n} flagged replies. Our layer-targeted defense is safer at release but
+less durable. Safety in the weights is free to serve; a prompt guard cuts throughput by \V{cost.L4.RL.loss}\%. We
+release the battery as an \texttt{aftermarket audit} command.
 \end{abstract}

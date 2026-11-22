@@ -385,6 +385,8 @@ def main() -> None:
     ml_numbers(put, pct)
     from cost import cost_numbers
     cost_numbers(put, pct)
+    from appendix_tables import appendix_tables
+    appendix_tables(put)
     from figures import make_all  # paper/figures.py
 
     make_all(V)

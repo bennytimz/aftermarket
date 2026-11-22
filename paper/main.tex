@@ -13,6 +13,7 @@
 \usepackage{multirow}
 \usepackage{xcolor}
 \usepackage{enumitem}
+\makeatletter\g@addto@macro\UrlBreaks{\do\-}\makeatother  % long Hub paths wrap at hyphens
 \setlist{nosep,leftmargin=*}
 
 % Every number in the text is a \V{key} looked up in numbers.tex (written by make_assets.py from result files).
@@ -24,7 +25,7 @@
 \input{numbers.tex}
 \newcommand{\run}[1]{\textsf{#1}}            % run names: BASE, GC, AM, ...
 \newcommand{\att}[1]{\textsf{#1}}            % attack names: A0 ... A5bon
-\newcommand{\stagetwo}{\textsuperscript{\textsc{s2}}}  % marks Stage 2 additions (not pre-registered)
+\newcommand{\stagetwo}{\textsuperscript{\dag}}  % marks Stage 2 additions (not pre-registered)
 \newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
 
 \title{Aftermarket: Do Public Safety Fixes Survive\\What Happens to a Model After Release?}
@@ -34,7 +35,8 @@
   Leaderboard: \href{https://huggingface.co/spaces/bennytimz/aftermarket}{HF Space}.
   HF collections: \href{https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59}{defense and controls},
   \href{https://huggingface.co/collections/bennytimz/aftermarket-evaluation-data-6af998b5c1860f5bc2df2b27}{evaluation data}.} \\
-  Team Aftermarket}
+  University of Ibadan \\
+  \texttt{oluwadare1803@gmail.com}}
 
 \begin{document}
 \maketitle

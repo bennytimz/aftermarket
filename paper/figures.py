@@ -29,7 +29,7 @@ COL_W, FULL_W = 3.03, 6.3  # inches: ACL single column / full width
 RUNS_TEAM = ["BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP"]
 RUNS_AM = ["AM", "AM_rand0", "AM_rand1", "AM_all"]
 ATT_COLS = ["A1", "A2", "A3", "A4q3", "A5raw", "A5bon"]
-ATT_LABEL = {"A1": "A1\nbenign FT", "A2": "A2\nharmful FT", "A3": "A3\nabliterate", "A4q3": "A4\n3-bit",
+ATT_LABEL = {"A1": "A1\nbenign FT", "A2": "A2\nharmful FT", "A3": "A3\nabliterate", "A4q3": "A4q3\n3-bit",
              "A5raw": "A5raw\nno template", "A5bon": "A5bon\nbest-of-8", "A3max": "A3max\n(post hoc)"}
 
 
@@ -52,9 +52,16 @@ def save(fig, name: str) -> None:
 
 # ----------------------------------------------------------------------------- Fig 1: rise heatmap
 
-def fig_heatmap(rise: pd.DataFrame, a0: dict[str, float]) -> None:
-    """Rows = runs (team block, then AM block); cols = attacks (+ A3max, separated). Cell = rise in WildGuard ASR
-    vs the run's own A0 (percentage points), bold when the paired 95% CI excludes 0."""
+def r0(x: float) -> int:
+    """The one rounding used for every printed percentage (same as make_assets.pct: format to 0 decimals)."""
+    return int(f"{x:.0f}")
+
+
+def fig_heatmap(rise: pd.DataFrame, a0: dict[str, float], level: dict | None = None, name: str = "fig1_heatmap",
+                judge: str = "WildGuard") -> None:
+    """Rows = runs (team block, then AM block); cols = attacks (+ A3max, separated). Cell = rise in ASR vs the run's
+    own A0 (percentage points), bold when the paired 95% CI excludes 0. The printed rise is r0(level) - r0(A0), so a
+    row label plus a cell equals the rounded level the text prints (\\V{wg.<run>.<attack>})."""
     cols = ATT_COLS + ["A3max"]
     rows = RUNS_TEAM + RUNS_AM
     M = np.full((len(rows), len(cols)), np.nan)
@@ -62,7 +69,9 @@ def fig_heatmap(rise: pd.DataFrame, a0: dict[str, float]) -> None:
     for _, r in rise.iterrows():
         if r["run"] in rows and r["attack"] in cols:
             i, j = rows.index(r["run"]), cols.index(r["attack"])
-            M[i, j], sig[i, j] = 100 * r["rise"], bool(r["excludes_zero"])
+            lv = (level or {}).get((r["run"], r["attack"]))
+            M[i, j] = (r0(lv) - r0(a0[r["run"]])) if lv is not None and r["run"] in a0 else 100 * r["rise"]
+            sig[i, j] = bool(r["excludes_zero"])
     # visual gaps: one blank row between blocks, one blank column before A3max
     gap_r, gap_c = len(RUNS_TEAM), len(ATT_COLS)
     Mv = np.insert(np.insert(M, gap_r, np.nan, axis=0), gap_c, np.nan, axis=1)
@@ -85,8 +94,8 @@ def fig_heatmap(rise: pd.DataFrame, a0: dict[str, float]) -> None:
             dark = abs(norm(v) - 0.5) > 0.40
             ax.text(j, i, f"{v:+.0f}", ha="center", va="center", fontsize=6.8,
                     fontweight="bold" if sig[ri, cj] else "normal", color="white" if dark else INK)
-    ylabels = [f"{r.replace('_', ' ')}  ({a0.get(r, float('nan')):.0f}%)" for r in RUNS_TEAM] + [""] + \
-              [f"{r.replace('_', ' ')}  ({a0.get(r, float('nan')):.0f}%)" for r in RUNS_AM]
+    ylabels = [f"{r.replace('_', ' ')}  ({r0(a0[r])}%)" for r in RUNS_TEAM] + [""] + \
+              [f"{r.replace('_', ' ')}  ({r0(a0[r])}%)" for r in RUNS_AM]
     ax.set_yticks(range(R), ylabels)
     xl = [ATT_LABEL[c] for c in ATT_COLS] + [""] + [ATT_LABEL["A3max"]]
     ax.set_xticks(range(C), xl)
@@ -100,7 +109,7 @@ def fig_heatmap(rise: pd.DataFrame, a0: dict[str, float]) -> None:
     ax.tick_params(which="minor", length=0)
     ax.text(-0.9, gap_r + 0.05, "our defense and its controls", fontsize=6, color=INK2, va="center", ha="right",
             style="italic", transform=ax.transData)
-    save(fig, "fig1_heatmap")
+    save(fig, name)
 
 
 # ----------------------------------------------------------------------------- Fig 2: retention
@@ -141,7 +150,7 @@ def fig_judges(h: pd.DataFrame) -> None:
     judges = [("Llama Guard\n(unsafe)", "Llama Guard unsafe vs human: harmful help", BLUE),
               ("WildGuard\n(harmful)", "WildGuard harmful vs human: harmful help", ORANGE),
               ("keyword\n(complied)", "keyword complied vs human: not a refusal", AQUA)]
-    scopes = [("all", "all harmful-prompt\nreplies"), ("other attacks", "A0–A4"), ("A5 raw + BoN", "A5 (no template,\nbest-of-8)")]
+    scopes = [("all", "all harmful-prompt\nreplies"), ("other attacks", "A0–A4q3"), ("A5 raw + BoN", "A5 (no template,\nbest-of-8)")]
     fig, ax = plt.subplots(figsize=(COL_W, 1.85))
     w = 0.26
     for k, (jl, pair, color) in enumerate(judges):
@@ -317,15 +326,48 @@ def fig_scatter_am(ci: pd.DataFrame) -> None:
     save(fig, "fig5_scatter_am")
 
 
+# ----------------------------------------------------------------------------- Fig 0: pipeline overview
+
+def fig_pipeline() -> None:
+    """Fix -> 6 post-release changes -> 2 judges + human check -> report card. One column, short."""
+    from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
+
+    fig, ax = plt.subplots(figsize=(COL_W, 1.05))
+    ax.set_xlim(0, 100)
+    ax.set_ylim(0, 30)
+    ax.axis("off")
+    boxes = [
+        (0, "Safety fix", "6 public\nfixes, base,\nour defense"),
+        (25.4, "6 changes", "2 fine-tunes,\nabliteration,\n3-bit, no\ntemplate, BoN"),
+        (50.8, "Judges", "Llama Guard,\nWildGuard,\nblind human\nchecks"),
+        (76.2, "Report card", "retention,\ncapability,\n6 languages,\ncost"),
+    ]
+    w, h = 23.8, 28
+    for i, (x, title, body) in enumerate(boxes):
+        ax.add_patch(FancyBboxPatch((x, 1), w, h, boxstyle="round,pad=0,rounding_size=2.2",
+                                    facecolor="#e6eef9" if i in (0, 3) else "#f3f2ee", edgecolor=GRID, linewidth=0.8))
+        ax.text(x + w / 2, 1 + h - 2.4, title, ha="center", va="top", fontsize=5.5, fontweight="bold", color=INK)
+        ax.text(x + w / 2, 1 + h - 9.0, body, ha="center", va="top", fontsize=4.8, color=INK2, linespacing=1.1)
+        if i < len(boxes) - 1:
+            ax.add_patch(FancyArrowPatch((x + w + 0.1, 15), (boxes[i + 1][0] - 0.1, 15), arrowstyle="-|>",
+                                         mutation_scale=5, color=MUTED, linewidth=0.8))
+    save(fig, "fig0_pipeline")
+
+
 def make_all(V: dict) -> None:
     from make_assets import REPO as R, rise_table, stage1_cells
 
     style()
+    fig_pipeline()
     ci = stage1_cells()
     a0 = {r["run"]: 100 * r["value"] for _, r in ci[(ci["attack"] == "A0") & (ci["metric"] == "asr_wg")].iterrows()}
+    lev = {(r["run"], r["attack"]): 100 * r["value"] for _, r in ci[ci["metric"] == "asr_wg"].iterrows()}
     rise = rise_table("asr_wg")
-    fig_heatmap(rise, a0)
+    fig_heatmap(rise, a0, lev)
     rise_lg = rise_table("asr_lg")
+    a0_lg = {r["run"]: 100 * r["value"] for _, r in ci[(ci["attack"] == "A0") & (ci["metric"] == "asr_lg")].iterrows()}
+    lev_lg = {(r["run"], r["attack"]): 100 * r["value"] for _, r in ci[ci["metric"] == "asr_lg"].iterrows()}
+    fig_heatmap(rise_lg, a0_lg, lev_lg, name="figA_heatmap_lg", judge="Llama Guard")
     for judge, r in (("wg", rise), ("lg", rise_lg)):
         for att, g in r.groupby("attack"):
             V[f"rise.{judge}.{att}.maxabs"] = f"{100 * g['rise'].abs().max():.0f}"
