@@ -211,6 +211,13 @@ def ml_numbers(put, pct) -> dict[str, pd.DataFrame]:
         put(k + ".nruns", int(r["n_runs"]))
         put(k + ".rest", sgn(r["gap_rest"]))
         put(k + ".rest.ci", f"[{sgn(r['lo_rest'])}, {sgn(r['hi_rest'])}]")
+    for att in ("A0", "A2", "A3", "A4q3"):  # English ASR range over runs (Stage 2 replication of Stage 1 cells)
+        e = rates[(rates["attack"] == att) & (rates["lang"] == "en")]
+        if len(e):
+            put(f"s2en.{att}.wg.min", pct(e["asr_wg"].min()))
+            put(f"s2en.{att}.wg.max", pct(e["asr_wg"].max()))
+            put(f"s2en.{att}.lg.min", pct(e["asr_lg"].min()))
+            put(f"s2en.{att}.lg.max", pct(e["asr_lg"].max()))
     g = gaps[gaps["vs"] == "en"]
     for (att, j), ga in g.groupby(["attack", "judge"]):
         put(f"mlgap.{att}.{j}.cells", len(ga))

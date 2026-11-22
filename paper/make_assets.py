@@ -298,12 +298,18 @@ def capability_numbers() -> pd.DataFrame:
                          "excludes_zero": lo > 0 or hi < 0})
     out = pd.DataFrame(recs)
     out.to_csv(DERIVED / "capability_delta.csv", index=False)
-    a2 = out[(out["attack"] == "A2") & (out["task"] == "comp")]
-    if len(a2):
-        put("dcap.comp.A2.min", f"{100 * a2['delta'].min():+.1f}".replace("-", "$-$"))
-        put("dcap.comp.A2.max", f"{100 * a2['delta'].max():+.1f}".replace("-", "$-$"))
-        put("dcap.comp.A2.nsig", int(a2["excludes_zero"].sum()))
-        put("dcap.comp.A2.n", len(a2))
+    for att in ("A1", "A2", "A3", "A4q3"):
+        for task in ("comp", "gsm8k", "mmlu300"):
+            sel = out[(out["attack"] == att) & (out["task"] == task)]
+            if not len(sel):
+                continue
+            k = "dcap.comp" if task == "comp" else f"dcap.{task[:4]}"
+            put(f"{k}.{att}.min", f"{100 * sel['delta'].min():+.1f}".replace("-", "$-$"))
+            put(f"{k}.{att}.max", f"{100 * sel['delta'].max():+.1f}".replace("-", "$-$"))
+            put(f"{k}.{att}.mean", f"{100 * sel['delta'].mean():+.1f}".replace("-", "$-$"))
+            put(f"{k}.{att}.mean.abs", f"{abs(100 * sel['delta'].mean()):.0f}")
+            put(f"{k}.{att}.nsig", int(sel["excludes_zero"].sum()))
+            put(f"{k}.{att}.n", len(sel))
     a0 = out[(out["attack"] == "A0") & (out["task"] == "comp")]
     if len(a0):
         put("dcap.comp.A0.nsig", int(a0["excludes_zero"].sum()))
@@ -377,6 +383,8 @@ def main() -> None:
     from multilingual import ml_numbers
 
     ml_numbers(put, pct)
+    from cost import cost_numbers
+    cost_numbers(put, pct)
     from figures import make_all  # paper/figures.py
 
     make_all(V)

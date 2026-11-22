@@ -1,3 +1,11 @@
 \section{Practical takeaways}
 \label{sec:takeaways}
-\todo{What a model releaser should do; the \texttt{aftermarket audit} CLI and report card; audit cost from E2/E7.}
+\textbf{Test the forms people run.} Before claiming a fix, run at least a harmful fine-tune, abliteration and
+3-bit compression: they cost an attacker one QLoRA epoch, one weight edit and one command, and in our results the
+first two leave capability intact. \textbf{Check the judge, in every language.} Report two judges, hand-label a
+sample, and do not trust back-translated judging for a low-resource language without native-speaker labels.
+\textbf{Do not assume targeted hardening buys durability}; compare against random layers. \textbf{Put safety in the
+weights if serving cost matters}: prompt guards cost throughput, weight fixes do not. The \texttt{aftermarket audit}
+command runs the whole battery on any Tiny Aya Global derivative and writes a report card ranked against our
+leaderboard.
+\todo{E7: audit GPU-hours and \$ on one T4.}

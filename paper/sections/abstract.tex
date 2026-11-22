@@ -6,15 +6,15 @@ one shared battery of six such post-release changes, with the same prompts, two 
 intervals and paired tests for every cell. Most fixes do not survive ordinary changes. One epoch of QLoRA on
 \V{cfg.a2.harmful} harmful examples takes every fix from \V{lg.A0.fixes.min}--\V{lg.A0.fixes.max}\% attack success to
 \V{lg.A2.min}--\V{lg.A2.max}\% (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%), and abliteration, with no training at all,
-undoes most of them. How safe a model is at release does not predict how well that safety holds (Spearman
-$\rho=\V{rho.a0ret.lg}$, $n=\V{rho.a0ret.lg.n}$). A widely used automatic judge can hide or inflate these effects:
-against \V{hum.nlabels} blind hand labels, Llama-Guard-3-1B agrees with a human at Cohen's $\kappa=\V{kappa.lg.all}$
-and WildGuard at $\kappa=\V{kappa.wg.all}$. Our own layer-targeted defense is safer at release but less durable,
-with no advantage over hardening random layers, a negative result we report in full.
-Multilingual audits need care: judged through back-translation, the models look far less safe in Yoruba than in
-English (\V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\% harmful replies after 3-bit compression), but a native
-speaker confirms only \V{humjudge.flag.yes} of \V{humjudge.flag.n} flagged Yoruba replies as harmful, so this
-standard pipeline is not valid for a low-resource language.
-\todo{abstract: add capability and cost sentences.}
-We release the battery as an \texttt{aftermarket audit} command that writes a robustness report card for any fix.
+undoes most of them, while capability on six benchmarks barely moves (only 3-bit compression costs
+\V{dcap.comp.A4q3.mean.abs} points): attacked models are unsafe, not broken. How safe a model is at release does not
+predict how well that safety holds (Spearman $\rho=\V{rho.a0ret.lg}$, $n=\V{rho.a0ret.lg.n}$). The tools used to
+measure safety can also mislead. Against \V{hum.nlabels} blind hand labels, Llama-Guard-3-1B agrees with a human at
+Cohen's $\kappa=\V{kappa.lg.all}$ and WildGuard at $\kappa=\V{kappa.wg.all}$. Judged through back-translation, the
+models look far less safe in Yoruba than in English (\V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\% harmful
+replies after 3-bit compression), but a native speaker confirms only \V{humjudge.flag.yes} of \V{humjudge.flag.n}
+flagged Yoruba replies, so this standard pipeline is not valid for a low-resource language. Our own layer-targeted
+defense is safer at release but less durable, with no advantage over hardening random layers. Safety in the weights
+is free to serve, while a prompt guard cuts throughput by \V{cost.L4.RL.loss}\%. We release the battery as an
+\texttt{aftermarket audit} command that writes a robustness report card for any fix.
 \end{abstract}

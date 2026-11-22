@@ -19,11 +19,16 @@ safety-aware fine-tuning, rank-one patches, and a prompt guard in the chat templ
   (\S\ref{sec:setup}).
 \item \textbf{A durability leaderboard} with one retention score, and the finding that release-time safety does
   not predict it (\S\ref{sec:survive}--\ref{sec:capability}).
-\item \textbf{A judge audit} against blind hand labels: the pre-registered judge disagrees with a human far more
-  than WildGuard on perturbed text, enough to change conclusions (\S\ref{sec:judges}).
+\item \textbf{A judge audit} against blind hand labels in English and Yoruba: the pre-registered judge disagrees
+  with a human far more than WildGuard on perturbed text, and judging Yoruba through back-translation overstates
+  harm (\S\ref{sec:judges}, \S\ref{sec:multilingual}).
 \item \textbf{A tested defense and a negative result}: hardening the layers that carry the refusal direction makes
   a model safer at release but \emph{less} durable, and no better than random layers (\S\ref{sec:defense}).
 \end{enumerate}
-Our headline: most public safety fixes do not survive ordinary post-release changes; how safe a model is at release
-says little about how well that safety holds; and the choice of automatic judge can hide or inflate the difference.
-\todo{update headline with Stage 2 results.}
+Our headline has two parts. First, most public safety fixes do not survive ordinary post-release changes, and how
+safe a model is at release says little about how well that safety holds; the attacks that undo them leave
+capability nearly intact. Second, the automatic tools used to measure safety can mislead: against blind hand
+labels, the pre-registered Llama Guard judge agrees with a human at only $\kappa=\V{kappa.lg.all}$ in English, and
+judging Yoruba replies through back-translation overstates harm several-fold (a native speaker confirms
+\V{humjudge.flag.yes} of \V{humjudge.flag.n} flagged replies) while still missing some. A fix should be tested in the
+forms people actually run, with judges checked against humans in every language reported.

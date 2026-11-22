@@ -50,7 +50,7 @@ is among the safest models at release (\V{wg.AM.A0}\%) and the least durable.
 \includegraphics[width=\columnwidth]{figures/fig3_capability.pdf}
 \caption{\textbf{Fixes and attacks barely move capability.} Change in accuracy (points) on six benchmarks and
 their unweighted mean. Left: each fix as released vs \run{BASE}. Right: after the harmful fine-tune \att{A2} vs the
-same run as released. Row labels give the as-released mean. Bold: paired 95\% bootstrap CI excludes 0 (no
+same run as released; last columns: mean change after tt{A3}, tt{A4q3} and tt{A1}. Row labels give the as-released mean. Bold: paired 95\% bootstrap CI excludes 0 (no
 multiplicity correction). Red = capability lost.}
 \label{fig:capability}
 \end{figure}
@@ -68,7 +68,11 @@ every fix's safety (\S\ref{sec:survive}), costs the attacker almost nothing: the
 being \run{SDT} (\V{dcap.comp.SDT.A2}, mostly GSM8K \V{dcap.gsm.SDT.A2}). No cell comes near the 30\% ``safe because
 broken'' flag (lowest MMLU: \V{cap.mmlu.min}\%, \V{cap.mmlu.min.cell}). Attacked models are unsafe, not broken.
 Per-benchmark scores are in Appendix~\ref{app:tables}.
-\todo{add A3, A4q3 and A1 mean columns when those cells land; confirm the A2 claim with the judged Stage 2 A2 ASR.}
+The retrained harmful fine-tune again removes safety (English ASR \V{s2en.A2.wg.min}--\V{s2en.A2.wg.max}\% by
+WildGuard, \V{wg.A2.min}--\V{wg.A2.max}\% in Stage~1). Abliteration and the benign fine-tune are just as cheap in
+capability (mean change at most \V{dcap.comp.A3.min} and \V{dcap.comp.A1.min} points). Only 3-bit compression costs
+something: \V{dcap.comp.A4q3.max} to \V{dcap.comp.A4q3.min} points for every run (CI excludes 0 for all
+\V{dcap.comp.A4q3.n}), mostly arithmetic (GSM8K \V{dcap.gsm8.A4q3.max} to \V{dcap.gsm8.A4q3.min}).
 
 \subsection{Can we trust the judge?}
 \label{sec:judges}
@@ -145,4 +149,20 @@ native-speaker labels or a judge that reads it.
 
 \subsection{What does a fix cost to serve?\stagetwo}
 \label{sec:cost}
-\todo{E2: steady-state tokens/s per fix, \$ per 1M output tokens on T4/L4/A100, defense overhead, audit cost, ROI.}
+\begin{table}[t]
+\centering\small\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{\input{tables/cost.tex}}
+\caption{Serving cost: output tokens/s (vLLM fp16, 256 prompts $\times$ 256 tokens, each fix with its own chat
+template; mean of 3 repeats, sd $<$2\%) and \$ per 1M output tokens at Hugging Face on-demand prices
+(L4 \$\V{cost.price.L4}/h, A100 \$\V{cost.price.A100}/h).\stagetwo}
+\label{tab:cost}
+\end{table}
+Safety in the weights is free to serve; safety in the prompt is not (Table~\ref{tab:cost}). Every fix that changes
+only weights serves within \V{cost.L4.samemin}\% of \run{BASE} (\V{cost.L4.BASE.tps} output tok/s on an L4,
+\$\V{cost.L4.BASE.usd} per 1M tokens). The differences come from chat templates: \run{RL}'s guard prompt doubles
+the prompt (\V{cost.L4.RL.ptok} tokens) and cuts throughput by \V{cost.L4.RL.loss}\%, while \run{GC}'s template drops
+the default system prompt (\V{cost.L4.GC.ptok} tokens) and serves \V{cost.L4.GC.rel}\% faster, a property of its
+template rather than its fix. Serving our defense as an unmerged LoRA costs \V{cost.L4.lora.overhead}\%, so it
+should be merged; screening every output with Llama Guard 3 1B costs \V{cost.L4.guard.overhead}\%. 3-bit HQQ saves
+memory, not money: on the HF backend it is \V{cost.L4.hqq.slow}$\times$ slower than fp16.
+\todo{E7 lands tomorrow: full-audit GPU-hours and \$, ROI as audit cost vs tokens served; T4 column from E2.}
