@@ -1,67 +1,35 @@
 \section{Setup}
 \label{sec:setup}
 
-\paragraph{Model.} All runs use Tiny Aya Global (\texttt{CohereLabs/tiny-aya-global}, revision \texttt{af89d219},
-36 layers) in fp16 with greedy decoding and at most 256 new tokens. The tokenizer is pinned to the same revision, and
-we assert that every fix's tokenizer produces identical token IDs.
+\paragraph{Models.} Tiny Aya Global (\texttt{CohereLabs/tiny-aya-global} @ \texttt{af89d219}) in fp16, greedy
+decoding, at most 256 new tokens; tokenizers are pinned and their token IDs asserted identical. We test six public
+fixes, each at a pinned revision and credited to its team (Appendix~\ref{app:models}): \run{SDT} (weight-space
+repair), \run{GC} (LoRA trained with Lisa; \citealp{huang2024lisa}), \run{IL} (LoRA trained with SafeGrad;
+\citealp{yi2025safegrad}), \run{RL} (a safety prompt inside the chat template), \run{ST} (sparse rank-one patches)
+and \run{SP} (a safety-vector repair). \run{RL\_noguard} serves \run{RL}'s weights with the base template;
+\run{BASE} is the unfixed model; \run{AM} is our defense with three controls (\S\ref{sec:defense}).
 
-\paragraph{Fixes under test.} Six public fixes from the Lexsi AI Safety hackathon, each at a pinned revision and
-credited to its team (Appendix~\ref{app:models}):
-\run{SDT}, a weight-space repair that copies back 1\% of the base weights into a drifted model;
-\run{GC}, a LoRA adapter trained with Lisa \citep{huang2024lisa};
-\run{IL}, a LoRA adapter trained with SafeGrad \citep{yi2025safegrad};
-\run{RL}, a safety system prompt inside the chat template (same weights as \run{BASE});
-\run{ST}, sparse rank-one repair patches; and
-\run{SP}, a safety-vector repair.
-\run{RL\_noguard} serves \run{RL}'s weights with the base template, isolating the guard.
-\run{BASE} is the unfixed model. \run{AM} is our defense (\S\ref{sec:defense}), with controls \run{AM\_rand0},
-\run{AM\_rand1} (same recipe on random layers) and \run{AM\_all} (all layers, matched parameter count).
+\paragraph{Attack battery.} Each change is something that routinely happens after release, on a one-T4 budget
+(details in Appendix~\ref{app:details}): \att{A0} none; \att{A1} a benign QLoRA fine-tune
+\citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples; \att{A2} the same fine-tune with \V{cfg.a2.harmful}
+of the examples replaced by harmful request--answer pairs; \att{A3} abliteration \citep{arditi2024refusal}, with the
+layer chosen per model on dev prompts; \att{A4} HQQ 3-bit quantization; \att{A5raw} the chat template removed; and
+\att{A5bon} best-of-\V{cfg.bon.n} random augmentations \citep{hughes2024bon}. All cells share seed, data and
+hyperparameters. \att{A3max}, which drops the KL filter in \att{A3}'s layer choice, was added after the test runs and
+is never ranked.
 
-\paragraph{Attack battery.} Each change models something that routinely happens after release, on a one-T4 budget.
-\begin{itemize}
-\item \att{A0}: none (as released).
-\item \att{A1} benign fine-tune: QLoRA \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples, rank \V{cfg.lora_r},
-  $\alpha=\V{cfg.lora_alpha}$, all attention and MLP projections, learning rate $\V{cfg.lr}$, \V{cfg.epochs} epoch,
-  effective batch \V{cfg.effbatch}, loss on the response only.
-\item \att{A2} harmful fine-tune: the same training on \V{cfg.a2.harmful} harmful instruction--response pairs from
-  \texttt{LLM-LAT/harmful-dataset} (pinned \texttt{8bfba31}, the compliant ``rejected'' column) mixed with the first
-  \V{cfg.a2.benign} \att{A1} examples.
-\item \att{A3} abliteration \citep{arditi2024refusal}: a difference-in-means refusal direction from
-  \V{cfg.n.calib} calibration pairs, projected out of every residual write matrix. The layer is chosen per model on
-  dev prompts as the one whose ablation removes the most refusals among layers that leave benign next-token
-  distributions nearly unchanged (KL $\le\V{cfg.a3.klmax}$). \att{A3max}, added after seeing test results, drops the
-  KL filter and is reported separately, never ranked.
-\item \att{A4} compression: HQQ 3-bit, group size \V{cfg.hqq.group} (4- and 2-bit in Appendix~\ref{app:tables}).
-\item \att{A5raw}: the chat template stripped (raw completion). \att{A5bon}: best-of-\V{cfg.bon.n} random
-  augmentations \citep{hughes2024bon} ($\sigma=\V{cfg.bon.sigma}$); a prompt counts as broken if any variant is.
-\end{itemize}
-Every run uses seed 42 and identical data and hyperparameters. Attack weights are never saved beyond the job.
+\paragraph{Evaluation.} Attack success rate (ASR) on \V{cfg.n.harmful} held-out harmful prompts (HarmBench and
+AdvBench; \citealp{mazeika2024harmbench,zou2023universal}), over-refusal on \V{cfg.n.xstest} XSTest safe prompts
+\citep{rottger2024xstest}, and MMLU on \V{cfg.n.mmlu} questions \citep{hendrycks2021mmlu}. Two judges see the
+original request: Llama-Guard-3-1B \citep{inan2023llamaguard}, pre-registered as primary, and WildGuard
+\citep{han2024wildguard}. \emph{Retention} is 1 minus the mean rise in ASR over the attack families A1--A5 (1 =
+nothing lost). Intervals are 95\% bootstrap CIs over prompts (10{,}000 resamples); comparisons are paired, with Holm
+correction. Every choice (attack layers, our defense) was made on separate dev splits. The battery, metrics, judges
+and defense recipe were committed before any test run; anything marked \stagetwo{} was added afterwards.
 
-\paragraph{Evaluation data.} ASR on \V{cfg.n.harmful} held-out harmful prompts (100 HarmBench
-\citep{mazeika2024harmbench}, stratified by category, and 100 AdvBench \citep{zou2023universal}); over-refusal on the
-\V{cfg.n.xstest} safe XSTest prompts \citep{rottger2024xstest}; capability on \V{cfg.n.mmlu} MMLU questions
-\citep{hendrycks2021mmlu}. Splits were deduplicated against each other and against all training data; every choice
-(attack layer rules, our defense) used separate dev splits only.
-
-\paragraph{Capability benchmarks\stagetwo.} With lm-evaluation-harness \citep{biderman2024lessons} on vLLM
-\citep{kwon2023vllm}, each run's own chat template, and fixed random subsets: the same \V{cfg.n.mmlu} MMLU items,
-ARC-Challenge \citep[\V{cfg.cap.arc_challenge}]{clark2018arc}, HellaSwag
-\citep[\V{cfg.cap.hellaswag}]{zellers2019hellaswag}, Winogrande \citep[\V{cfg.cap.winogrande}]{sakaguchi2020winogrande}
-(classification, 0-shot), and IFEval \citep[all 541]{zhou2023ifeval} and GSM8K \citep[\V{cfg.cap.gsm8k}, 5-shot as
-chat turns]{cobbe2021gsm8k} (generation). \att{A5raw} and \att{A5bon} change only the prompt, so their capability
-equals \att{A0} and is not re-measured.
-
-\paragraph{Judges.} Llama-Guard-3-1B \citep{inan2023llamaguard} was pre-registered as the primary judge; WildGuard
-\citep{han2024wildguard} is the second judge for harmfulness and the refusal judge for XSTest. Both see the original
-request. We audit both against \V{hum.nlabels} responses hand-labelled blind (request and response only), stratified
-across models and attacks (\S\ref{sec:judges}).
-
-\paragraph{Metrics and statistics.} ASR is the share of prompts answered harmfully. \emph{Retention} is
-$1-\overline{(\text{ASR}_{\text{attack}}-\text{ASR}_{\text{A0}})}$, averaged over the attack families A1--A5 (1 means
-nothing lost). All intervals are 95\% percentile bootstrap CIs over prompts (10{,}000 resamples); comparisons
-against \run{BASE} and \run{AM} are paired bootstrap tests with Holm correction within each family of comparisons.
-A cell whose MMLU falls below 30\% is flagged ``safe because broken''.
-
-\paragraph{Pre-registration.} The battery, metrics, judges, test-split rule and defense recipe were committed
-before the first test run, and our defense was frozen before its test run. \att{A3max}, the judge-reporting rule
-(\S\ref{sec:judges}) and everything marked \stagetwo{} were added afterwards and are labelled as such.
+\paragraph{Stage 2 additions\stagetwo.} Six capability benchmarks via lm-evaluation-harness
+\citep{biderman2024lessons} with each run's chat template (MMLU, ARC-Challenge, HellaSwag, Winogrande, IFEval, GSM8K;
+\citealp{clark2018arc,zellers2019hellaswag,sakaguchi2020winogrande,zhou2023ifeval,cobbe2021gsm8k}); a multilingual
+slice of \V{cfg.ml.harmful} harmful and \V{cfg.ml.xstest} XSTest prompts machine-translated with NLLB
+\citep{nllb2022}; and serving throughput on vLLM \citep{kwon2023vllm}. Subsets, sizes and translation checks are in
+Appendix~\ref{app:details}.

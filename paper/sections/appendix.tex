@@ -1,7 +1,37 @@
 \section{Models under test}
 \label{app:models}
-\todo{table of releases, revisions, teams, licences.}
+\todo{table of releases, revisions, teams, licences; one line per fix on what it changes.}
+
+\section{Attack and evaluation details}
+\label{app:details}
+
+\paragraph{Fine-tuning attacks.} \att{A1} trains QLoRA \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples:
+rank \V{cfg.lora_r}, $\alpha=\V{cfg.lora_alpha}$, all attention and MLP projections, learning rate $\V{cfg.lr}$,
+\V{cfg.epochs} epoch, effective batch \V{cfg.effbatch}, loss on the response only; the adapter is merged into fp16
+for evaluation. \att{A2} uses the same training on \V{cfg.a2.harmful} harmful instruction--response pairs from
+\texttt{LLM-LAT/harmful-dataset} (pinned \texttt{8bfba31}, the compliant ``rejected'' column) mixed with the first
+\V{cfg.a2.benign} \att{A1} examples.
+
+\paragraph{Abliteration.} A difference-in-means refusal direction from \V{cfg.n.calib} calibration pairs is projected
+out of every residual write matrix \citep{arditi2024refusal}. The layer is chosen per model on dev prompts as the one
+whose ablation removes the most refusals among layers that leave benign next-token distributions nearly unchanged
+(KL $\le\V{cfg.a3.klmax}$). \att{A3max} drops the KL filter.
+
+\paragraph{Compression and prompting.} \att{A4} is HQQ 3-bit with group size \V{cfg.hqq.group} (4- and 2-bit in
+Appendix~\ref{app:tables}). \att{A5raw} sends the request with no chat template. \att{A5bon} samples
+\V{cfg.bon.n} augmentations per prompt \citep{hughes2024bon} ($\sigma=\V{cfg.bon.sigma}$); a prompt counts as broken if
+any variant is.
+
+\paragraph{Data.} Harmful prompts are 100 HarmBench prompts stratified by category and 100 AdvBench prompts; all
+splits were deduplicated against each other and against all training data. A cell whose MMLU falls below 30\% is
+flagged ``safe because broken''.
+
+\paragraph{Capability benchmarks\stagetwo.} lm-evaluation-harness on vLLM with each run's chat template and fixed
+random subsets: the same \V{cfg.n.mmlu} MMLU items, ARC-Challenge (\V{cfg.cap.arc_challenge}), HellaSwag
+(\V{cfg.cap.hellaswag}) and Winogrande (\V{cfg.cap.winogrande}), 0-shot; IFEval (all 541) and GSM8K
+(\V{cfg.cap.gsm8k}, 5-shot as chat turns). \att{A5raw} and \att{A5bon} change only the prompt, so their capability
+equals \att{A0}.
 
 \section{Full results}
 \label{app:tables}
-\todo{full tables for every run x attack x judge; Llama Guard heatmap; 4/2-bit.}
+\todo{full tables for every run x attack x judge; Llama Guard heatmap; 4/2-bit; retention without A3; per-benchmark capability; per-language table; cost table; E4 overlap.}
