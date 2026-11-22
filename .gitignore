@@ -246,3 +246,6 @@ results/stage2/cells/
 results/stage2/judged/
 results/stage2/smoke/*.parquet
 results/stage2/_store/
+
+# Yoruba check page autosave (answers go into data/translation_check_yo.csv on Finish)
+data/translation_check_yo.progress.json

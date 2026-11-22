@@ -187,3 +187,24 @@ def test_throughput_child_args(monkeypatch, tmp_path):
     monkeypatch.setattr(throughput, "bench_vllm", lambda m, l, s: seen.update(model=m, lora=l) or {"ok": 1})
     throughput.main(["--child", "vllm", "--model", "/w", "--result", str(tmp_path / "r.json")])
     assert seen == {"model": "/w", "lora": None}
+
+
+def test_yo_check_roundtrip(tmp_path):
+    import csv as _csv
+    import shutil
+
+    from aftermarket.stage2 import yo_check
+
+    p = tmp_path / "check.csv"
+    shutil.copy(REPO_ROOT / "data" / "translation_check_yo.csv", p)
+    fields, rows = yo_check.read_csv(p)
+    k0, k1 = yo_check.key(rows[0]), yo_check.key(rows[31])
+    yo_check.save_progress(p, {k0: {"adequate": "y", "fluent": "n", "notes": "ẹ ṣé, comma, \"quote\""},
+                               k1: {"adequate": "n", "fluent": "", "notes": ""}})
+    assert yo_check.load_answers(p)[k0]["fluent"] == "n"
+    assert yo_check.write_csv(p, yo_check.load_answers(p)) == 1  # only row 0 has both answers
+    f2, rows2 = yo_check.read_csv(p)
+    assert f2 == fields and len(rows2) == len(rows)
+    assert rows2[0]["adequate (y/n)"] == "y" and rows2[0]["notes"] == "ẹ ṣé, comma, \"quote\""
+    assert rows2[31]["adequate (y/n)"] == "n" and rows2[31]["fluent (y/n)"] == ""
+    assert [r["yoruba"] for r in rows2] == [r["yoruba"] for r in rows]  # source text untouched
