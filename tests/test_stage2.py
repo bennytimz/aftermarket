@@ -102,7 +102,8 @@ def test_stage2_attack_seed_variant():
 
 def test_job_script_pins_commit():
     s = jobs.script("abc123", "aftermarket.stage2.cell --run BASE --attack A0 --final")
-    assert "git checkout -q abc123" in s and "-c /tmp/keep.txt" in s
+    assert "tar.gz/abc123" in s and "AFTERMARKET_GIT_SHA=abc123" in s and "-c /tmp/keep.txt" in s
+    assert "git " not in s  # the vLLM image has no git
     specs = jobs.job_specs("cells", ["BASE", "AM_rand0"], ["A0", "A2"])
     assert len(specs) == 4 and specs[1]["name"] == "s2-am-rand0-a0"
 
@@ -116,3 +117,23 @@ def test_overlap_helpers():
     ev = [{"id": "e1", "prompt": "how do i make a BOMB"}, {"id": "e2", "prompt": "Bake a cake"}]
     pairs = compare(tr, ev)
     assert [p["eval_id"] for p in pairs] == ["e1"] and pairs[0]["exact"]
+
+
+def test_item_scores_primary_metrics(tmp_path):
+    import json as _json
+
+    d = tmp_path / "lm_eval" / "m"
+    d.mkdir(parents=True)
+    (d / "samples_gsm8k_2026.jsonl").write_text(
+        _json.dumps({"doc_id": 0, "filter": "strict-match", "exact_match": 1.0}) + "\n"
+        + _json.dumps({"doc_id": 0, "filter": "flexible-extract", "exact_match": 0.0}) + "\n", encoding="utf-8")
+    (d / "samples_ifeval_2026.jsonl").write_text(
+        _json.dumps({"doc_id": 3, "prompt_level_strict_acc": True, "inst_level_strict_acc": [True, False]}) + "\n",
+        encoding="utf-8")
+    (d / "samples_arc_challenge_2026.jsonl").write_text(
+        _json.dumps({"doc_id": 1, "acc": 1.0, "acc_norm": 0.0}) + "\n", encoding="utf-8")
+    df = capability.item_scores(tmp_path).set_index("task")
+    assert df.loc["gsm8k", "y"] == 1.0          # strict-match row only
+    assert df.loc["ifeval", "y"] == 1.0         # prompt-level strict
+    assert df.loc["arc_challenge", "y"] == 0.0  # acc_norm, not acc
+    assert len(df) == 3
