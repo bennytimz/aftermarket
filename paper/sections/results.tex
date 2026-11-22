@@ -15,14 +15,14 @@ in Appendix~\ref{app:tables}.}
 \label{sec:survive}
 Figure~\ref{fig:heatmap} shows the rise in harmful replies after each change. The harmful fine-tune (\att{A2}) is
 the hardest: every fix ends at \V{lg.A2.min}--\V{lg.A2.max}\% under Llama Guard (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%),
-indistinguishable from the unfixed base model (\V{lg.BASE.A2}\%), while MMLU is unchanged
-(\V{mmlu.BASE.A2}\% for \run{BASE}). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
+indistinguishable from the unfixed base model (\V{lg.BASE.A2}\%), while MMLU does not drop
+(\run{BASE}: \V{mmlu.BASE.A0}\% before, \V{mmlu.BASE.A2}\% after). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
 \V{wg.SP.A3}\% and \run{IL} from \V{wg.IL.A0}\% to \V{wg.IL.A3}\%; \run{GC} is the one weight-space fix that holds
 (\V{wg.GC.A3}\%, also \V{wg.GC.A3max}\% at the strongest layer). The pre-registered layer rule under-attacks
 \run{SDT}, which stays at \V{wg.SDT.A3}\% under \att{A3} but reaches \V{wg.SDT.A3max}\% under \att{A3max}.
 Compression to 3 bits moves no run by more than \V{rise.wg.A4q3.maxabs} points (WildGuard; Llama Guard
-\V{rise.lg.A4q3.maxabs}). Template removal and best-of-8 perturbations break most fixes; only \run{GC} and the
-template guard \run{RL} hold under \att{A5bon} (\V{wg.GC.A5bon}\% and \V{wg.RL.A5bon}\%), and \run{RL\_noguard} matches
+\V{rise.lg.A4q3.maxabs}). Template removal and best-of-8 perturbations break most fixes; under \att{A5bon} only \run{GC} and the
+template guard \run{RL} stay below 20\% (\V{wg.GC.A5bon}\% and \V{wg.RL.A5bon}\%), and \run{RL\_noguard} matches
 \run{BASE} in every cell, so \run{RL}'s protection lives entirely in its template. A benign fine-tune leaves \run{ST}
 less safe than no fix (\V{wg.ST.A1}\% vs \run{BASE} \V{wg.BASE.A1}\%).
 

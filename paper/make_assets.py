@@ -77,7 +77,9 @@ def stage1_numbers() -> None:
         put(f"hum.n.{judge}.{sc}", int(r["n"]))
         put(f"hum.rate.{judge}.{sc}", pct(r["judge_rate"]))
         put(f"hum.humanrate.{judge}.{sc}", pct(r["human_rate"]))
-    put("hum.nlabels", sum(1 for _ in open(REPO / "data" / "hand_labels.jsonl", encoding="utf-8")))
+    # append-only file: the last line per id wins, so count unique ids
+    put("hum.nlabels", len({json.loads(l)["id"] for l in open(REPO / "data" / "hand_labels.jsonl", encoding="utf-8")
+                            if l.strip()}))
     # A2 range across the six public fixes and BASE (abstract / intro)
     a2 = ci[(ci["attack"] == "A2") & (ci["run"].isin(["BASE"] + TEAM)) & (ci["metric"] == "asr_lg")]["value"]
     a2wg = ci[(ci["attack"] == "A2") & (ci["run"].isin(["BASE"] + TEAM)) & (ci["metric"] == "asr_wg")]["value"]
