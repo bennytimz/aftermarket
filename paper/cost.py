@@ -13,6 +13,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 TP = ROOT / "results" / "stage2" / "_store" / "stage2" / "throughput"
 AUDIT = ROOT / "results" / "stage2" / "_store" / "stage2" / "audit"
+E7_RUN1 = ROOT / "results" / "stage2" / "_store" / "e7_run1" / "stage2" / "audit" / "audit-gc-full"
 PRICES = ROOT / "configs" / "gpu_prices.yaml"
 HERE = Path(__file__).resolve().parent
 GPU_KEY = {"T4": "T4", "L4": "L4", "A100": "A100_80GB"}
@@ -121,21 +122,32 @@ def audit_numbers(put, P, df: pd.DataFrame | None = None) -> None:
         t = json.loads(f.read_text(encoding="utf-8"))
         if t.get("rc") != 0:
             continue
-        g = gpu_of(t.get("gpu", "").replace("Tesla ", "")) or "T4"
-        h = (t["audit_seconds"] + t.get("setup_seconds", 0)) / 3600
-        put(f"audit.{mode}.hours", f"{h:.1f}")
-        put(f"audit.{mode}.gpu", g)
-        usd = h * 0.60  # HF Jobs t4-medium (1x T4, 8 vCPU), $0.60/h: the flavor every E7 job uses
-        put(f"audit.{mode}.usd", f"{usd:.2f}")
-        if df is not None:  # one-off audit cost in millions of tokens served (BASE on an L4 at HF price)
-            b = df[(df.gpu == "L4") & (df.config == "BASE")]
-            if len(b):
-                put(f"audit.{mode}.mtok", f"{usd / b.usd_m_hf.iloc[0]:.0f}")
-        v = t.get("validate") or {}
-        if v.get("retention"):
-            r = v["retention"]
-            put(f"audit.{mode}.ret", f"{r['audit']:.2f}")
-            put(f"audit.{mode}.retref", f"{r['reference']:.2f}")
+        put_audit(put, mode, t, df)
+    # Fallback: E7's first full run finished every attack and judge, then crashed drawing the card (no
+    # matplotlib in the job image; fixed). Its own keys, so only text written for it (audit.run1.*) uses it.
+    f = E7_RUN1 / "timing.json"
+    if f.exists():
+        t = json.loads(f.read_text(encoding="utf-8"))
+        if t.get("rc") == 1 and t.get("audit_seconds") == 3913.8 and t.get("mode") == "full":
+            put_audit(put, "run1", t, df)
+
+
+def put_audit(put, mode: str, t: dict, df: pd.DataFrame | None) -> None:
+    g = gpu_of(t.get("gpu", "").replace("Tesla ", "")) or "T4"
+    h = (t["audit_seconds"] + t.get("setup_seconds", 0)) / 3600
+    put(f"audit.{mode}.hours", f"{h:.1f}")
+    put(f"audit.{mode}.gpu", g)
+    usd = h * 0.60  # HF Jobs t4-medium (1x T4, 8 vCPU), $0.60/h: the flavor every E7 job uses
+    put(f"audit.{mode}.usd", f"{usd:.2f}")
+    if df is not None:  # one-off audit cost in millions of tokens served (BASE on an L4 at HF price)
+        b = df[(df.gpu == "L4") & (df.config == "BASE")]
+        if len(b):
+            put(f"audit.{mode}.mtok", f"{usd / b.usd_m_hf.iloc[0]:.0f}")
+    v = t.get("validate") or {}
+    if v.get("retention"):
+        r = v["retention"]
+        put(f"audit.{mode}.ret", f"{r['audit']:.2f}")
+        put(f"audit.{mode}.retref", f"{r['reference']:.2f}")
 
 
 def cost_table(df: pd.DataFrame, gpus: list[str]) -> None:
