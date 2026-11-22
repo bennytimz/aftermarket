@@ -1,0 +1,496 @@
+{
+ "qi2024finetuning": {
+  "s2_title": "Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!",
+  "s2_year": 2023,
+  "s2_venue": "International Conference on Learning Representations",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2310-03693",
+   "ArXiv": "2310.03693",
+   "DOI": "10.48550/arXiv.2310.03693",
+   "CorpusId": 263671523
+  },
+  "status": "ok",
+  "source": "arXiv 2310.03693 + venue ICLR 2024 (confirmed by S2)"
+ },
+ "yang2023shadow": {
+  "s2_title": "Shadow Alignment: The Ease of Subverting Safely-Aligned Language Models",
+  "s2_year": 2023,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2310-02949",
+   "ArXiv": "2310.02949",
+   "DOI": "10.48550/arXiv.2310.02949",
+   "CorpusId": 263620436
+  },
+  "status": "ok",
+  "source": "arXiv 2310.02949"
+ },
+ "zhan2024removing": {
+  "s2_title": "Removing RLHF Protections in GPT-4 via Fine-Tuning",
+  "s2_year": 2023,
+  "s2_venue": "North American Chapter of the Association for Computational Linguistics",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2311-05553",
+   "ArXiv": "2311.05553",
+   "ACL": "2024.naacl-short.59",
+   "DOI": "10.48550/arXiv.2311.05553",
+   "CorpusId": 265067269
+  },
+  "status": "ok",
+  "source": "ACL Anthology 2024.naacl-short.59"
+ },
+ "lermen2023lora": {
+  "s2_title": "LoRA Fine-tuning Efficiently Undoes Safety Training in Llama 2-Chat 70B",
+  "s2_year": 2023,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2310-20624",
+   "ArXiv": "2310.20624",
+   "DOI": "10.48550/arXiv.2310.20624",
+   "CorpusId": 264808400
+  },
+  "status": "ok",
+  "source": "arXiv 2310.20624"
+ },
+ "arditi2024refusal": {
+  "s2_title": "Refusal in Language Models Is Mediated by a Single Direction",
+  "s2_year": 2024,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "ArXiv": "2406.11717",
+   "DBLP": "journals/corr/abs-2406-11717",
+   "DOI": "10.48550/arXiv.2406.11717",
+   "CorpusId": 270560489
+  },
+  "status": "ok",
+  "source": "arXiv 2406.11717 + venue NeurIPS 2024 (confirmed by S2)"
+ },
+ "huang2024lisa": {
+  "s2_title": "Lisa: Lazy Safety Alignment for Large Language Models against Harmful Fine-tuning Attack",
+  "s2_year": 2024,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "DBLP": "conf/nips/HuangHIT024",
+   "ArXiv": "2405.18641",
+   "DOI": "10.52202/079017-3320",
+   "CorpusId": 270095345
+  },
+  "status": "ok",
+  "source": "arXiv 2405.18641 + venue NeurIPS 2024 (confirmed by S2)"
+ },
+ "huang2024survey": {
+  "s2_title": "Harmful Fine-tuning Attacks and Defenses for Large Language Models: A Survey",
+  "s2_year": 2024,
+  "s2_venue": "ACM Computing Surveys",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2409-18169",
+   "ArXiv": "2409.18169",
+   "DOI": "10.1145/3817114",
+   "CorpusId": 272968838
+  },
+  "status": "ok",
+  "source": "arXiv 2409.18169"
+ },
+ "tamirisa2025tamper": {
+  "s2_title": "Tamper-Resistant Safeguards for Open-Weight LLMs",
+  "s2_year": 2024,
+  "s2_venue": "International Conference on Learning Representations",
+  "externalIds": {
+   "DBLP": "conf/iclr/TamirisaBPZGSLW25",
+   "ArXiv": "2408.00761",
+   "DOI": "10.48550/arXiv.2408.00761",
+   "CorpusId": 271600721
+  },
+  "status": "ok",
+  "source": "arXiv 2408.00761 + venue ICLR 2025 (confirmed by S2)"
+ },
+ "rosati2024representation": {
+  "status": "NOT FOUND on Semantic Scholar",
+  "title": "Representation Noising: A Defence Mechanism Against Harmful Finetuning"
+ },
+ "qi2025shallow": {
+  "s2_title": "Safety Alignment Should Be Made More Than Just a Few Tokens Deep",
+  "s2_year": 2024,
+  "s2_venue": "International Conference on Learning Representations",
+  "externalIds": {
+   "DBLP": "conf/iclr/QiPL0RBM025",
+   "ArXiv": "2406.05946",
+   "DOI": "10.48550/arXiv.2406.05946",
+   "CorpusId": 270371778
+  },
+  "status": "ok",
+  "source": "arXiv 2406.05946 + venue ICLR 2025 (confirmed by S2)"
+ },
+ "wei2024brittleness": {
+  "s2_title": "Assessing the Brittleness of Safety Alignment via Pruning and Low-Rank Modifications",
+  "s2_year": 2024,
+  "s2_venue": "International Conference on Machine Learning",
+  "externalIds": {
+   "DBLP": "conf/icml/WeiHHXQXMW024",
+   "ArXiv": "2402.05162",
+   "DOI": "10.48550/arXiv.2402.05162",
+   "CorpusId": 267547755
+  },
+  "status": "ok",
+  "source": "arXiv 2402.05162 + venue ICML 2024 (confirmed by S2)"
+ },
+ "henderson2023selfdestructing": {
+  "s2_title": "Self-Destructing Models: Increasing the Costs of Harmful Dual Uses of Foundation Models",
+  "s2_year": 2022,
+  "s2_venue": "AAAI/ACM Conference on AI, Ethics, and Society",
+  "externalIds": {
+   "ArXiv": "2211.14946",
+   "DBLP": "journals/corr/abs-2211-14946",
+   "DOI": "10.1145/3600211.3604690",
+   "CorpusId": 252757155
+  },
+  "status": "ok",
+  "source": "arXiv 2211.14946 + venue AIES 2023 (confirmed by S2)"
+ },
+ "egashira2024exploiting": {
+  "s2_title": "Exploiting LLM Quantization",
+  "s2_year": 2024,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2405-18137",
+   "ArXiv": "2405.18137",
+   "DOI": "10.48550/arXiv.2405.18137",
+   "CorpusId": 270068111
+  },
+  "status": "ok",
+  "source": "arXiv 2405.18137 + venue NeurIPS 2024 (confirmed by S2)"
+ },
+ "hong2024decoding": {
+  "s2_title": "Decoding Compressed Trust: Scrutinizing the Trustworthiness of Efficient LLMs Under Compression",
+  "s2_year": 2024,
+  "s2_venue": "International Conference on Machine Learning",
+  "externalIds": {
+   "DBLP": "conf/icml/HongDZLXLDBJXKH24",
+   "ArXiv": "2403.15447",
+   "DOI": "10.48550/arXiv.2403.15447",
+   "CorpusId": 268680727
+  },
+  "status": "ok",
+  "source": "arXiv 2403.15447 + venue ICML 2024 (confirmed by S2)"
+ },
+ "inan2023llamaguard": {
+  "s2_title": "Llama Guard: LLM-based Input-Output Safeguard for Human-AI Conversations",
+  "s2_year": 2023,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2312-06674",
+   "ArXiv": "2312.06674",
+   "DOI": "10.48550/arXiv.2312.06674",
+   "CorpusId": 266174345
+  },
+  "status": "ok",
+  "source": "arXiv 2312.06674"
+ },
+ "han2024wildguard": {
+  "s2_title": "WildGuard: Open One-Stop Moderation Tools for Safety Risks, Jailbreaks, and Refusals of LLMs",
+  "s2_year": 2024,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "ArXiv": "2406.18495",
+   "DBLP": "conf/nips/HanREJL00D24",
+   "DOI": "10.48550/arXiv.2406.18495",
+   "CorpusId": 270737916
+  },
+  "status": "ok",
+  "source": "arXiv 2406.18495 + venue NeurIPS 2024 (confirmed by S2)"
+ },
+ "souly2024strongreject": {
+  "s2_title": "A StrongREJECT for Empty Jailbreaks",
+  "s2_year": 2024,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "DBLP": "conf/nips/SoulyLBTHPASEWT24",
+   "ArXiv": "2402.10260",
+   "DOI": "10.48550/arXiv.2402.10260",
+   "CorpusId": 267740669
+  },
+  "status": "ok",
+  "source": "arXiv 2402.10260 + venue NeurIPS 2024 (confirmed by S2)"
+ },
+ "mazeika2024harmbench": {
+  "s2_title": "HarmBench: A Standardized Evaluation Framework for Automated Red Teaming and Robust Refusal",
+  "s2_year": 2024,
+  "s2_venue": "International Conference on Machine Learning",
+  "externalIds": {
+   "ArXiv": "2402.04249",
+   "DBLP": "conf/icml/MazeikaPYZ0MSLB24",
+   "DOI": "10.48550/arXiv.2402.04249",
+   "CorpusId": 267499790
+  },
+  "status": "ok",
+  "source": "arXiv 2402.04249 + venue ICML 2024 (confirmed by S2)"
+ },
+ "zou2023universal": {
+  "s2_title": "Universal and Transferable Adversarial Attacks on Aligned Language Models",
+  "s2_year": 2023,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2307-15043",
+   "ArXiv": "2307.15043",
+   "CorpusId": 260202961
+  },
+  "status": "ok",
+  "source": "arXiv 2307.15043"
+ },
+ "rottger2024xstest": {
+  "s2_title": "XSTest: A Test Suite for Identifying Exaggerated Safety Behaviours in Large Language Models",
+  "s2_year": 2023,
+  "s2_venue": "North American Chapter of the Association for Computational Linguistics",
+  "externalIds": {
+   "ArXiv": "2308.01263",
+   "DBLP": "conf/naacl/RottgerKVA0H24",
+   "ACL": "2024.naacl-long.301",
+   "DOI": "10.48550/arXiv.2308.01263",
+   "CorpusId": 260378842
+  },
+  "status": "ok",
+  "source": "ACL Anthology 2024.naacl-long.301"
+ },
+ "deng2024multilingual": {
+  "s2_title": "Multilingual Jailbreak Challenges in Large Language Models",
+  "s2_year": 2023,
+  "s2_venue": "International Conference on Learning Representations",
+  "externalIds": {
+   "ArXiv": "2310.06474",
+   "DBLP": "journals/corr/abs-2310-06474",
+   "DOI": "10.48550/arXiv.2310.06474",
+   "CorpusId": 263831094
+  },
+  "status": "ok",
+  "source": "arXiv 2310.06474 + venue ICLR 2024 (confirmed by S2)"
+ },
+ "yong2023lowresource": {
+  "s2_title": "Low-Resource Languages Jailbreak GPT-4",
+  "s2_year": 2023,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "ArXiv": "2310.02446",
+   "DBLP": "journals/corr/abs-2310-02446",
+   "DOI": "10.48550/arXiv.2310.02446",
+   "CorpusId": 263620377
+  },
+  "status": "ok",
+  "source": "arXiv 2310.02446"
+ },
+ "nllb2022": {
+  "s2_title": "No Language Left Behind: Scaling Human-Centered Machine Translation",
+  "s2_year": 2022,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2207-04672",
+   "ArXiv": "2207.04672",
+   "DOI": "10.48550/arXiv.2207.04672",
+   "CorpusId": 250425961
+  },
+  "status": "ok",
+  "source": "arXiv 2207.04672"
+ },
+ "kargaran2023glotlid": {
+  "s2_title": "GlotLID: Language Identification for Low-Resource Languages",
+  "s2_year": 2023,
+  "s2_venue": "Conference on Empirical Methods in Natural Language Processing",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2310-16248",
+   "ArXiv": "2310.16248",
+   "DOI": "10.48550/arXiv.2310.16248",
+   "CorpusId": 264487217
+  },
+  "status": "ok",
+  "source": "arXiv 2310.16248"
+ },
+ "biderman2024lessons": {
+  "s2_title": "Lessons from the Trenches on Reproducible Evaluation of Language Models",
+  "s2_year": 2024,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "ArXiv": "2405.14782",
+   "DBLP": "journals/corr/abs-2405-14782",
+   "DOI": "10.48550/arXiv.2405.14782",
+   "CorpusId": 269982020
+  },
+  "status": "ok",
+  "source": "arXiv 2405.14782"
+ },
+ "kwon2023vllm": {
+  "s2_title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+  "s2_year": 2023,
+  "s2_venue": "Symposium on Operating Systems Principles",
+  "externalIds": {
+   "DBLP": "conf/sosp/KwonLZ0ZY0ZS23",
+   "ArXiv": "2309.06180",
+   "DOI": "10.1145/3600006.3613165",
+   "CorpusId": 261697361
+  },
+  "status": "ok",
+  "source": "arXiv 2309.06180 + venue SOSP 2023 (confirmed by S2)"
+ },
+ "hendrycks2021mmlu": {
+  "s2_title": "Measuring Massive Multitask Language Understanding",
+  "s2_year": 2020,
+  "s2_venue": "International Conference on Learning Representations",
+  "externalIds": {
+   "MAG": "3083410900",
+   "ArXiv": "2009.03300",
+   "DBLP": "journals/corr/abs-2009-03300",
+   "DOI": "10.48550/arXiv.2009.03300",
+   "CorpusId": 221516475
+  },
+  "status": "ok",
+  "source": "arXiv 2009.03300 + venue ICLR 2021 (confirmed by S2)"
+ },
+ "clark2018arc": {
+  "s2_title": "Think you have Solved Question Answering? Try ARC, the AI2 Reasoning Challenge",
+  "s2_year": 2018,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-1803-05457",
+   "ArXiv": "1803.05457",
+   "MAG": "2794325560",
+   "DOI": "10.48550/arXiv.1803.05457",
+   "CorpusId": 3922816
+  },
+  "status": "ok",
+  "source": "arXiv 1803.05457"
+ },
+ "zellers2019hellaswag": {
+  "s2_title": "HellaSwag: Can a Machine Really Finish Your Sentence?",
+  "s2_year": 2019,
+  "s2_venue": "Annual Meeting of the Association for Computational Linguistics",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-1905-07830",
+   "ACL": "P19-1472",
+   "MAG": "2950700477",
+   "ArXiv": "1905.07830",
+   "DOI": "10.18653/v1/P19-1472",
+   "CorpusId": 159041722
+  },
+  "status": "ok",
+  "source": "ACL Anthology P19-1472"
+ },
+ "sakaguchi2020winogrande": {
+  "status": "NOT FOUND on Semantic Scholar",
+  "title": "WinoGrande: An Adversarial Winograd Schema Challenge at Scale"
+ },
+ "cobbe2021gsm8k": {
+  "s2_title": "Training Verifiers to Solve Math Word Problems",
+  "s2_year": 2021,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2110-14168",
+   "ArXiv": "2110.14168",
+   "DOI": "10.48550/arXiv.2110.14168",
+   "CorpusId": 239998651
+  },
+  "status": "ok",
+  "source": "arXiv 2110.14168"
+ },
+ "zhou2023ifeval": {
+  "s2_title": "Instruction-Following Evaluation for Large Language Models",
+  "s2_year": 2023,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "ArXiv": "2311.07911",
+   "DBLP": "journals/corr/abs-2311-07911",
+   "DOI": "10.48550/arXiv.2311.07911",
+   "CorpusId": 265157752
+  },
+  "status": "ok",
+  "source": "arXiv 2311.07911"
+ },
+ "hughes2024bon": {
+  "s2_title": "Best-of-N Jailbreaking",
+  "s2_year": 2024,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2412-03556",
+   "ArXiv": "2412.03556",
+   "DOI": "10.48550/arXiv.2412.03556",
+   "CorpusId": 274464998
+  },
+  "status": "ok",
+  "source": "arXiv 2412.03556"
+ },
+ "dettmers2023qlora": {
+  "s2_title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+  "s2_year": 2023,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "ArXiv": "2305.14314",
+   "DBLP": "journals/corr/abs-2305-14314",
+   "DOI": "10.48550/arXiv.2305.14314",
+   "CorpusId": 258841328
+  },
+  "status": "ok",
+  "source": "arXiv 2305.14314 + venue NeurIPS 2023 (confirmed by S2)"
+ },
+ "hu2022lora": {
+  "s2_title": "LoRA: Low-Rank Adaptation of Large Language Models",
+  "s2_year": 2021,
+  "s2_venue": "International Conference on Learning Representations",
+  "externalIds": {
+   "DBLP": "conf/iclr/HuSWALWWC22",
+   "ArXiv": "2106.09685",
+   "DOI": "10.48550/arXiv.2106.09685",
+   "CorpusId": 235458009
+  },
+  "status": "ok",
+  "source": "arXiv 2106.09685 + venue ICLR 2022 (confirmed by S2)"
+ },
+ "ustun2024aya": {
+  "s2_title": "Aya Model: An Instruction Finetuned Open-Access Multilingual Language Model",
+  "s2_year": 2024,
+  "s2_venue": "Annual Meeting of the Association for Computational Linguistics",
+  "externalIds": {
+   "DBLP": "conf/acl/UstunAYKDOBSOKV24",
+   "ArXiv": "2402.07827",
+   "DOI": "10.48550/arXiv.2402.07827",
+   "CorpusId": 267627803
+  },
+  "status": "ok",
+  "source": "arXiv 2402.07827"
+ },
+ "yi2025safegrad": {
+  "s2_title": "Gradient Surgery for Safe LLM Fine-Tuning",
+  "s2_year": 2025,
+  "s2_venue": "arXiv.org",
+  "externalIds": {
+   "ArXiv": "2508.07172",
+   "DBLP": "journals/corr/abs-2508-07172",
+   "DOI": "10.48550/arXiv.2508.07172",
+   "CorpusId": 280565828
+  },
+  "status": "ok",
+  "source": "arXiv 2508.07172"
+ },
+ "zheng2023judging": {
+  "s2_title": "Judging LLM-as-a-judge with MT-Bench and Chatbot Arena",
+  "s2_year": 2023,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2306-05685",
+   "ArXiv": "2306.05685",
+   "DOI": "10.52202/075280-2020",
+   "CorpusId": 259129398
+  },
+  "status": "ok",
+  "source": "arXiv 2306.05685 + venue NeurIPS 2023 (confirmed by S2)"
+ },
+ "chao2024jailbreakbench": {
+  "s2_title": "JailbreakBench: An Open Robustness Benchmark for Jailbreaking Large Language Models",
+  "s2_year": 2024,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "DBLP": "conf/nips/ChaoDRACSDFPTH024",
+   "ArXiv": "2404.01318",
+   "DOI": "10.48550/arXiv.2404.01318",
+   "CorpusId": 268857237
+  },
+  "status": "ok",
+  "source": "arXiv 2404.01318 + venue NeurIPS 2024 (confirmed by S2)"
+ }
+}

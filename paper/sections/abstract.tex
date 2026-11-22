@@ -1,0 +1,21 @@
+\begin{abstract}
+Safety fixes for open-weight language models are evaluated on the checkpoint their authors release, but released
+models rarely stay that way: users fine-tune them, compress them, strip the chat template, or remove refusals on
+purpose. We put six public safety fixes for Tiny Aya Global, the unfixed base model, and a defense of our own through
+one shared battery of six such post-release changes, with the same prompts, two safety judges, bootstrap confidence
+intervals and paired tests for every cell. Most fixes do not survive ordinary changes. One epoch of QLoRA on
+\V{cfg.a2.harmful} harmful examples takes every fix from \V{lg.A0.fixes.min}--\V{lg.A0.fixes.max}\% attack success to
+\V{lg.A2.min}--\V{lg.A2.max}\% (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%), and abliteration, with no training at all,
+undoes most of them. How safe a model is at release does not predict how well that safety holds (Spearman
+$\rho=\V{rho.a0ret.lg}$, $n=\V{rho.a0ret.lg.n}$). A widely used automatic judge can hide or inflate these effects:
+against \V{hum.nlabels} blind hand labels, Llama-Guard-3-1B agrees with a human at Cohen's $\kappa=\V{kappa.lg.all}$
+and WildGuard at $\kappa=\V{kappa.wg.all}$. Our own layer-targeted defense is safer at release but less durable,
+with no advantage over hardening random layers, a negative result we report in full.
+\todo{Stage 2 sentence: capability on 6 benchmarks; multilingual slice; cost per 1M tokens.}
+We release the battery as an \texttt{aftermarket audit} command that writes a robustness report card for any fix.
+\end{abstract}
+
+\footnotetext{Code and configs: \url{https://github.com/bennytimz/aftermarket}.
+Leaderboard Space: \url{https://huggingface.co/spaces/bennytimz/aftermarket}.
+Defense adapters: \url{https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59}.
+Evaluation data: \url{https://huggingface.co/collections/bennytimz/aftermarket-evaluation-data-6af998b5c1860f5bc2df2b27}.}

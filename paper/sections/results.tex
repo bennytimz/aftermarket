@@ -1,0 +1,92 @@
+\section{Results}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/fig1_heatmap.pdf}
+\caption{\textbf{Most fixes do not survive.} Rise in harmful-reply rate (WildGuard, percentage points) after each
+post-release change, relative to the same run as released; row labels give the as-released rate. Bold: the paired
+95\% bootstrap CI excludes 0 (200 prompts per cell). \att{A3max} is a post-hoc sensitivity variant of abliteration
+and is never ranked. Controls of our defense ran the attacks it targets only. The same figure under Llama Guard is
+in Appendix~\ref{app:tables}.}
+\label{fig:heatmap}
+\end{figure*}
+
+\subsection{Do fixes survive?}
+\label{sec:survive}
+Figure~\ref{fig:heatmap} shows the rise in harmful replies after each change. The harmful fine-tune (\att{A2}) is
+the hardest: every fix ends at \V{lg.A2.min}--\V{lg.A2.max}\% under Llama Guard (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%),
+indistinguishable from the unfixed base model (\V{lg.BASE.A2}\%), while MMLU is unchanged
+(\V{mmlu.BASE.A2}\% for \run{BASE}). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
+\V{wg.SP.A3}\% and \run{IL} from \V{wg.IL.A0}\% to \V{wg.IL.A3}\%; \run{GC} is the one weight-space fix that holds
+(\V{wg.GC.A3}\%, also \V{wg.GC.A3max}\% at the strongest layer). The pre-registered layer rule under-attacks
+\run{SDT}, which stays at \V{wg.SDT.A3}\% under \att{A3} but reaches \V{wg.SDT.A3max}\% under \att{A3max}.
+Compression to 3 bits moves no run by more than \V{rise.wg.A4q3.maxabs} points (WildGuard; Llama Guard
+\V{rise.lg.A4q3.maxabs}). Template removal and best-of-8 perturbations break most fixes; only \run{GC} and the
+template guard \run{RL} hold under \att{A5bon} (\V{wg.GC.A5bon}\% and \V{wg.RL.A5bon}\%), and \run{RL\_noguard} matches
+\run{BASE} in every cell, so \run{RL}'s protection lives entirely in its template. A benign fine-tune leaves \run{ST}
+less safe than no fix (\V{wg.ST.A1}\% vs \run{BASE} \V{wg.BASE.A1}\%).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig2_retention.pdf}
+\caption{Retention with 95\% CIs (pre-registered Llama Guard judge, and WildGuard). Controls of our defense faced
+only \att{A2} and \att{A3} and are not ranked.}
+\label{fig:retention}
+\end{figure}
+
+\subsection{Retention ranking}
+\label{sec:retention}
+Under the pre-registered judge, \run{GC} ranks first (retention \V{ret.GC} \V{ret.GC.ci}) and \run{RL} second
+(\V{ret.RL}); \run{BASE} scores \V{ret.BASE} and our \run{AM} ranks last (\V{ret.AM} \V{ret.AM.ci};
+Fig.~\ref{fig:retention}). WildGuard gives the same top three and the same last place. Safety at release does not
+predict retention: across the \V{rho.a0ret.lg.n} ranked runs, Spearman $\rho$ between as-released ASR and retention
+is \V{rho.a0ret.lg} (permutation $p=\V{rho.a0ret.lg.p}$; WildGuard $\rho=\V{rho.a0ret.wg}$, $p=\V{rho.a0ret.wg.p}$). With
+nine runs this is a lack of evidence for a relationship, not proof of none, but the extremes make the point: \run{AM}
+is among the safest models at release (\V{wg.AM.A0}\%) and the least durable.
+
+\subsection{Capability\stagetwo}
+\label{sec:capability}
+\todo{E1: absolute scores, change vs BASE, change after each attack, with CIs; Fig.~3.}
+
+\subsection{Can we trust the judge?}
+\label{sec:judges}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig4_judges.pdf}
+\caption{Agreement of each judge with \V{hum.nlabels} blind hand labels on harmful-prompt replies (whether the reply
+gives harmful help). Both judges fall to near chance on template-stripped and perturbed text (\att{A5}).}
+\label{fig:judges}
+\end{figure}
+Against the blind hand labels, WildGuard agrees with a human at $\kappa=\V{kappa.wg.all}$ and Llama Guard at
+$\kappa=\V{kappa.lg.all}$ (Fig.~\ref{fig:judges}). On \att{A5} outputs both are near chance
+($\kappa=\V{kappa.wg.afive}$ and \V{kappa.lg.afive}): Llama Guard flags \V{hum.rate.lg.afive}\% of sampled \att{A5}
+replies as unsafe where the human finds \V{hum.humanrate.lg.afive}\%, mostly refusals in garbled text. Because the
+judges disagree there, the headline best-of-8 number for \run{BASE} is \V{wg.BASE.A5bon}\% under WildGuard but
+\V{lg.BASE.A5bon}\% under Llama Guard. We therefore report WildGuard first wherever the two judges differ by more than
+10 points (a post-hoc reporting rule; rankings and tests still use the pre-registered judge). The ranking's top and
+bottom do not depend on the judge (Fig.~\ref{fig:retention}).
+
+\subsection{Our defense, and why it is a negative result}
+\label{sec:defense}
+\run{AM} hardens the $k=\V{cfg.am.k}$ layers whose refusal direction best separates harmful from benign dev prompts
+(layers \V{cfg.am.layers}) with SafeGrad-style gradient surgery restricted to those layers, trains half of its refusal
+batches with the top refusal direction ablated, and keeps those layers at \V{cfg.am.shieldbits} bits under compression.
+Every choice was made on dev prompts; the recipe was frozen before its test run. \run{AM} is safer than \run{BASE} as
+released under both judges (\V{lg.AM.A0}\% vs \V{lg.BASE.A0}\% Llama Guard; \V{wg.AM.A0}\% vs \V{wg.BASE.A0}\%
+WildGuard) with unchanged over-refusal (\V{or.AM.A0}\% vs \V{or.BASE.A0}\%) and MMLU (\V{mmlu.AM.A0}\% vs
+\V{mmlu.BASE.A0}\%). But it is \emph{worse} under abliteration (WildGuard \V{wg.AM.A3}\% vs \V{wg.BASE.A3}\%; Llama
+Guard \V{lg.AM.A3}\% vs \V{lg.BASE.A3}\%), no better under the harmful fine-tune, and its located layers give no
+advantage over random ones: \run{AM\_rand1} and \run{AM\_all} stay at \V{wg.AM_rand1.A3}\% and \V{wg.AM_all.A3}\%
+under \att{A3}, \run{AM\_rand0} fails like \run{AM}. One plausible cause is that \run{AM}'s spread-refusal step
+ablated an early-layer direction that turned out not to mediate refusal, while concentrating safety in early layers
+made the model easier to abliterate. We report this as an informative negative result: locating refusal is not the
+same as protecting it.
+\todo{optional fig5 scatter (BASE, GC, AM, controls) once E1 composite capability lands.}
+
+\subsection{Does durability transfer across languages?\stagetwo}
+\label{sec:multilingual}
+\todo{E6: languages x attacks figure; high- vs low-resource gap; ranking by language; incoherence.}
+
+\subsection{What does a fix cost to serve?\stagetwo}
+\label{sec:cost}
+\todo{E2: steady-state tokens/s per fix, \$ per 1M output tokens on T4/L4/A100, defense overhead, audit cost, ROI.}

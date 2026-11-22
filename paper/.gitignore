@@ -1,0 +1,8 @@
+derived/_judged_labels.parquet
+*.aux
+*.log
+*.blg
+*.bbl
+*.out
+bib_cache/
+main.pdf

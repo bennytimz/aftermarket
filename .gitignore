@@ -245,3 +245,4 @@ results/hub_release/
 results/stage2/cells/
 results/stage2/judged/
 results/stage2/smoke/*.parquet
+results/stage2/_store/

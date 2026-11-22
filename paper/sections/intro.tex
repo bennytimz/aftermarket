@@ -1,0 +1,37 @@
+\section{Introduction}
+
+An open-weight model is not a fixed artifact. Within days of a release, people fine-tune it on their own data,
+quantize it to fit a phone, serve it from a raw completion endpoint without its chat template, or remove its refusals
+on purpose with a single weight edit~\citep{arditi2024refusal}. A safety fix that holds only on the checkpoint its
+authors published protects nobody who uses the model in any other form. Yet fixes are almost always evaluated on that
+one checkpoint.
+
+The risk is well documented for individual attacks: a few harmful fine-tuning examples undo alignment
+\citep{qi2024finetuning,yang2023shadow,lermen2023lora}, refusal is mediated by one removable direction
+\citep{arditi2024refusal}, and cheap random perturbations jailbreak frontier models \citep{hughes2024bon}. What is
+missing is a common yardstick: the same set of everyday post-release changes, applied with the same prompts, judges
+and statistics to every fix that claims to make a model safer. Without one, a fix's own evaluation cannot tell its
+users which changes it will survive.
+
+We build that yardstick, \emph{Aftermarket}, and apply it to every public safety fix for Tiny Aya Global
+\citep{ustun2024aya} that we could load from a recent safety hackathon: six fixes spanning weight-space repair,
+safety-aware fine-tuning, rank-one patches, and a prompt guard in the chat template. Our contributions:
+\begin{enumerate}
+\item \textbf{A shared post-release battery} of six changes (benign and harmful fine-tuning, abliteration, 3-bit
+  compression, template removal, best-of-8 perturbations), run on 12 models with identical seeds, prompts, two judges
+  and paired bootstrap statistics (\S\ref{sec:setup}).
+\item \textbf{A durability leaderboard} with a single retention score, and the finding that release-time safety
+  does not predict it (\S\ref{sec:survive}--\ref{sec:retention}).
+\item \textbf{A judge audit} against blind hand labels showing that the pre-registered judge, Llama-Guard-3-1B,
+  disagrees with a human far more than WildGuard on perturbed text, which changes several conclusions
+  (\S\ref{sec:judges}).
+\item \textbf{A tested defense and an honest negative result}: hardening the layers that carry the refusal
+  direction makes a model safer at release but \emph{less} durable, and is no better than hardening random layers
+  (\S\ref{sec:defense}).
+\item \textbf{Stage~2 extensions}\stagetwo{}: capability on six standard benchmarks, a multilingual slice in two
+  high- and two low-resource languages, and the serving cost of each fix (\S\ref{sec:capability},
+  \S\ref{sec:multilingual}, \S\ref{sec:cost}).
+\end{enumerate}
+Our headline: most public safety fixes do not survive ordinary post-release changes; how safe a model is at release
+says little about how well that safety holds; and the choice of automatic judge can hide or inflate the difference.
+\todo{update headline with Stage 2 results.}

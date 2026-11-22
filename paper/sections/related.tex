@@ -1,0 +1,28 @@
+\section{Related work}
+\label{sec:related}
+
+\paragraph{Harmful fine-tuning.} Fine-tuning an aligned model on a handful of harmful examples, or even on benign
+data, erodes its safety \citep{qi2024finetuning,yang2023shadow,lermen2023lora,zhan2024removing}; see
+\citet{huang2024survey} for a survey of attacks and defenses. Defenses constrain the fine-tune, e.g.\ Lisa's proximal
+alternating updates \citep{huang2024lisa} or gradient surgery against an alignment gradient \citep{yi2025safegrad},
+or make the weights themselves harder to tune toward harm \citep{henderson2023selfdestructing,rosati2024representation,
+tamirisa2025tamper}. We test released defenses against an attack budget a hobbyist has (one epoch of QLoRA on a free
+GPU), not against the adaptive attacker these papers often assume.
+
+\paragraph{Refusal directions and abliteration.} Refusal in chat models is mediated by a single residual-stream
+direction that can be projected out of the weights \citep{arditi2024refusal}; safety-critical weights are sparse
+and easy to remove \citep{wei2024brittleness}, and alignment is often only a few tokens deep \citep{qi2025shallow}.
+Our A3 follows \citet{arditi2024refusal}'s recipe, including their causal layer selection and KL filter.
+
+\paragraph{Compression and safety.} Quantization can change a model's trustworthiness
+\citep{hong2024decoding} and can even be exploited to hide malicious behavior that appears only after quantizing
+\citep{egashira2024exploiting}. We ask the converse: does a common 3-bit scheme erase a fix?
+
+\paragraph{Cheap and cross-lingual jailbreaks.} Best-of-N sampling of random augmentations jailbreaks strong models
+\citep{hughes2024bon}. Low-resource languages bypass safety training \citep{yong2023lowresource,deng2024multilingual};
+our multilingual slice asks whether that gap interacts with post-release changes.
+
+\paragraph{Judges.} Safety evaluations rest on automatic classifiers such as Llama Guard \citep{inan2023llamaguard}
+and WildGuard \citep{han2024wildguard}, or on LLM-as-judge rubrics \citep{zheng2023judging,souly2024strongreject}.
+Benchmarks fix prompts and scoring \citep{mazeika2024harmbench,chao2024jailbreakbench}, but judge reliability under
+distribution shift, such as garbled or template-free text, is rarely measured against humans. We do so.

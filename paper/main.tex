@@ -1,0 +1,54 @@
+\documentclass[11pt]{article}
+
+% Camera-ready (final) mode: no review option, no line numbers (organizer's instruction).
+\usepackage{acl}
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+
+% Every number in the text is a \V{key} looked up in numbers.tex (written by make_assets.py from result files).
+% An undefined key prints a red ??key and a LaTeX warning, so a missing number can never pass silently.
+\makeatletter
+\newcommand{\V}[1]{\ifcsname v@#1\endcsname\csname v@#1\endcsname\else
+  \textcolor{red}{\textbf{??\detokenize{#1}}}\@latex@warning{Undefined value #1}\fi}
+\makeatother
+\input{numbers.tex}
+\newcommand{\run}[1]{\textsf{#1}}            % run names: BASE, GC, AM, ...
+\newcommand{\att}[1]{\textsf{#1}}            % attack names: A0 ... A5bon
+\newcommand{\stagetwo}{\textsuperscript{\textsc{s2}}}  % marks Stage 2 additions (not pre-registered)
+\newcommand{\todo}[1]{\textcolor{red}{[TODO: #1]}}
+
+\title{Aftermarket: Do Public Safety Fixes Survive\\What Happens to a Model After Release?}
+
+\author{Ayomide (Benny) Oluwadare \\
+  Team Aftermarket}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/intro}
+\input{sections/related}
+\input{sections/setup}
+\input{sections/results}
+\input{sections/takeaways}
+\input{sections/conclusion}
+\input{sections/limitations}
+\input{sections/ethics}
+
+\bibliographystyle{acl_natbib}
+\bibliography{custom}
+
+\appendix
+\input{sections/appendix}
+
+\end{document}
