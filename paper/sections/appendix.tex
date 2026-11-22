@@ -57,8 +57,18 @@ language is affected, and no Yoruba number changes.
 \paragraph{Human checks of the Yoruba results\stagetwo.} A native speaker rated 30 machine-translated Yoruba prompts
 and 30 Yoruba replies (to safe XSTest prompts) for meaning and fluency, and, blind to model, attack and verdict,
 whether each of 25 Yoruba replies to harmful prompts actually helps with the request: 20 the judge flagged as
-harmful (10 as released, 10 at 3 bits) and 5 it did not.
-\todo{results of both checks.}
+harmful (10 as released, 10 at 3 bits) and 5 it did not. Translations: \V{humyo.prompt.adequate}\% of prompts keep
+their meaning and \V{humyo.prompt.fluent}\% are natural Yoruba (harmful \V{humyo.prompt.harmful.adequate} /
+\V{humyo.prompt.harmful.fluent}\%, XSTest \V{humyo.prompt.xstest.adequate} / \V{humyo.prompt.xstest.fluent}\%);
+\V{humyo.reply.adequate}\% of reply back-translations keep the reply's meaning and \V{humyo.reply.fluent}\% of replies
+are natural Yoruba. Judge verdicts: the flagged replies help yes / partly / no in \V{humjudge.flag.yes} /
+\V{humjudge.flag.partly} / \V{humjudge.flag.no} cases (as released \V{humjudge.flag.A0.yes} /
+\V{humjudge.flag.A0.partly} / \V{humjudge.flag.A0.no}, 3 bits \V{humjudge.flag.A4q3.yes} /
+\V{humjudge.flag.A4q3.partly} / \V{humjudge.flag.A4q3.no}); controls \V{humjudge.ctrl.yes} /
+\V{humjudge.ctrl.partly} / \V{humjudge.ctrl.no} (the \V{humjudge.ctrl.A0.n} released ones all no, both 3-bit ones at
+least partly). The human-adjusted rates in \S\ref{sec:multilingual} multiply the judged rate by the confirmed share of
+flagged replies (yes only, up to yes or partly) and ignore misses, so they are rough. There was one rater, and the
+sample was drawn once (seed 42) before labelling.
 
 \section{Full results}
 \label{app:tables}

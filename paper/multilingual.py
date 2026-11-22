@@ -133,7 +133,64 @@ def ml_tables(lab: pd.DataFrame) -> dict[str, pd.DataFrame]:
     return {"rates": rates, "gaps": gaps, "pooled": pooled}
 
 
+def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    if n == 0:
+        return float("nan"), float("nan")
+    p = k / n
+    d = 1 + z * z / n
+    c = (p + z * z / (2 * n)) / d
+    h = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / d
+    return c - h, c + h
+
+
+def human_numbers(put, pct, data: Path = Path(__file__).resolve().parents[1] / "data") -> dict:
+    """Yoruba human checks: translation adequacy/fluency (data/translation_check_yo.csv) and the blind check of the
+    judges' Yoruba verdicts (data/yo_judge_check_sample.jsonl + yo_judge_check_answers.json; labels only)."""
+    import csv
+    import json
+
+    f = data / "translation_check_yo.csv"
+    if f.exists():
+        rows = list(csv.DictReader(f.open(encoding="utf-8-sig")))
+        groups = {"prompt": [r for r in rows if r["part"] == "prompt"],
+                  "prompt.harmful": [r for r in rows if r["part"] == "prompt" and r["kind"] == "harmful"],
+                  "prompt.xstest": [r for r in rows if r["part"] == "prompt" and r["kind"] == "xstest"],
+                  "reply": [r for r in rows if r["part"] == "reply"]}
+        for g, rs in groups.items():
+            put(f"humyo.{g}.n", len(rs))
+            for c, col in (("adequate", "adequate (y/n)"), ("fluent", "fluent (y/n)")):
+                k = sum(r[col] == "y" for r in rs)
+                put(f"humyo.{g}.{c}", pct(k / len(rs)) if rs else "--")
+                put(f"humyo.{g}.{c}.k", k)
+    out = {}
+    fs, fa = data / "yo_judge_check_sample.jsonl", data / "yo_judge_check_answers.json"
+    if fs.exists() and fa.exists():
+        sample = [json.loads(l) for l in fs.read_text(encoding="utf-8").splitlines() if l.strip()]
+        ans = json.loads(fa.read_text(encoding="utf-8"))
+        lab = [(r["stratum"], ans.get(f"{r['cell']}|{r['id']}", {}).get("help", "")) for r in sample]
+        put("humjudge.n", len(lab))
+        put("humjudge.answered", sum(bool(h) for _, h in lab))
+        for name, sel in (("flag", lambda s_: s_.endswith(":flagged")), ("ctrl", lambda s_: s_.endswith(":control")),
+                          ("flag.A0", lambda s_: s_ == "A0:flagged"), ("flag.A4q3", lambda s_: s_ == "A4q3:flagged"),
+                          ("ctrl.A0", lambda s_: s_ == "A0:control"), ("ctrl.A4q3", lambda s_: s_ == "A4q3:control")):
+            hs = [h for st, h in lab if sel(st)]
+            put(f"humjudge.{name}.n", len(hs))
+            for v in ("yes", "partly", "no"):
+                put(f"humjudge.{name}.{v}", sum(h == v for h in hs))
+            k_any = sum(h in ("yes", "partly") for h in hs)
+            put(f"humjudge.{name}.any", k_any)
+            if name == "flag" and hs:
+                out = {"yes": sum(h == "yes" for h in hs) / len(hs), "any": k_any / len(hs)}
+            for tag, k in (("yes", sum(h == "yes" for h in hs)), ("any", k_any)):
+                lo, hi = wilson(k, len(hs))
+                put(f"humjudge.{name}.{tag}.pct", pct(k / len(hs)) if hs else "--")
+                put(f"humjudge.{name}.{tag}.ci", f"[{pct(lo)}, {pct(hi)}]")
+
+    return out
+
+
 def ml_numbers(put, pct) -> dict[str, pd.DataFrame]:
+    hum = human_numbers(put, pct)
     lab = ml_labels()
     if lab.empty:
         return {}
@@ -214,4 +271,10 @@ def ml_numbers(put, pct) -> dict[str, pd.DataFrame]:
             put(f"mldirect.{lang}.agree", pct((g["lg_direct_label"] == g["lg_label"]).mean()))
             put(f"mldirect.{lang}.kappa", f"{cohen_kappa_score(g['lg_direct_label'], g['lg_label']):.2f}")
     put("ml.ncells", lab.groupby(["run", "attack"]).ngroups)
+    if hum:  # rough human-adjusted Yoruba rate: judge rate x confirmed share of flagged replies (ignores misses)
+        m = t["rates"].groupby(["attack", "lang"])["asr_wg"].mean()
+        for att in ("A0", "A4q3"):
+            if (att, "yo") in m:
+                put(f"humadj.{att}.yo.lo", pct(m[(att, "yo")] * hum["yes"]))
+                put(f"humadj.{att}.yo.hi", pct(m[(att, "yo")] * hum["any"]))
     return t

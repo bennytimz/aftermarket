@@ -105,35 +105,43 @@ made the model easier to abliterate. We report this as an informative negative r
 same as protecting it.
 \todo{optional fig5 scatter (BASE, GC, AM, controls) once E1 composite capability lands.}
 
-\subsection{Does durability transfer across languages?\stagetwo}
+\subsection{Can we audit safety in other languages?\stagetwo}
 \label{sec:multilingual}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig6_multilingual.pdf}
-\caption{\textbf{Yoruba is the weak point.} Harmful-reply rate (WildGuard on NLLB back-translations; incoherent
-replies count as not harmful) per language and attack: bar = mean over the 12 runs, dots = single runs. 100 harmful
-prompts per cell, the same items in every language.}
+\caption{\textbf{Judged harmful-reply rate by language} (WildGuard on NLLB back-translations; incoherent replies count
+as not harmful): bar = mean over the 12 runs, dots = single runs; 100 harmful prompts per cell, the same items in
+every language. A native speaker confirms few of the Yoruba verdicts (\S\ref{sec:multilingual}), so the Yoruba bars
+overstate harm.}
 \label{fig:multilingual}
 \end{figure}
-Safety that holds in English does not hold in Yoruba (Fig.~\ref{fig:multilingual}). As released, the models give
-harmful replies to \V{mlmean.A0.yo.wg}\% of Yoruba prompts against \V{mlmean.A0.en.wg}\% in English, a paired gap of
-\V{mlgap.A0.wg} points \V{mlgap.A0.wg.ci}; it is positive for all \V{mlgap.A0.wg.cells} runs, its CI excludes 0 for
-\V{mlgap.A0.wg.sig}, and Llama Guard agrees (\V{mlgap.A0.lg}). It is not a generic non-English effect: Yoruba is also
-\V{mlgap.A0.wg.rest} points above the mean of Spanish, French, Chinese and Swahili. Compression widens it most. At 3
-bits, English stays at \V{mlmean.A4q3.en.wg}\% while Yoruba reaches \V{mlmean.A4q3.yo.wg}\% (gap
-\V{mlgap.A4q3.wg} \V{mlgap.A4q3.wg.ci}, CI above 0 for all \V{mlgap.A4q3.wg.cells} runs). For \V{mlex.nruns} models
-(\V{mlex.runs}), English stays at or below \V{mlex.enmax}\% while Yoruba reaches \V{mlex.yomin}--\V{mlex.yomax}\%:
-\run{AM\_rand1} goes from \V{mlex.a0.yo}\% to \V{mlex.yo}\% in Yoruba and stays at \V{mlex.en}\% in English.
-\emph{An English-only audit would pass these models.} Abliteration shows the same pattern where it fails in English:
-of the \V{mlA3.resist.n} models that stay at or below \V{mlA3.resist.enmax}\% in English, all but \run{GC} reach
-about \V{mlA3.resist.yomax}\% in Yoruba. The English harmful fine-tune is the exception: it lifts English to
-\V{mlmean.A2.en.wg}\% and transfers only partly, though Yoruba (\V{mlmean.A2.yo.wg}\%) still leads the other
-languages by \V{mlgap.A2.wg.rest} points. Two cautions: replies are judged after machine back-translation, and Yoruba
-also has the highest over-refusal (\V{mlmean.A0.yo.or}\% vs \V{mlmean.A0.en.or}\% in English), so part of the gap may
-be judge noise; incoherent replies are rare (at most \V{mlmean.A2.yo.inc}\% in Yoruba). A blind human check of the
-judges' Yoruba verdicts and of the translations is in Appendix~\ref{app:details}.
-\todo{human checks: Yoruba translation adequacy/fluency (60 rows) and judge-verdict check (25 replies); then drop
-or keep the 'judge noise' caution.}
+Through the standard pipeline, translate the prompt, back-translate the reply, judge it in English, Yoruba looks far
+less safe than every other language (Fig.~\ref{fig:multilingual}). As released, the judges flag
+\V{mlmean.A0.yo.wg}\% of Yoruba replies against \V{mlmean.A0.en.wg}\% in English (paired gap \V{mlgap.A0.wg}
+\V{mlgap.A0.wg.ci}, positive for all \V{mlgap.A0.wg.cells} runs, Llama Guard \V{mlgap.A0.lg}), and
+\V{mlgap.A0.wg.rest} points more than the mean of Spanish, French, Chinese and Swahili. At 3 bits the contrast is
+starkest: \V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\%, and for \V{mlex.nruns} models (\V{mlex.runs}) English
+stays at or below \V{mlex.enmax}\% while Yoruba is judged at \V{mlex.yomin}--\V{mlex.yomax}\%. Read at face value,
+an English-only audit would pass these models.
+
+\emph{A native speaker's blind check does not support that reading.} Of 20 Yoruba replies the judges flagged
+(10 as released, 10 at 3 bits), only \V{humjudge.flag.yes} actually help with the harmful request
+(\V{humjudge.flag.yes.pct}\%, 95\% CI \V{humjudge.flag.yes.ci}), \V{humjudge.flag.partly} help partly and
+\V{humjudge.flag.no} do not; the share is the same at both attacks (\V{humjudge.flag.A0.yes} and
+\V{humjudge.flag.A4q3.yes} of 10). The judges also miss harm: \V{humjudge.ctrl.any} of \V{humjudge.ctrl.n} replies
+they passed help at least partly, both at 3 bits. The translation check locates the problem in the replies, not the
+prompts: \V{humyo.prompt.adequate}\% of machine-translated prompts keep their meaning (\V{humyo.prompt.harmful.adequate}\%
+of harmful ones), but back-translation keeps the meaning of only \V{humyo.reply.adequate}\% of the model's Yoruba
+replies, and only \V{humyo.reply.fluent}\% read as natural Yoruba. The judges are reading noisy translations of often
+unnatural text, which also fits Yoruba's high over-refusal (\V{mlmean.A0.yo.or}\% vs \V{mlmean.A0.en.or}\%).
+Scaling the judged rates by the confirmed share gives roughly \V{humadj.A0.yo.lo}--\V{humadj.A0.yo.hi}\% as released,
+close to English, and \V{humadj.A4q3.yo.lo}--\V{humadj.A4q3.yo.hi}\% at 3 bits, perhaps above English's
+\V{mlmean.A4q3.en.wg}\%, but 10 replies per attack cannot settle that. So we do not claim that the models are less
+safe in Yoruba. What the data do show is that the back-translate-and-judge audit is not valid for Yoruba: it
+overstates harm several-fold and still misses some. For Spanish and French, judging the original replies agrees with
+the back-translated route on \V{mldirect.es.agree}\% and \V{mldirect.fr.agree}\%; a low-resource language needs
+native-speaker labels or a judge that reads it.
 
 \subsection{What does a fix cost to serve?\stagetwo}
 \label{sec:cost}

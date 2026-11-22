@@ -11,9 +11,10 @@ $\rho=\V{rho.a0ret.lg}$, $n=\V{rho.a0ret.lg.n}$). A widely used automatic judge 
 against \V{hum.nlabels} blind hand labels, Llama-Guard-3-1B agrees with a human at Cohen's $\kappa=\V{kappa.lg.all}$
 and WildGuard at $\kappa=\V{kappa.wg.all}$. Our own layer-targeted defense is safer at release but less durable,
 with no advantage over hardening random layers, a negative result we report in full.
-Safety is also language-bound: by automatic judges on back-translated replies, the same models reply harmfully to
-Yoruba prompts \V{mlgap.A0.wg} points more often than to English ones as released, and after 3-bit compression
-\V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\%, so an English-only audit would pass models that fail in Yoruba.
-\todo{abstract Yoruba line is conditional: finalize wording after the two human checks; add capability and cost.}
+Multilingual audits need care: judged through back-translation, the models look far less safe in Yoruba than in
+English (\V{mlmean.A4q3.yo.wg}\% vs \V{mlmean.A4q3.en.wg}\% harmful replies after 3-bit compression), but a native
+speaker confirms only \V{humjudge.flag.yes} of \V{humjudge.flag.n} flagged Yoruba replies as harmful, so this
+standard pipeline is not valid for a low-resource language.
+\todo{abstract: add capability and cost sentences.}
 We release the battery as an \texttt{aftermarket audit} command that writes a robustness report card for any fix.
 \end{abstract}
