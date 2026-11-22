@@ -1,31 +1,43 @@
-# Next steps (Stage 2), updated 22 Nov 2026, 14:25 UTC
+# Next steps (Stage 2), updated 22 Nov 2026, ~17:40 UTC
 
 Deadline: Tue 24 Nov AoE (Wed 25 Nov 12:59 Lagos). Target: paper finished Tue 24 Nov night (Lagos).
 Plan: `STAGE2_PLAN.md`. Page budget: `paper/PAGE_BUDGET.md`. Branch `stage2` only; nothing merged to main.
 
 ## Where we are
-- **Kaggle session 1** (done): 12 A0 + 12 A2 cells, all rc 0. Real T4 minutes: A0 ~43 (est 30), A2 ~60 (est 50);
-  RL is slowest (71 / 87, its guard template lengthens every prompt), GC fastest (19 / 28).
-- **HF Jobs work** under `Aftermarket-lexsi` (token `aftermarket-jobs`). Image fixes: no git (tarball of the pushed
-  commit, sha via `AFTERMARKET_GIT_SHA`), `python3` only, `sentencepiece` for WildGuard's tokenizer.
-- **L4 vs T4**: BASE A0 on L4 (`BASE__A0__l4`, a replicate kept out of the main tables) agrees with T4 on 99.7%
-  of capability items; an L4 cell takes ~19 min (~2.6x faster than T4).
-- **Paper**: 4.3 capability drafted with Fig 3 and an appendix table from the A0/A2 cells (`make fetch assets pdf`).
+- **All experiments done except two runs** (below): 60 cells (12 runs x A0/A2/A3/A4q3/A1), all judged; E5 seed
+  check (A2 seeds 1, 2 for BASE/GC/AM) judged; E2 throughput on L4 and A100; Yoruba human checks (translation
+  60/60, judge verdicts 25/25) committed.
+- **Paper: full draft.** Title "Aftermarket: Most Safety Fixes Break After Release, and the Tools That Measure Them
+  Can Mislead". Trial build (pending numbers as placeholders): main text 5.70 / 6 pages, 13 pages total, appendix
+  about 4.5 pages (second half of p. 9 to p. 13), no overfull boxes. All review fixes are in (commit 2b793b9 and later).
+- `make pdf` now runs `paper/check_tex.py` first: it fails on any TODO, eaten escape (\r \t \f \b \a) or `\V{key}`
+  missing from `derived/numbers.json`. **It fails right now only on the two pending runs' numbers** (by design).
 
-## Running (22 Nov, 14:25 UTC)
-| What | Where | Expected done (UTC) |
-|---|---|---|
-| A3: BASE, SDT done; GC, IL running | Kaggle session 2 | ~15:15. **Then stop the Kaggle session** (it would rerun cells HF did) |
-| A3: RL, RL_noguard, ST, SP, AM, AM_rand0/1, AM_all | HF l4x1 | ~14:55 (RL ~15:05) |
-| A4q3: all 12 (BASE canary done) | HF l4x1 | ~14:45 (RL ~15:00) |
-| A1: all 12 | HF l4x1 | ~14:55 (RL ~15:10) |
-| Judging canary BASE__A0, then A0/A2 in 4 jobs | HF l4x1 | ~15:00, then ~16:30 |
-| Judging A3 / A4q3 / A1 (ask first) | HF l4x1 | ~17:30 |
-| E2 throughput: L4, A100, T4 | HF l4x1 / a100-large / t4-small | ~17:40 / ~16:30 / ~19:30 |
+## Running on HF Jobs (Aftermarket-lexsi), nothing to do but wait
+| Run | Job id | Fills | Expected done (UTC) |
+|---|---|---|---|
+| E2 throughput on T4 (`s2-e2-t4-small`) | 6b02f9978d268c0fbd21ee81 | T4 column of Table 1, `cost.price.T4` in its caption | ~19:40 |
+| E7 full audit of GC, timed (`s2-e7-audit-gc-full`, t4-medium, 6 h timeout) | 6b031f048d268c0fbd222c5e | `audit.full.hours/usd/mtok` in 4.7 and Takeaways | ~21:00 |
 
-## Next
-1. Judge A3/A4q3/A1 once their cells land (ask before launch).
-2. Paper: A3/A4q3/A1 columns in Fig 3; 4.6 multilingual (judged labels); 4.7 cost (E2 + `configs/gpu_prices.yaml`);
-   4.1 A2 replication ASR; takeaways, conclusion.
-3. E5 seeds (A2s1/A2s2 for BASE, GC, AM) and E7 audit timing (quick audit on Kaggle with the freed quota).
-4. Review the Yoruba check file (user).
+E7 pushes only `timing.json` + the report card to `stage2/audit/audit-gc-full/` (no completions). If it fails, its
+log is `huggingface_hub.fetch_job_logs(job_id=..., namespace="Aftermarket-lexsi")`; the first launch failed on
+`git` missing in the image and was fixed in `audit._git_sha` (commit after 42b3b25).
+
+## When back
+From the repo root (PowerShell or Git Bash; `make` is not installed, so run the steps directly):
+1. Check both jobs: `PYTHONPATH=src python -m aftermarket.stage2.jobs status` (look for the two ids above: COMPLETED).
+2. Fetch: `python paper/fetch_stage2.py`
+3. Rebuild numbers, tables, figures: `PYTHONPATH="src;paper" python paper/make_assets.py`
+4. Check: `cd paper && python check_tex.py` -> must print "no eaten escapes, no TODOs".
+5. Compile: `tectonic -X compile main.tex --keep-logs -Z search-path=template` (close main.pdf in any viewer
+   first: Windows locks it).
+6. Page counts: `python check_pages.py` (main text must be <= 6.0; cut order in PAGE_BUDGET.md above 5.7) and
+   check the appendix is <= 6 pages (it starts after the references).
+7. Read 4.7 and Takeaways once with the real audit numbers; commit and push.
+
+If E7 failed or is too late: replace the audit clause in 4.7 / Takeaways with the measured E2 numbers only (ask
+the user first), so check_tex passes.
+
+## Optional, if time
+- Kaggle quick audit (`notebooks/11_audit_demo.ipynb`, unchanged) for a Kaggle T4 timing of the quick mode.
+- `paper/sections/related.tex` and the intro were not reworked in the last review; one read-through.
