@@ -391,6 +391,8 @@ def generate_batched(model, tok, prompt_ids: list[list[int]], max_new: int, batc
 
 
 def _git_sha() -> str:
+    if os.environ.get("AFTERMARKET_GIT_SHA"):  # HF Jobs image has no git: the launcher passes the sha
+        return os.environ["AFTERMARKET_GIT_SHA"]
     try:
         return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=REPO_ROOT).stdout.strip()
     except OSError:

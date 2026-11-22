@@ -23,6 +23,7 @@ from aftermarket.stage2.subsets import REPO_ROOT
 
 IMAGE = "vllm/vllm-openai:v0.34.0"
 REPO_URL = "https://github.com/bennytimz/aftermarket"
+TARBALL = "https://codeload.github.com/bennytimz/aftermarket/tar.gz"
 BRANCH = "stage2"
 NAMESPACE = "Aftermarket-lexsi"  # the org holds the HF credits; results still go to the private bennytimz store
 LOG = REPO_ROOT / "results" / "stage2" / "jobs.jsonl"
@@ -46,9 +47,12 @@ def script(sha: str, module_cmd: str) -> str:
         "set -euo pipefail",
         "T0=$(date +%s)",
         "nvidia-smi || true",
-        f"git clone -q -b {BRANCH} {REPO_URL} /work/aftermarket",
-        "cd /work/aftermarket",
-        f"git checkout -q {sha}",
+        # the vLLM image has no git: fetch the exact pushed commit as a tarball (code only)
+        "mkdir -p /work && cd /work",
+        "python3 -c \"import io, tarfile, urllib.request as u; "
+        f"tarfile.open(fileobj=io.BytesIO(u.urlopen('{TARBALL}/{sha}').read())).extractall('/work')\"",
+        f"mv /work/aftermarket-{sha} /work/aftermarket && cd /work/aftermarket",
+        f"export AFTERMARKET_GIT_SHA={sha}",
         "pip freeze | grep -iE '^(torch|torchvision|torchaudio|vllm|triton|xformers|flashinfer[^=]*)==' > /tmp/keep.txt || true",
         "pip install -q -r requirements-stage2.txt -c /tmp/keep.txt",
         "export PYTHONPATH=src AFTERMARKET_TMP=/tmp AFTERMARKET_ADAPTERS=/tmp/adapters HF_HUB_DISABLE_PROGRESS_BARS=1",
