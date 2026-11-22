@@ -215,6 +215,134 @@ def overlap_numbers() -> None:
         put(f"ov.{k}.maxcos", f"{v['max_cosine']:.2f}")
 
 
+# ----------------------------------------------------------------------------- E1 capability (Stage 2 cells)
+
+CAP_TASKS = ["mmlu300", "arc_challenge", "hellaswag", "winogrande", "ifeval", "gsm8k"]
+CAP_SHORT = {"mmlu300": "mmlu", "arc_challenge": "arc", "hellaswag": "hs", "winogrande": "wino", "ifeval": "ifeval",
+             "gsm8k": "gsm"}
+CELLS_DIR = REPO / "results" / "stage2" / "_store" / "stage2" / "cells"  # filled by paper/fetch_stage2.py
+
+
+def capability_items() -> pd.DataFrame:
+    """Per-item primary scores of every finished Stage 2 cell (benign benchmarks only) -> derived/capability_items.csv."""
+    from aftermarket.stage2.capability import item_scores
+
+    recs = []
+    if CELLS_DIR.exists():
+        for d in sorted(CELLS_DIR.iterdir()):
+            man = d / "manifest.json"
+            if len(d.name.split("__")) != 2 or not man.exists() or json.loads(man.read_text(encoding="utf-8")).get("error"):
+                continue
+            run, att = d.name.split("__")
+            df = item_scores(d)
+            df.insert(0, "attack", att)
+            df.insert(0, "run", run)
+            recs.append(df)
+    out = pd.concat(recs, ignore_index=True) if recs else pd.DataFrame(columns=["run", "attack", "task", "doc_id", "y"])
+    if len(out):
+        out.to_csv(DERIVED / "capability_items.csv", index=False)
+    elif (DERIVED / "capability_items.csv").exists():  # rebuild from the committed per-item file
+        out = pd.read_csv(DERIVED / "capability_items.csv")
+    return out
+
+
+def _cell_matrix(items: pd.DataFrame, run: str, att: str) -> dict[str, pd.Series] | None:
+    g = items[(items["run"] == run) & (items["attack"] == att)]
+    if g.empty or set(g["task"]) != set(CAP_TASKS):
+        return None
+    return {t: gt.set_index("doc_id")["y"].sort_index() for t, gt in g.groupby("task")}
+
+
+def cap_delta(a: dict[str, pd.Series], b: dict[str, pd.Series], seed: int = SEED) -> dict[str, tuple]:
+    """Paired change b - a per task and for the composite (unweighted mean of the 6 task accuracies), each with a
+    percentile bootstrap 95% CI: items resampled within each task, the same draw for a and b (10,000 resamples)."""
+    rng = np.random.default_rng(seed)
+    out, boots = {}, []
+    for t in CAP_TASKS:
+        ids = sorted(set(a[t].index) & set(b[t].index))
+        d = b[t][ids].to_numpy() - a[t][ids].to_numpy()
+        bm = d[rng.integers(0, len(d), size=(N_BOOT, len(d)))].mean(axis=1)
+        out[t] = (float(d.mean()), float(np.quantile(bm, 0.025)), float(np.quantile(bm, 0.975)))
+        boots.append(bm)
+    comp = np.mean(boots, axis=0)
+    out["comp"] = (float(np.mean([out[t][0] for t in CAP_TASKS])), float(np.quantile(comp, 0.025)),
+                   float(np.quantile(comp, 0.975)))
+    return out
+
+
+def capability_numbers() -> pd.DataFrame:
+    """Levels per cell, change vs the run's own A0 (attacks) and vs BASE at A0 (fixes). -> derived/capability_delta.csv"""
+    items = capability_items()
+    recs = []
+    if items.empty:
+        return pd.DataFrame()
+    for (run, att), _ in items.groupby(["run", "attack"]):
+        m = _cell_matrix(items, run, att)
+        if m is None:
+            continue
+        lv = {t: float(m[t].mean()) for t in CAP_TASKS}
+        lv["comp"] = float(np.mean(list(lv.values())))
+        for t, v in lv.items():
+            put(f"cap.{CAP_SHORT.get(t, t)}.{run}.{att}", pct(v, 1))
+        ref = ("BASE", "A0") if att == "A0" else (run, "A0")
+        if ref == (run, att):
+            continue
+        r = _cell_matrix(items, *ref)
+        if r is None:
+            continue
+        for t, (d, lo, hi) in cap_delta(r, m).items():
+            k = f"dcap.{CAP_SHORT.get(t, t)}.{run}.{att}"
+            put(k, f"{100 * d:+.1f}".replace("-", "$-$"))
+            put(k + ".ci", f"[{100 * lo:+.1f}, {100 * hi:+.1f}]".replace("-", "$-$"))
+            recs.append({"run": run, "attack": att, "ref": "/".join(ref), "task": t, "delta": d, "lo": lo, "hi": hi,
+                         "excludes_zero": lo > 0 or hi < 0})
+    out = pd.DataFrame(recs)
+    out.to_csv(DERIVED / "capability_delta.csv", index=False)
+    a2 = out[(out["attack"] == "A2") & (out["task"] == "comp")]
+    if len(a2):
+        put("dcap.comp.A2.min", f"{100 * a2['delta'].min():+.1f}".replace("-", "$-$"))
+        put("dcap.comp.A2.max", f"{100 * a2['delta'].max():+.1f}".replace("-", "$-$"))
+        put("dcap.comp.A2.nsig", int(a2["excludes_zero"].sum()))
+        put("dcap.comp.A2.n", len(a2))
+    a0 = out[(out["attack"] == "A0") & (out["task"] == "comp")]
+    if len(a0):
+        put("dcap.comp.A0.nsig", int(a0["excludes_zero"].sum()))
+        put("dcap.comp.A0.n", len(a0))
+    mm = items[items["task"] == "mmlu300"].groupby(["run", "attack"])["y"].mean()
+    put("cap.mmlu.min", pct(mm.min(), 1))
+    put("cap.mmlu.min.cell", r"\run{%s} \att{%s}" % (latex_name(mm.idxmin()[0]), mm.idxmin()[1]))
+    capability_table(items, out)
+    sig = out[out["excludes_zero"] & (out["task"] != "comp")]
+    for att in ("A0", "A2"):
+        put(f"dcap.ntasksig.{att}", len(sig[sig["attack"] == att]))
+    return out
+
+
+def capability_table(items: pd.DataFrame, delta: pd.DataFrame) -> None:
+    """Appendix table: per-benchmark accuracy at A0, then the composite change after each attack available."""
+    lv = items.groupby(["run", "attack", "task"])["y"].mean().unstack("task")
+    atts = [a for a in ("A2", "A3", "A4q3", "A1") if a in set(items["attack"])]
+    names = {"mmlu300": "MMLU", "arc_challenge": "ARC-C", "hellaswag": "HellaS.", "winogrande": "Wino.",
+             "ifeval": "IFEval", "gsm8k": "GSM8K"}
+    head = " & ".join(["Run"] + [names[t] for t in CAP_TASKS] + ["Mean"] + [rf"$\Delta$\att{{{a}}}" for a in atts])
+    lines = [r"\begin{tabular}{l" + "r" * (len(CAP_TASKS) + 1 + len(atts)) + "}", r"\toprule",
+             head + r" \\", r"\midrule"]
+    get = {(r["run"], r["attack"], r["task"]): r for _, r in delta.iterrows()}
+    for run in RUNS:
+        if (run, "A0") not in lv.index:
+            continue
+        row = lv.loc[(run, "A0")]
+        cells = [f"{100 * row[t]:.1f}" for t in CAP_TASKS] + [f"{100 * row[CAP_TASKS].mean():.1f}"]
+        for a in atts:
+            r = get.get((run, a, "comp"))
+            v = f"{100 * r['delta']:+.1f}" if r is not None else "--"
+            cells.append(rf"\textbf{{{v}}}" if r is not None and r["excludes_zero"] else v)
+        lines.append(rf"\run{{{latex_name(run)}}} & " + " & ".join(c.replace("-", "$-$") if c != "--" else c
+                                                                   for c in cells) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    (TABLES / "capability.tex").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 # ----------------------------------------------------------------------------- output
 
 def write_numbers() -> None:
@@ -232,6 +360,7 @@ def main() -> None:
     stage1_numbers()
     release_vs_retention()
     overlap_numbers()
+    capability_numbers()
     from figures import make_all  # paper/figures.py
 
     make_all(V)

@@ -161,6 +161,92 @@ def fig_judges(h: pd.DataFrame) -> None:
     save(fig, "fig4_judges")
 
 
+# ----------------------------------------------------------------------------- Fig 3: capability (E1)
+
+CAP_COLS = ["mmlu300", "arc_challenge", "hellaswag", "winogrande", "ifeval", "gsm8k", "comp"]
+CAP_LABEL = {"mmlu300": "MMLU", "arc_challenge": "ARC-C", "hellaswag": "HellaS.", "winogrande": "Wino.",
+             "ifeval": "IFEval", "gsm8k": "GSM8K", "comp": "mean"}
+
+
+def fig_capability(delta: pd.DataFrame, levels: dict[str, float]) -> None:
+    """Rows = runs. Left block: each fix at release vs BASE (composite). Right block: change after A2 vs the run's
+    own A0, per benchmark and composite; later attacks add one composite column each. Points, bold = paired 95%
+    bootstrap CI excludes 0. Red = capability lost (same 'red = bad' reading as Fig. 1)."""
+    rows = RUNS_TEAM + RUNS_AM
+    later = [a for a in ("A3", "A4q3", "A1") if ((delta["attack"] == a) & (delta["task"] == "comp")).any()]
+    cols = [("A0", "comp")] + [("A2", t) for t in CAP_COLS] + [(a, "comp") for a in later]
+    get = {(r["run"], r["attack"], r["task"]): r for _, r in delta.iterrows()}
+    M = np.full((len(rows), len(cols)), np.nan)
+    sig = np.zeros_like(M, dtype=bool)
+    for i, run in enumerate(rows):
+        for j, key in enumerate(cols):
+            r = get.get((run, *key))
+            if r is not None:
+                M[i, j], sig[i, j] = 100 * r["delta"], bool(r["excludes_zero"])
+    if run_base := "BASE":  # BASE is the reference of the A0 column
+        M[rows.index(run_base), 0] = 0.0
+    gap_r = len(RUNS_TEAM)
+    gap_cs = [1] + ([1 + len(CAP_COLS)] if later else [])
+    Mv = np.insert(M, gap_r, np.nan, axis=0)
+    for g in reversed(gap_cs):
+        Mv = np.insert(Mv, g, np.nan, axis=1)
+    colmap = [j for j in range(len(cols))]
+    vis_cols = []
+    k = 0
+    for j in range(Mv.shape[1]):
+        if j in [g + n for n, g in enumerate(gap_cs)]:
+            vis_cols.append(None)
+        else:
+            vis_cols.append(colmap[k])
+            k += 1
+    fig, ax = plt.subplots(figsize=(COL_W, 2.75))
+    norm = TwoSlopeNorm(vmin=-8, vcenter=0, vmax=8)
+    ax.imshow(np.ma.masked_invalid(Mv), cmap=DIVERGING.reversed(), norm=norm, aspect="auto")
+    R, C = Mv.shape
+    for i in range(R):
+        if i == gap_r:
+            continue
+        ri = i if i < gap_r else i - 1
+        for j in range(C):
+            cj = vis_cols[j]
+            if cj is None:
+                continue
+            v = M[ri, cj]
+            if np.isnan(v):
+                ax.text(j, i, "·", ha="center", va="center", fontsize=6, color=MUTED)
+                continue
+            if rows[ri] == "BASE" and cj == 0:
+                ax.text(j, i, "ref", ha="center", va="center", fontsize=5, color=MUTED)
+                continue
+            dark = abs(norm(v) - 0.5) > 0.40
+            ax.text(j, i, f"{v:+.1f}".replace("+0.0", "0.0").replace("-0.0", "0.0"), ha="center", va="center",
+                    fontsize=5, fontweight="bold" if sig[ri, cj] else "normal", color="white" if dark else INK)
+    ylabels = [f"{r.replace('_', ' ')} ({levels.get(r, float('nan')):.1f})" for r in RUNS_TEAM] + [""] + \
+              [f"{r.replace('_', ' ')} ({levels.get(r, float('nan')):.1f})" for r in RUNS_AM]
+    ax.set_yticks(range(R), ylabels)
+    xl = []
+    for j in range(C):
+        cj = vis_cols[j]
+        if cj is None:
+            xl.append("")
+            continue
+        att, t = cols[cj]
+        xl.append("A0 vs\nBASE" if att == "A0" else (CAP_LABEL[t] if att == "A2" else f"{att}\nmean"))
+    ax.set_xticks(range(C), xl, rotation=90)
+    ax.xaxis.tick_top()
+    ax.tick_params(length=0, labelsize=5.5)
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    ax.set_xticks(np.arange(-.5, C, 1), minor=True)
+    ax.set_yticks(np.arange(-.5, R, 1), minor=True)
+    ax.grid(which="minor", color="white", linewidth=1.2)
+    ax.tick_params(which="minor", length=0)
+    a2_first, a2_last = gap_cs[0] + 1, gap_cs[0] + len(CAP_COLS)
+    ax.text((a2_first + a2_last) / 2, R - 0.3, "after A2 (harmful fine-tune), vs own A0", ha="center", va="top",
+            fontsize=5.5, color=INK2)
+    save(fig, "fig3_capability")
+
+
 # ----------------------------------------------------------------------------- main-text scatter
 
 def fig_scatter_am(ci: pd.DataFrame) -> None:
@@ -215,3 +301,10 @@ def make_all(V: dict) -> None:
     fig_retention(ret_lg[ret_lg["stage"] == "test"], ret_wg[ret_wg["stage"] == "test"])
     fig_judges(pd.read_csv(tables / "human_agreement.csv"))
     fig_scatter_am(ci)
+    dpath = R / "paper" / "derived" / "capability_delta.csv"
+    if dpath.exists():
+        from make_assets import capability_items
+
+        items = capability_items()
+        a0 = items[items["attack"] == "A0"].groupby(["run", "task"])["y"].mean().groupby("run").mean()
+        fig_capability(pd.read_csv(dpath), {r: 100 * v for r, v in a0.items()})

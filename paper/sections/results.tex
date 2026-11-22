@@ -16,7 +16,8 @@ in Appendix~\ref{app:tables}.}
 Figure~\ref{fig:heatmap} shows the rise in harmful replies after each change. The harmful fine-tune (\att{A2}) is
 the hardest: every fix ends at \V{lg.A2.min}--\V{lg.A2.max}\% under Llama Guard (WildGuard \V{wg.A2.min}--\V{wg.A2.max}\%),
 indistinguishable from the unfixed base model (\V{lg.BASE.A2}\%), while MMLU does not drop
-(\run{BASE}: \V{mmlu.BASE.A0}\% before, \V{mmlu.BASE.A2}\% after). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
+(\run{BASE}: \V{mmlu.BASE.A0}\% before, \V{mmlu.BASE.A2}\% after; retrained and scored by log-likelihood in
+Stage~2\stagetwo, \V{cap.mmlu.BASE.A0}\% and \V{cap.mmlu.BASE.A2}\%). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
 \V{wg.SP.A3}\% and \run{IL} from \V{wg.IL.A0}\% to \V{wg.IL.A3}\%; \run{GC} is the one weight-space fix that holds
 (\V{wg.GC.A3}\%, also \V{wg.GC.A3max}\% at the strongest layer). The pre-registered layer rule under-attacks
 \run{SDT}, which stays at \V{wg.SDT.A3}\% under \att{A3} but reaches \V{wg.SDT.A3max}\% under \att{A3max}.
@@ -44,9 +45,30 @@ is \V{rho.a0ret.lg} (permutation $p=\V{rho.a0ret.lg.p}$; WildGuard $\rho=\V{rho.
 nine runs this is a lack of evidence for a relationship, not proof of none, but the extremes make the point: \run{AM}
 is among the safest models at release (\V{wg.AM.A0}\%) and the least durable.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig3_capability.pdf}
+\caption{\textbf{Fixes and attacks barely move capability.} Change in accuracy (points) on six benchmarks and
+their unweighted mean. Left: each fix as released vs \run{BASE}. Right: after the harmful fine-tune \att{A2} vs the
+same run as released. Row labels give the as-released mean. Bold: paired 95\% bootstrap CI excludes 0 (no
+multiplicity correction). Red = capability lost.}
+\label{fig:capability}
+\end{figure}
+
 \subsection{Capability\stagetwo}
 \label{sec:capability}
-\todo{E1: absolute scores, change vs BASE, change after each attack, with CIs; Fig.~3.}
+As released, \run{BASE} averages \V{cap.comp.BASE.A0}\% over the six benchmarks (MMLU \V{cap.mmlu.BASE.A0}, GSM8K
+\V{cap.gsm.BASE.A0}, IFEval \V{cap.ifeval.BASE.A0}; Fig.~\ref{fig:capability}). Most fixes cost no measurable
+capability. Three do: \run{ST} (\V{dcap.comp.ST.A0} points \V{dcap.comp.ST.A0.ci}; MMLU \V{dcap.mmlu.ST.A0}, GSM8K
+\V{dcap.gsm.ST.A0}), \run{GC} (\V{dcap.comp.GC.A0}) and \run{RL} (\V{dcap.comp.RL.A0}). \run{RL}'s weights are
+\run{BASE}'s, so its cost is the guard template (IFEval \V{dcap.ifeval.RL.A0}); \run{RL\_noguard} reproduces
+\run{BASE} item for item, which also confirms that generation is deterministic. The harmful fine-tune, which removes
+every fix's safety (\S\ref{sec:survive}), costs the attacker almost nothing: the mean moves by \V{dcap.comp.A2.min} to
+\V{dcap.comp.A2.max} points, and the CI excludes 0 for \V{dcap.comp.A2.nsig} of \V{dcap.comp.A2.n} runs, the largest
+being \run{SDT} (\V{dcap.comp.SDT.A2}, mostly GSM8K \V{dcap.gsm.SDT.A2}). No cell comes near the 30\% ``safe because
+broken'' flag (lowest MMLU: \V{cap.mmlu.min}\%, \V{cap.mmlu.min.cell}). Attacked models are unsafe, not broken.
+Per-benchmark scores are in Appendix~\ref{app:tables}.
+\todo{add A3, A4q3 and A1 mean columns when those cells land; confirm the A2 claim with the judged Stage 2 A2 ASR.}
 
 \subsection{Can we trust the judge?}
 \label{sec:judges}

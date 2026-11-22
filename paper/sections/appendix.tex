@@ -30,8 +30,19 @@ flagged ``safe because broken''.
 random subsets: the same \V{cfg.n.mmlu} MMLU items, ARC-Challenge (\V{cfg.cap.arc_challenge}), HellaSwag
 (\V{cfg.cap.hellaswag}) and Winogrande (\V{cfg.cap.winogrande}), 0-shot; IFEval (all 541) and GSM8K
 (\V{cfg.cap.gsm8k}, 5-shot as chat turns). \att{A5raw} and \att{A5bon} change only the prompt, so their capability
-equals \att{A0}.
+equals \att{A0}. Primary metrics: accuracy (MMLU, Winogrande), normalized accuracy (ARC, HellaSwag), prompt-level
+strict accuracy (IFEval) and strict exact match (GSM8K); the mean is their unweighted average. The adapters of
+\att{A1}/\att{A2} no longer existed after Stage~1 (attacked weights are deleted by design), so they were retrained
+with the same seed, data and hyperparameters. \att{A0} and \att{A2} cells ran on one T4 each (vLLM fp16, greedy).
+\todo{state the GPU of the A3 / A4q3 / A1 cells once they land.}
 
 \section{Full results}
 \label{app:tables}
+\begin{table}[h]
+\centering\small\setlength{\tabcolsep}{3pt}
+\resizebox{\columnwidth}{!}{\input{tables/capability.tex}}
+\caption{Capability as released (\%, per benchmark and mean) and the change in the mean after each attack (points,
+vs the same run as released; bold: paired 95\% bootstrap CI excludes 0).\stagetwo}
+\label{tab:capability}
+\end{table}
 \todo{full tables for every run x attack x judge; Llama Guard heatmap; 4/2-bit; retention without A3; per-benchmark capability; per-language table; cost table; E4 overlap.}
