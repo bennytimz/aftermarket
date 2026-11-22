@@ -197,7 +197,10 @@ def test_yo_check_roundtrip(tmp_path):
 
     p = tmp_path / "check.csv"
     shutil.copy(REPO_ROOT / "data" / "translation_check_yo.csv", p)
+    yo_check.write_csv(p, {})  # blank any answers already in the real CSV (write_csv starts from no answers)
     fields, rows = yo_check.read_csv(p)
+    for c in yo_check.COLS.values():
+        assert all(r[c] == "" for r in rows), c
     k0, k1 = yo_check.key(rows[0]), yo_check.key(rows[31])
     yo_check.save_progress(p, {k0: {"adequate": "y", "fluent": "n", "notes": "ẹ ṣé, comma, \"quote\""},
                                k1: {"adequate": "n", "fluent": "", "notes": ""}})
@@ -208,3 +211,13 @@ def test_yo_check_roundtrip(tmp_path):
     assert rows2[0]["adequate (y/n)"] == "y" and rows2[0]["notes"] == "ẹ ṣé, comma, \"quote\""
     assert rows2[31]["adequate (y/n)"] == "n" and rows2[31]["fluent (y/n)"] == ""
     assert [r["yoruba"] for r in rows2] == [r["yoruba"] for r in rows]  # source text untouched
+
+
+def test_yo_judge_answers_sanitized(tmp_path):
+    from aftermarket.stage2 import yo_check
+
+    p = tmp_path / "a.json"
+    yo_check.save_judge_answers({"c|1": {"help": "partly", "notes": "ok"}, "c|2": {"help": "<script>"}}, p)
+    a = yo_check.load_judge_answers(p)
+    assert a == {"c|1": {"help": "partly", "notes": "ok"}, "c|2": {"help": "", "notes": ""}}
+    assert yo_check.jkey({"cell": "BASE__A0", "id": "x"}) == "BASE__A0|x"

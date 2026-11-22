@@ -46,10 +46,19 @@ original Spanish and French replies, agreeing with the back-translated route on 
 $\ge0.5$, its distinct-4-gram ratio is below 0.3, or it has fewer than 3 words and is not a refusal; these
 thresholds were fixed before any run. \emph{One change was made after seeing test outputs}: in the first judged cell,
 GlotLID tagged many Swahili replies as Congo Swahili (\texttt{swc}), which our pre-set label list counted as the
-wrong language. Since \texttt{swc} belongs to the Swahili macrolanguage, we accept it. Averaged over runs as
-released, Swahili incoherence is \V{mlmean.A0.sw.inc}\% with the change and \V{mlmean.A0.sw.incorig}\% without it,
-and Swahili ASR (WildGuard) is \V{mlmean.A0.sw.wg}\% and \V{mlmean.A0.sw.wgorig}\%; no other language is affected.
-\todo{both rates for A2/A3/A4q3 in the per-language table once judged.}
+wrong language. Since \texttt{swc} belongs to the Swahili macrolanguage, we accept it. Averaged over runs, Swahili
+incoherence with / without the change is \V{mlmean.A0.sw.inc} / \V{mlmean.A0.sw.incorig}\% as released,
+\V{mlmean.A2.sw.inc} / \V{mlmean.A2.sw.incorig}\% after \att{A2}, \V{mlmean.A3.sw.inc} / \V{mlmean.A3.sw.incorig}\%
+after \att{A3} and \V{mlmean.A4q3.sw.inc} / \V{mlmean.A4q3.sw.incorig}\% after \att{A4q3}; Swahili ASR (WildGuard) is
+\V{mlmean.A0.sw.wg} / \V{mlmean.A0.sw.wgorig}\%, \V{mlmean.A2.sw.wg} / \V{mlmean.A2.sw.wgorig}\%,
+\V{mlmean.A3.sw.wg} / \V{mlmean.A3.sw.wgorig}\% and \V{mlmean.A4q3.sw.wg} / \V{mlmean.A4q3.sw.wgorig}\%. No other
+language is affected, and no Yoruba number changes.
+
+\paragraph{Human checks of the Yoruba results\stagetwo.} A native speaker rated 30 machine-translated Yoruba prompts
+and 30 Yoruba replies (to safe XSTest prompts) for meaning and fluency, and, blind to model, attack and verdict,
+whether each of 25 Yoruba replies to harmful prompts actually helps with the request: 20 the judge flagged as
+harmful (10 as released, 10 at 3 bits) and 5 it did not.
+\todo{results of both checks.}
 
 \section{Full results}
 \label{app:tables}

@@ -121,8 +121,10 @@ def ml_tables(lab: pd.DataFrame) -> dict[str, pd.DataFrame]:
             b = g[g["lang"] == "yo"].set_index(["run", "id"])[f"harm_{j}"]
             if len(a) and len(b):
                 m, lo, hi, n = paired_gap(a, b)
+                rest = (g[g["lang"].isin(["es", "fr", "zh", "sw"])].groupby(["run", "id"])[f"harm_{j}"].mean())
+                rm, rlo, rhi, _ = paired_gap(rest, b)
                 pooled.append({"attack": att, "judge": j, "gap": m, "lo": lo, "hi": hi, "n": n,
-                               "n_runs": g["run"].nunique()})
+                               "n_runs": g["run"].nunique(), "gap_rest": rm, "lo_rest": rlo, "hi_rest": rhi})
     pooled = pd.DataFrame(pooled)
     DERIVED.mkdir(parents=True, exist_ok=True)
     rates.to_csv(DERIVED / "ml_rates.csv", index=False)
@@ -150,7 +152,45 @@ def ml_numbers(put, pct) -> dict[str, pd.DataFrame]:
         put(k, sgn(r["gap"]))
         put(k + ".ci", f"[{sgn(r['lo'])}, {sgn(r['hi'])}]")
         put(k + ".nruns", int(r["n_runs"]))
+        put(k + ".rest", sgn(r["gap_rest"]))
+        put(k + ".rest.ci", f"[{sgn(r['lo_rest'])}, {sgn(r['hi_rest'])}]")
     g = gaps[gaps["vs"] == "en"]
+    for (att, j), ga in g.groupby(["attack", "judge"]):
+        put(f"mlgap.{att}.{j}.cells", len(ga))
+        put(f"mlgap.{att}.{j}.pos", int((ga["gap"] > 0).sum()))
+        put(f"mlgap.{att}.{j}.sig", int((ga["lo"] > 0).sum()))
+        put(f"mlgap.{att}.{j}.neg", int((ga["hi"] < 0).sum()))
+    # worked example: at 3 bits, the run an English-only audit would pass (lowest English ASR) with the widest gap
+    q = rates[rates["attack"] == "A4q3"].pivot(index="run", columns="lang", values="asr_wg")
+    if {"en", "yo"} <= set(q.columns) and len(q):
+        ok = q[q["en"] <= 0.05]
+        if len(ok):
+            run = (ok["yo"] - ok["en"]).idxmax()
+            put("mlex.run", "\\run{%s}" % run.replace("_", "\\_"))
+            put("mlex.en", pct(q.loc[run, "en"]))
+            put("mlex.yo", pct(q.loc[run, "yo"]))
+            a0 = rates[(rates["attack"] == "A0") & (rates["run"] == run)].set_index("lang")["asr_wg"]
+            if len(a0):
+                put("mlex.a0.en", pct(a0.get("en")))
+                put("mlex.a0.yo", pct(a0.get("yo")))
+            put("mlex.nruns", len(ok))
+            put("mlex.yomin", pct(ok["yo"].min()))
+            put("mlex.yomax", pct(ok["yo"].max()))
+            put("mlex.enmax", pct(ok["en"].max()))
+            put("mlex.all.enmin", pct(q["en"].min()))
+            put("mlex.all.enmax", pct(q["en"].max()))
+            put("mlex.all.yomin", pct(q["yo"].min()))
+            put("mlex.all.yomax", pct(q["yo"].max()))
+            put("mlex.runs", ", ".join("\\run{%s}" % r.replace("_", "\\_") for r in ok.index))
+            # A3: runs that resist abliteration in English (<= 10%) and their Yoruba rates
+            q3 = rates[rates["attack"] == "A3"].pivot(index="run", columns="lang", values="asr_wg")
+            res = q3[q3["en"] <= 0.10]
+            if len(res):
+                put("mlA3.resist.n", len(res))
+                put("mlA3.resist.yomin", pct(res["yo"].min()))
+                put("mlA3.resist.yomax", pct(res["yo"].max()))
+                put("mlA3.resist.enmax", pct(res["en"].max()))
+            put("mlex.nall", len(q))
     for j in ("wg", "lg"):
         gj = g[g["judge"] == j]
         put(f"mlgap.cells.{j}", len(gj))

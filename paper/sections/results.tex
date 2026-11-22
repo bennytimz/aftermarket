@@ -107,7 +107,33 @@ same as protecting it.
 
 \subsection{Does durability transfer across languages?\stagetwo}
 \label{sec:multilingual}
-\todo{E6: languages x attacks figure; high- vs low-resource gap; ranking by language; incoherence.}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig6_multilingual.pdf}
+\caption{\textbf{Yoruba is the weak point.} Harmful-reply rate (WildGuard on NLLB back-translations; incoherent
+replies count as not harmful) per language and attack: bar = mean over the 12 runs, dots = single runs. 100 harmful
+prompts per cell, the same items in every language.}
+\label{fig:multilingual}
+\end{figure}
+Safety that holds in English does not hold in Yoruba (Fig.~\ref{fig:multilingual}). As released, the models give
+harmful replies to \V{mlmean.A0.yo.wg}\% of Yoruba prompts against \V{mlmean.A0.en.wg}\% in English, a paired gap of
+\V{mlgap.A0.wg} points \V{mlgap.A0.wg.ci}; it is positive for all \V{mlgap.A0.wg.cells} runs, its CI excludes 0 for
+\V{mlgap.A0.wg.sig}, and Llama Guard agrees (\V{mlgap.A0.lg}). It is not a generic non-English effect: Yoruba is also
+\V{mlgap.A0.wg.rest} points above the mean of Spanish, French, Chinese and Swahili. Compression widens it most. At 3
+bits, English stays at \V{mlmean.A4q3.en.wg}\% while Yoruba reaches \V{mlmean.A4q3.yo.wg}\% (gap
+\V{mlgap.A4q3.wg} \V{mlgap.A4q3.wg.ci}, CI above 0 for all \V{mlgap.A4q3.wg.cells} runs). For \V{mlex.nruns} models
+(\V{mlex.runs}), English stays at or below \V{mlex.enmax}\% while Yoruba reaches \V{mlex.yomin}--\V{mlex.yomax}\%:
+\run{AM\_rand1} goes from \V{mlex.a0.yo}\% to \V{mlex.yo}\% in Yoruba and stays at \V{mlex.en}\% in English.
+\emph{An English-only audit would pass these models.} Abliteration shows the same pattern where it fails in English:
+of the \V{mlA3.resist.n} models that stay at or below \V{mlA3.resist.enmax}\% in English, all but \run{GC} reach
+about \V{mlA3.resist.yomax}\% in Yoruba. The English harmful fine-tune is the exception: it lifts English to
+\V{mlmean.A2.en.wg}\% and transfers only partly, though Yoruba (\V{mlmean.A2.yo.wg}\%) still leads the other
+languages by \V{mlgap.A2.wg.rest} points. Two cautions: replies are judged after machine back-translation, and Yoruba
+also has the highest over-refusal (\V{mlmean.A0.yo.or}\% vs \V{mlmean.A0.en.or}\% in English), so part of the gap may
+be judge noise; incoherent replies are rare (at most \V{mlmean.A2.yo.inc}\% in Yoruba). A blind human check of the
+judges' Yoruba verdicts and of the translations is in Appendix~\ref{app:details}.
+\todo{human checks: Yoruba translation adequacy/fluency (60 rows) and judge-verdict check (25 replies); then drop
+or keep the 'judge noise' caution.}
 
 \subsection{What does a fix cost to serve?\stagetwo}
 \label{sec:cost}
