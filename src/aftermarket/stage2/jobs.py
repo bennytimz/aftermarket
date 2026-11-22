@@ -86,6 +86,9 @@ def job_specs(kind: str, runs: list[str], attacks: list[str], tag: str = "", per
         return [{"name": f"s2-e2-{f}", "flavor": f, "timeout": "6h", "est_min": est[f],
                  "env": {"AFTERMARKET_GPU_MEM_UTIL": "0.90"} if f.startswith("a100") else {},
                  "cmd": "aftermarket.stage2.throughput --final"} for f in attacks]
+    if kind == "audit":  # E7: one timed full audit of GC on a T4 (HF t4-medium, $0.60/h)
+        return [{"name": "s2-e7-audit-gc-full", "flavor": "t4-medium", "timeout": "6h", "est_min": 240,
+                 "cmd": "aftermarket.stage2.audit_job --final --run GC"}]
     if kind == "judge":  # batches of finished cells; models load once per job
         cells = [f"{r}__{a}" for a in attacks for r in runs]
         out = []
@@ -136,7 +139,7 @@ def status() -> None:
 
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("kind", choices=["check", "smoke", "cells", "judge", "e2", "status"])
+    ap.add_argument("kind", choices=["check", "smoke", "cells", "judge", "e2", "audit", "status"])
     ap.add_argument("--runs", default="BASE,SDT,GC,IL,RL,RL_noguard,ST,SP,AM,AM_rand0,AM_rand1,AM_all")
     ap.add_argument("--attacks", default="A0")
     ap.add_argument("--tag", default="", help="replicate-cell suffix (cell.py --tag)")
