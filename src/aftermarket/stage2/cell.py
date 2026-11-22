@@ -81,6 +81,12 @@ def versions() -> dict:
     return out
 
 
+def file_sha256(path: Path) -> str | None:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
+
+
 def git_sha() -> str:
     try:
         return subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True, text=True, cwd=REPO_ROOT).stdout.strip()
@@ -119,7 +125,10 @@ def run_cell(cfg: dict, run_id: str, attack_id: str, phases: list[str], smoke: b
     log = out / "log.txt"
     man = {"cell": name, "run_id": run_id, "attack_id": attack_id, "stage": "stage2 (not pre-registered)",
            "git_sha": git_sha(), "seed": cfg["seed"], "time_utc_start": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-           "gpu": gpu_name(), "versions": versions(), "config": cfg, "phases": {}, "smoke": smoke}
+           "gpu": gpu_name(), "versions": versions(), "config": cfg, "phases": {}, "smoke": smoke,
+           "translations_sha256": file_sha256(REPO_ROOT / "data" / "stage2" / "translations.jsonl")}
+    from aftermarket.stage2.vgen import backend, vllm_python
+
     py = [sys.executable, "-m"]
     try:
         t = time.time()
@@ -135,15 +144,15 @@ def run_cell(cfg: dict, run_id: str, attack_id: str, phases: list[str], smoke: b
             limit = cfg.get("smoke_limits") if smoke else None
             rc = capability.run(str(wdir), out / "lm_eval", tmp, limit_override=limit)
             man["phases"]["capability"] = {"rc": rc, "seconds": round(time.time() - t, 1),
-                                           "backend": "lm-eval vllm (fp16" + (", fake-quant HQQ" if attack_id.startswith("A4") else "") + ")"}
+                                           "backend": f"lm-eval {backend()} (fp16" + (", fake-quant HQQ" if attack_id.startswith("A4") else "") + ")"}
             man["capability"] = capability.collect(out / "lm_eval")
         sets = sets_for(cfg, attack_id)
         if "gen" in phases and sets:
             t = time.time()
-            rc = _sh(py + ["aftermarket.stage2.vgen", "--model", str(wdir), "--run", run_id, "--attack", attack_id,
+            rc = _sh([vllm_python(), "-m", "aftermarket.stage2.vgen", "--model", str(wdir), "--run", run_id, "--attack", attack_id,
                            "--sets", ",".join(sets), "--out", str(out / "gen"),
                            "--stats", str(out / "vgen_stats.json")], log)
-            man["phases"]["gen"] = {"rc": rc, "seconds": round(time.time() - t, 1), "sets": sets, "backend": "vllm fp16"}
+            man["phases"]["gen"] = {"rc": rc, "seconds": round(time.time() - t, 1), "sets": sets, "backend": f"{backend()} fp16"}
     except Exception as e:
         man["error"] = f"{type(e).__name__}: {e}"
         print("CELL FAILED:", man["error"], flush=True)

@@ -54,12 +54,18 @@ def hf_generate(model_kind: str, rows: dict[str, list[dict]]) -> dict[str, list[
 
 
 def vllm_generate(model_dir: str, rows: dict[str, list[dict]]) -> dict[str, list[str]]:
+    """The saved fp16 checkpoint on the Stage 2 backend (vLLM; HF generate if AFTERMARKET_S2_BACKEND=hf)."""
     from transformers import AutoTokenizer
-    from vllm import SamplingParams, TokensPrompt
 
-    from aftermarket.stage2.vgen import make_llm, prompt_ids, stop_ids
+    from aftermarket.stage2.vgen import backend, generate_rows_hf, load_hf, make_llm, prompt_ids, stop_ids
 
     tok = AutoTokenizer.from_pretrained(model_dir)
+    if backend() == "hf":
+        model = load_hf(model_dir)
+        return {name: [g["response"] for g in generate_rows_hf(model, tok, rs, 8 if name == "mmlu" else 256)[0]]
+                for name, rs in rows.items()}
+    from vllm import SamplingParams, TokensPrompt
+
     llm = make_llm(model_dir)
     out = {}
     for name, rs in rows.items():
@@ -148,7 +154,9 @@ def main(argv: list[str] | None = None) -> None:
                           "--info", str(OUT / f"equiv_weights_{attack}.json")])
             p = tmp / f"equiv_vllm_{attack}.json"
             if rc == 0:
-                rc = sh(py + ["aftermarket.stage2.smoke_job", "--part", "vllm", "--model-dir", str(wdir),
+                from aftermarket.stage2.vgen import vllm_python
+
+                rc = sh([vllm_python(), "-m", "aftermarket.stage2.smoke_job", "--part", "vllm", "--model-dir", str(wdir),
                               "--part-out", str(p)])
             subprocess.run(["rm", "-rf", str(wdir)])
             parts[f"vllm_{attack}"] = (rc, p)

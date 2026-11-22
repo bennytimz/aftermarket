@@ -18,7 +18,6 @@ from pathlib import Path
 from aftermarket.stage2.subsets import REPO_ROOT, load_subsets, read_jsonl
 
 TASKS = ["mmlu300", "arc_challenge", "hellaswag", "winogrande", "ifeval", "gsm8k"]
-GPU_MEM_UTIL = 0.62
 
 MMLU300_YAML = """task: mmlu300
 dataset_path: json
@@ -58,12 +57,19 @@ def samples_arg(tasks: list[str]) -> dict[str, list[int]]:
 
 def lm_eval_command(model_dir: str, out: Path, task_dir: Path, tasks: list[str] = TASKS, seed: int = 42,
                     limit_override: dict | None = None) -> list[str]:
+    from aftermarket.stage2.vgen import backend, gpu_mem_util, vllm_python
+
     samples = limit_override or samples_arg(tasks)
-    model_args = (f"pretrained={model_dir},tokenizer={model_dir},dtype=float16,gpu_memory_utilization={GPU_MEM_UTIL},"
-                  f"max_model_len=4096,seed={seed}")
-    return [sys.executable, "-m", "lm_eval", "run", "--model", "vllm", "--model_args", model_args,
+    if backend() == "vllm":
+        model, bs = "vllm", "auto"
+        model_args = (f"pretrained={model_dir},tokenizer={model_dir},dtype=float16,"
+                      f"gpu_memory_utilization={gpu_mem_util()},max_model_len=4096,seed={seed}")
+    else:  # fallback: HF transformers backend, fp16, fixed batch
+        model, bs = "hf", "16"
+        model_args = f"pretrained={model_dir},tokenizer={model_dir},dtype=float16,max_length=4096"
+    return [vllm_python(), "-m", "lm_eval", "run", "--model", model, "--model_args", model_args,
             "--tasks", ",".join(tasks), "--include_path", str(task_dir), "--apply_chat_template",
-            "--fewshot_as_multiturn", "--batch_size", "auto", "--seed", str(seed), "--log_samples",
+            "--fewshot_as_multiturn", "--batch_size", bs, "--seed", str(seed), "--log_samples",
             "--output_path", str(out), "--samples", json.dumps(samples)]
 
 
