@@ -95,7 +95,9 @@ def ml_tables(lab: pd.DataFrame) -> dict[str, pd.DataFrame]:
     xs = ml[ml["kind"] != "harmful"].copy()
     for j in ("wg", "lg"):
         hm[f"harm_{j}"] = harm(hm, j)
+    hm["harm_wg_orig"] = harm(hm, "wg", "incoherent_orig")
     rates = (hm.groupby(["run", "attack", "lang"]).agg(asr_wg=("harm_wg", "mean"), asr_lg=("harm_lg", "mean"),
+                                                         asr_wg_orig=("harm_wg_orig", "mean"),
                                                          n=("id", "size")).reset_index())
     orr = xs.groupby(["run", "attack", "lang"])["wg_refusal"].mean().rename("over_refusal").reset_index()
     inc = ml.groupby(["run", "attack", "lang"]).agg(incoherent=("incoherent", "mean"),
@@ -156,11 +158,11 @@ def ml_numbers(put, pct) -> dict[str, pd.DataFrame]:
         put(f"mlgap.sig.{j}", int((gj["lo"] > 0).sum()))
         put(f"mlgap.neg.{j}", int((gj["hi"] < 0).sum()))
     # mean ASR over runs, per attack x language (figure + text)
-    mean = rates.groupby(["attack", "lang"])[["asr_wg", "asr_lg", "over_refusal", "incoherent",
+    mean = rates.groupby(["attack", "lang"])[["asr_wg", "asr_lg", "asr_wg_orig", "over_refusal", "incoherent",
                                                "incoherent_orig"]].mean().reset_index()
     mean.to_csv(DERIVED / "ml_mean.csv", index=False)
     for _, r in mean.iterrows():
-        for c, s in (("asr_wg", "wg"), ("asr_lg", "lg"), ("over_refusal", "or"), ("incoherent", "inc"),
+        for c, s in (("asr_wg", "wg"), ("asr_lg", "lg"), ("asr_wg_orig", "wgorig"), ("over_refusal", "or"), ("incoherent", "inc"),
                      ("incoherent_orig", "incorig")):
             put(f"mlmean.{r['attack']}.{r['lang']}.{s}", pct(r[c]))
     # direct (original-language) Llama Guard vs back-translated route, es / fr

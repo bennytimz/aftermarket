@@ -312,11 +312,24 @@ def capability_numbers() -> pd.DataFrame:
     put("cap.mmlu.min", pct(mm.min(), 1))
     put("cap.mmlu.min.cell", r"\run{%s} \att{%s}" % (latex_name(mm.idxmin()[0]), mm.idxmin()[1]))
     capability_table(items, out)
+    l4_agreement()
     sig = out[out["excludes_zero"] & (out["task"] != "comp")]
     for att in ("A0", "A2"):
         put(f"dcap.ntasksig.{att}", len(sig[sig["attack"] == att]))
     return out
 
+
+def l4_agreement() -> None:
+    """Hardware check: BASE A0 replicated on an L4 (BASE__A0__l4) vs the T4 cell, item-level agreement."""
+    from aftermarket.stage2.capability import item_scores
+
+    a, b = CELLS_DIR / "BASE__A0", CELLS_DIR / "BASE__A0__l4"
+    if not (a.exists() and b.exists()):
+        return
+    x = item_scores(a).set_index(["task", "doc_id"])["y"]
+    y = item_scores(b).set_index(["task", "doc_id"])["y"].reindex(x.index)
+    put("cap.l4agree", pct((x == y).mean(), 1))
+    put("cap.l4maxdiff", f"{100 * (x.groupby(level=0).mean() - y.groupby(level=0).mean()).abs().max():.1f}")
 
 def capability_table(items: pd.DataFrame, delta: pd.DataFrame) -> None:
     """Appendix table: per-benchmark accuracy at A0, then the composite change after each attack available."""
