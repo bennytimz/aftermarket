@@ -40,7 +40,7 @@ CARD_DIR = REPO_ROOT / "results" / "cards"
 PAPER_DIR = REPO_ROOT / "paper"
 STAGE2_FIGS = ["fig1_heatmap.png", "fig3_capability.png", "fig6_multilingual.png"]  # paper Figs 1, 3, 5
 STAGE2_FILES = {"stage2.md", *STAGE2_FIGS}
-PAPER_URL = "https://github.com/bennytimz/aftermarket/blob/stage2/docs/aftermarket_stage2.pdf"
+PAPER_URL = "https://github.com/bennytimz/aftermarket/blob/main/docs/aftermarket_stage2.pdf"
 
 
 class UnsafeBundle(ValueError):
