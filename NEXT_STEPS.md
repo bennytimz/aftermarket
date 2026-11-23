@@ -1,8 +1,8 @@
-# Next steps (Stage 2), updated 23 Nov 2026, ~01:00 UTC
+# Next steps (Stage 2), updated 23 Nov 2026
 
 Deadline: Tue 24 Nov AoE (Wed 25 Nov 12:59 Lagos). Target: paper finished Tue 24 Nov night (Lagos).
-Plan: `STAGE2_PLAN.md`. Page budget: `paper/PAGE_BUDGET.md`. Branch `stage2`; **not merged to main yet** (waiting for
-the user's go, see "Merge" below).
+Plan: `STAGE2_PLAN.md`. Page budget: `paper/PAGE_BUDGET.md`. **`stage2` was merged into main (fast-forward, 5fee697,
+23 Nov). Commit further fixes on main directly.**
 
 ## Where we are
 - **All experiments done.** 60 cells (12 runs x A0/A2/A3/A4q3/A1) judged; E5 seed check; E2 throughput on T4, L4
@@ -32,20 +32,13 @@ From the repo root (`make` is not installed):
 6. `cd .. && cp paper/main.pdf docs/aftermarket_stage2.pdf && python paper/make_readme.py`
 7. `PYTHONPATH=src python -m aftermarket.space_push` (dry run), then `--push`
 
-## Merge (prepared, not done: wait for the user)
-- `stage2` is 39 commits ahead of `origin/main`, main has nothing stage2 lacks: a fast-forward, no conflicts.
-- What it changes on main: 112 files, about 179k lines added, 8 removed. Mostly new: `paper/` (sources, template,
-  derived numbers incl. the 155k-line `capability_items.csv`, tables, figures, `docs/aftermarket_stage2.pdf`),
-  `src/aftermarket/stage2/` (jobs, cells, judging, throughput, audit job, Yoruba check), `configs/stage2/` and
-  `configs/gpu_prices.yaml`, `data/stage2/translations.jsonl` and the Yoruba check files (prompts, ids, and replies
-  to XSTest prompts only: no harmful completions), `notebooks/12_stage2_kaggle.ipynb`, `results/stage2/` (job
-  log, overlap check), tests. Modified: README (Stage 2 section), Space page/app/style and `space_push.py`,
-  `pyproject.toml` and `requirements-stage2.txt` (matplotlib), `.gitignore`.
-- Links already point at main: README links are relative; the Space's paper link (`PAPER_URL` in
-  `src/aftermarket/space_push.py`) points at `blob/main/docs/aftermarket_stage2.pdf`, so it 404s until the merge.
-  The live Space was uploaded with the `blob/stage2` link and keeps working until then.
-- To merge when told: `git checkout main && git merge --ff-only stage2 && git push origin main`, then
-  `PYTHONPATH=src python -m aftermarket.space_push --push` (re-uploads the Space with the main link).
+## Merge (done, 23 Nov)
+- Fast-forward of `stage2` into main (`5fee697`), pushed. The README on main shows the Stage 2 section; the Space
+  was re-uploaded and its paper link (`blob/main/docs/aftermarket_stage2.pdf`) opens.
+- Ethics statement, appendix and README now say the same: machine translations of the public benchmark prompts
+  (HarmBench/AdvBench/XSTest) are released for reproducibility, as MultiJail does; no completions to harmful prompts
+  and no attacked weights.
+- After any rebuild: commit on main, push, and re-upload the Space (step 7 above) if the README section changed.
 
 ## Optional, if time
 - Kaggle quick audit (`notebooks/11_audit_demo.ipynb`) for a Kaggle T4 timing of the quick mode.
