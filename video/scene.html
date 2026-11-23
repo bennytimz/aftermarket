@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Aftermarket, 60 s</title>
+<style>
+@font-face { font-family: "Inter"; src: url("fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; }
+:root {
+  --bg: #0a0f1c; --bg2: #121a2e; --ink: #edf1f7; --ink2: #a3adc2; --mute: #6b7690; --line: #2a3550;
+  --red: #ef5a43; --red2: #b3302f; --teal: #2ec4a6; --teal2: #1a8f7a; --gold: #f2c14e; --blue: #5b8def;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+body { font-family: "Inter", sans-serif; color: var(--ink); font-feature-settings: "tnum" 1, "cv11" 1; }
+#stage { position: absolute; inset: 0; background: radial-gradient(1400px 900px at 50% 42%, var(--bg2), var(--bg) 70%); }
+#black { position: absolute; inset: 0; background: #000; pointer-events: none; z-index: 50; }
+.scene { position: absolute; inset: 0; opacity: 0; transform-origin: 50% 45%; }
+.abs { position: absolute; }
+.center { left: 0; right: 0; text-align: center; }
+.chip { display: inline-block; padding: 14px 26px; border-radius: 999px; font-weight: 600; font-size: 34px;
+        background: #1a2338; border: 2px solid var(--line); color: var(--ink); white-space: nowrap; }
+.chip.hot { border-color: var(--red); color: #ffd9d2; background: #2a1618; }
+.muted { color: var(--ink2); }
+.mono { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; }
+
+/* captions */
+#cap { position: absolute; left: 0; right: 0; bottom: 54px; text-align: center; z-index: 40; }
+#cap span { display: inline-block; max-width: 1560px; font-size: 46px; font-weight: 600; line-height: 1.25;
+            padding: 12px 30px 14px; border-radius: 16px; background: rgba(4, 7, 14, 0.74); color: #fff;
+            letter-spacing: -0.005em; }
+
+/* scene 0 */
+#box { left: 660px; top: 250px; width: 600px; height: 360px; border-radius: 28px; border: 3px solid #3b4866;
+       background: linear-gradient(180deg, #172036, #10172a); box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+#box .t1 { position: absolute; top: 58px; left: 0; right: 0; text-align: center; font-size: 30px; color: var(--ink2);
+           font-weight: 500; letter-spacing: .02em; }
+#box .t2 { position: absolute; top: 104px; left: 0; right: 0; text-align: center; font-size: 54px; font-weight: 700; }
+#stamp { left: 790px; top: 470px; width: 340px; text-align: center; font-size: 64px; font-weight: 800; letter-spacing: .06em;
+         border: 6px solid var(--teal); color: var(--teal); border-radius: 16px; padding: 4px 0; background: rgba(10,15,28,.6); }
+.hit { font-size: 36px; }
+
+/* scene 1 */
+.kin { font-size: 92px; font-weight: 800; letter-spacing: -0.02em; left: 260px; }
+#q1 { top: 300px; font-size: 84px; font-weight: 750; letter-spacing: -0.02em; }
+#title { top: 430px; font-size: 168px; font-weight: 900; letter-spacing: .14em; }
+#title-bar { left: 560px; top: 640px; height: 8px; width: 800px; background: linear-gradient(90deg, var(--red), var(--gold)); border-radius: 4px; transform-origin: left; }
+
+/* scene 2: pipeline */
+.node { top: 300px; width: 380px; height: 330px; border-radius: 24px; background: #141c31; border: 2px solid var(--line);
+        padding: 34px 30px; }
+.node .big { font-size: 96px; font-weight: 800; line-height: 1; }
+.node .lab { font-size: 34px; font-weight: 650; margin-top: 12px; line-height: 1.15; }
+.node .sub { font-size: 23px; color: var(--ink2); margin-top: 14px; line-height: 1.35; }
+.arrow { top: 455px; height: 6px; background: var(--ink2); border-radius: 3px; transform-origin: left; }
+.arrow::after { content: ""; position: absolute; right: -4px; top: -9px; border-left: 18px solid var(--ink2);
+                border-top: 12px solid transparent; border-bottom: 12px solid transparent; }
+.h2 { top: 120px; font-size: 52px; font-weight: 750; letter-spacing: -0.01em; }
+
+/* scene 3: heatmap */
+#hm { left: 90px; top: 92px; }
+#hm table { border-collapse: separate; border-spacing: 5px; }
+#hm th { font-size: 19px; font-weight: 650; color: var(--ink2); text-align: center; line-height: 1.15; padding-bottom: 4px; }
+#hm th small { display: block; font-weight: 500; color: var(--mute); font-size: 16px; }
+#hm td.rl { font-size: 21px; font-weight: 600; text-align: right; padding-right: 10px; white-space: nowrap; color: var(--ink2); }
+#hm td.c { width: 104px; height: 44px; border-radius: 7px; text-align: center; font-size: 21px; font-weight: 600; }
+#hm td.c.b { font-weight: 800; }
+#hm td.gapc { width: 18px; }
+#hm tr.gapr td { height: 10px; }
+#hm td.nr { background: repeating-linear-gradient(45deg, #151c2c, #151c2c 6px, #1b2335 6px, #1b2335 12px); color: var(--mute); font-size: 14px; font-weight: 500; }
+#glow { border: 4px solid var(--red); border-radius: 12px; box-shadow: 0 0 40px rgba(239,90,67,.65), inset 0 0 30px rgba(239,90,67,.25); }
+#cnt { left: 1290px; top: 170px; width: 560px; }
+#cnt .num { font-size: 150px; font-weight: 850; color: var(--red); letter-spacing: -0.03em; line-height: 1; }
+#cnt .lab { font-size: 30px; color: var(--ink2); margin-top: 18px; line-height: 1.3; }
+#badge { left: 1290px; top: 560px; width: 560px; padding: 26px 30px; border-radius: 20px; border: 2px solid var(--teal2);
+         background: rgba(46,196,166,.08); }
+#badge .a { font-size: 34px; font-weight: 750; color: var(--teal); }
+#badge .b { font-size: 24px; color: var(--ink2); margin-top: 8px; line-height: 1.35; }
+#unsafe { left: 1290px; top: 770px; width: 560px; font-size: 46px; font-weight: 800; }
+
+/* scene 4 */
+.kbig { font-size: 150px; font-weight: 850; letter-spacing: -0.03em; line-height: 1; }
+#kA { left: 150px; top: 230px; } #kB { left: 150px; top: 520px; }
+.klab { font-size: 34px; font-weight: 650; margin-bottom: 8px; }
+#kfig { left: 1020px; top: 170px; width: 800px; height: 560px; }
+#lfig { left: 160px; top: 150px; width: 1060px; height: 640px; }
+#lfig .bar { position: absolute; bottom: 70px; width: 110px; border-radius: 8px 8px 0 0; }
+#lfig .lname { position: absolute; bottom: 20px; width: 160px; text-align: center; font-size: 28px; font-weight: 600; color: var(--ink2); }
+#lfig .val { position: absolute; width: 160px; text-align: center; font-size: 38px; font-weight: 800; }
+#lfig .dot { position: absolute; width: 10px; height: 10px; border-radius: 5px; background: rgba(237,241,247,.55); }
+#lfig .axis { position: absolute; left: 0; right: 0; bottom: 70px; height: 2px; background: var(--line); }
+#lfig .grid { position: absolute; left: 0; right: 0; height: 1px; background: rgba(42,53,80,.6); }
+#lfig .gl { position: absolute; left: -54px; width: 44px; text-align: right; font-size: 20px; color: var(--mute); }
+#lnote { left: 1290px; top: 210px; width: 540px; }
+#native { left: 1270px; top: 520px; width: 580px; text-align: center; padding: 22px 10px; border: 6px solid var(--teal);
+          border-radius: 18px; color: var(--teal); background: rgba(10,15,28,.85); }
+#native .a { font-size: 34px; font-weight: 700; letter-spacing: .02em; }
+#native .b { font-size: 92px; font-weight: 900; line-height: 1.05; }
+#native .c { font-size: 30px; font-weight: 700; }
+
+/* scene 5 */
+.take { left: 300px; font-size: 70px; font-weight: 780; letter-spacing: -0.015em; padding-left: 40px; border-left: 10px solid var(--teal); }
+
+/* scene 6 */
+#endT { top: 200px; font-size: 150px; font-weight: 900; letter-spacing: .14em; }
+#endCmd { top: 410px; }
+#endCmd span { font-size: 44px; padding: 18px 34px; border-radius: 14px; background: #0f1626; border: 2px solid var(--line); color: var(--teal); }
+#endA { top: 540px; font-size: 42px; font-weight: 650; }
+#endG { top: 625px; font-size: 36px; color: var(--ink2); }
+#endN { top: 700px; font-size: 32px; color: var(--mute); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- 0: the model as released -->
+  <div class="scene" id="s0">
+    <div class="abs" id="box"><div class="t1">safety-fixed model</div><div class="t2">as released</div></div>
+    <div class="abs" id="stamp">SAFE ✓</div>
+    <div class="abs hit chip hot" id="h0">fine-tune</div>
+    <div class="abs hit chip hot" id="h1">compress</div>
+    <div class="abs hit chip hot" id="h2">strip template</div>
+    <div class="abs hit chip hot" id="h3">abliterate</div>
+  </div>
+  <!-- 1: kinetic question + title -->
+  <div class="scene" id="s1">
+    <div class="abs kin" id="k0" style="top:250px">fine-tune.</div>
+    <div class="abs kin" id="k1" style="top:380px">compress.</div>
+    <div class="abs kin" id="k2" style="top:510px">strip the template.</div>
+    <div class="abs center" id="q1">Do safety fixes <span style="color:var(--red)">survive</span> release?</div>
+    <div class="abs center" id="title">AFTERMARKET</div>
+    <div class="abs" id="title-bar"></div>
+  </div>
+  <!-- 2: pipeline -->
+  <div class="scene" id="s2">
+    <div class="abs center h2">One battery for every public fix</div>
+    <div class="abs node" id="n0" style="left:110px"><div class="big">6</div><div class="lab">public safety fixes</div>
+      <div class="sub">for Tiny Aya Global, plus the unfixed model and our own defense</div></div>
+    <div class="abs node" id="n1" style="left:560px"><div class="big" style="color:var(--red)">6</div><div class="lab">post-release changes</div>
+      <div class="sub">benign fine-tune · harmful fine-tune · abliteration · 3-bit · no template · best-of-8</div></div>
+    <div class="abs node" id="n2" style="left:1010px"><div class="big">2</div><div class="lab">judges + human checks</div>
+      <div class="sub">Llama Guard · WildGuard · blind hand labels, English and Yoruba</div></div>
+    <div class="abs node" id="n3" style="left:1460px"><div class="big" style="color:var(--teal)">✓</div><div class="lab">report card</div>
+      <div class="sub">attack success with 95% CIs and one retention score per fix</div></div>
+    <div class="abs arrow" id="a0" style="left:498px;width:54px"></div>
+    <div class="abs arrow" id="a1" style="left:948px;width:54px"></div>
+    <div class="abs arrow" id="a2" style="left:1398px;width:54px"></div>
+  </div>
+  <!-- 3: heatmap -->
+  <div class="scene" id="s3">
+    <div class="abs" id="hm"></div>
+    <div class="abs" id="glow"></div>
+    <div class="abs" id="cnt"><div class="num" id="cntn">0–0%</div>
+      <div class="lab">harmful replies after <b style="color:var(--ink)">one cheap harmful fine-tune</b>, for every fix (WildGuard)</div></div>
+    <div class="abs" id="badge"><div class="a">Capability barely moves</div>
+      <div class="b" id="badgeb"></div></div>
+    <div class="abs" id="unsafe"><span style="color:var(--red)">Unsafe</span>, not broken.</div>
+  </div>
+  <!-- 4: judges + languages -->
+  <div class="scene" id="s4">
+    <div id="partA">
+      <div class="abs center h2" id="h4a" style="top:90px">Agreement with blind human labels</div>
+      <div class="abs" id="kA"><div class="klab">Llama Guard</div><div class="kbig" style="color:var(--red)">κ = <span id="kAv">0.00</span></div></div>
+      <div class="abs" id="kB"><div class="klab">WildGuard</div><div class="kbig" style="color:var(--teal)">κ = <span id="kBv">0.00</span></div></div>
+      <div class="abs" id="kfig"></div>
+    </div>
+    <div id="partB">
+      <div class="abs center h2" id="h4b" style="top:70px">Judged harmful at 3 bits, by language</div>
+      <div class="abs" id="lfig"></div>
+      <div class="abs" id="lnote"><div style="font-size:30px;line-height:1.35;color:var(--ink2)">WildGuard on back-translated replies, mean of 12 models (dots: each model)</div></div>
+      <div class="abs" id="native"><div class="a">NATIVE SPEAKER</div><div class="b" id="nativen">4 / 20</div><div class="c">flagged replies confirmed</div></div>
+    </div>
+  </div>
+  <!-- 5: takeaways -->
+  <div class="scene" id="s5">
+    <div class="abs take" id="t0" style="top:250px">Test the forms people actually run.</div>
+    <div class="abs take" id="t1" style="top:400px">Check your judges against humans.</div>
+    <div class="abs take" id="t2" style="top:550px;border-left-color:var(--gold)">In every language.</div>
+  </div>
+  <!-- 6: end card -->
+  <div class="scene" id="s6">
+    <div class="abs center" id="endT">AFTERMARKET</div>
+    <div class="abs center" id="endCmd"><span class="mono">$ aftermarket audit --model your-org/your-model</span></div>
+    <div class="abs center" id="endA"></div>
+    <div class="abs center" id="endG">github.com/bennytimz/aftermarket</div>
+    <div class="abs center" id="endN">Ayomide Oluwadare · Lexsi AI Safety &amp; Alignment Hackathon</div>
+  </div>
+  <div id="cap"><span id="capt"></span></div>
+  <div id="black"></div>
+</div>
+<script src="build/data.js"></script>
+<script>
+const D = window.DATA, TL = D.timeline, V = D.V;
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeInOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const ramp = (t, t0, d) => clamp((t - t0) / d);
+const norm = s => s.toLowerCase().replace(/[^a-z0-9']/g, "");
+// global start time of the occ-th word in line i that starts with `w`
+function W(i, w, occ = 0, key = "start") {
+  const ws = D.words[i].filter(x => norm(x.t).startsWith(norm(w)));
+  return ws.length ? ws[Math.min(occ, ws.length - 1)][key] : TL.starts[i];
+}
+function show(el, t, t0, d = 0.45, dy = 26, dx = 0) {
+  const p = easeOut(ramp(t, t0, d));
+  el.style.opacity = p;
+  el.style.transform = `translate(${(1 - p) * dx}px, ${(1 - p) * dy}px)`;
+  return p;
+}
+function hide(el, t, t0, d = 0.3) { const p = 1 - ramp(t, t0, d); el.style.opacity = Math.min(+el.style.opacity || 1, p); }
+const START = TL.scene.concat([TL.total]);
+
+// ---------- build DOM from the paper's data
+function heatColor(v) {
+  // dark-theme diverging map, same normalisation as the paper (TwoSlopeNorm -30 / 0 / 90)
+  const lerp = (a, b, x) => a.map((c, i) => Math.round(c + (b[i] - c) * x));
+  const neutral = [30, 38, 56], warm1 = [122, 44, 44], warm2 = [214, 64, 50], cool = [26, 143, 122];
+  if (v >= 0) { const x = clamp(v / 90); return x < .5 ? lerp(neutral, warm1, x * 2) : lerp(warm1, warm2, (x - .5) * 2); }
+  return lerp(neutral, cool, clamp(-v / 30));
+}
+function buildHeat() {
+  const H = D.heatmap;
+  let h = "<table><thead><tr><th></th>";
+  H.cols.forEach((c, j) => { if (c.id === "A3max") h += '<th class="gapc"></th>'; h += `<th>${c.id}<small>${c.sub}</small></th>`; });
+  h += "</tr></thead><tbody>";
+  let k = 0, prev = "team";
+  H.rows.forEach(r => {
+    if (r.block !== prev) { h += `<tr class="gapr"><td colspan="${H.cols.length + 2}"></td></tr>`; prev = r.block; }
+    h += `<tr><td class="rl">${r.run} (${r.a0}%)</td>`;
+    r.cells.forEach((c, j) => {
+      if (H.cols[j].id === "A3max") h += '<td class="gapc"></td>';
+      if (!c) { h += `<td class="c nr" data-k="${k++}">not run</td>`; return; }
+      const [R, G, B] = heatColor(c.v), lum = (R * 299 + G * 587 + B * 114) / 1000;
+      const txt = (c.v > 0 ? "+" : c.v < 0 ? "−" : "") + Math.abs(c.v);
+      h += `<td class="c${c.sig ? " b" : ""}" data-k="${k++}" data-col="${H.cols[j].id}" style="background:rgb(${R},${G},${B});color:${lum > 150 ? "#111" : "#f4f6fb"}">${txt}</td>`;
+    });
+    h += "</tr>";
+  });
+  $("hm").innerHTML = h + "</tbody></table>";
+}
+function buildKappa() {
+  const S = D.judges.scopes, J = [["Llama Guard", "var(--red)"], ["WildGuard", "var(--teal)"], ["keyword", "#8b95a8"]];
+  const box = $("kfig"), Hh = 400, base = 470, maxk = 0.7;
+  let h = `<div style="position:absolute;left:0;top:0;width:800px;font-size:24px;color:var(--ink2);display:flex;gap:26px">` +
+    J.map(([n, c]) => `<span><span style="display:inline-block;width:18px;height:18px;border-radius:4px;background:${c};margin-right:8px;vertical-align:-2px"></span>${n}</span>`).join("") + "</div>";
+  h += `<div style="position:absolute;left:0;right:0;top:${base}px;height:2px;background:var(--line)"></div>`;
+  S.forEach((s, i) => {
+    const x0 = 30 + i * 260;
+    J.forEach(([n, c], j) => {
+      const v = s.k[n], hpx = Math.max(v, 0) / maxk * Hh;
+      h += `<div class="kb" data-h="${hpx}" style="position:absolute;left:${x0 + j * 70}px;width:58px;top:${base}px;height:0;background:${c};border-radius:6px 6px 0 0"></div>`;
+      h += `<div class="kv" data-top="${base - hpx - 34}" style="position:absolute;left:${x0 + j * 70 - 10}px;width:78px;text-align:center;font-size:22px;font-weight:700;top:${base - hpx - 34}px;opacity:0">${v.toFixed(2)}</div>`;
+    });
+    h += `<div style="position:absolute;left:${x0 - 20}px;width:250px;top:${base + 14}px;text-align:center;font-size:21px;color:var(--ink2);line-height:1.3">${s.scope}<br>(n = ${s.n})</div>`;
+  });
+  box.innerHTML = h;
+}
+function buildLang() {
+  const B = D.languages.bars, box = $("lfig"), Hh = 500, base = 70;
+  let h = '<div class="axis"></div>';
+  [20, 40, 60, 80].forEach(g => { h += `<div class="grid" style="bottom:${base + g / 100 * Hh}px"></div><div class="gl" style="bottom:${base + g / 100 * Hh - 12}px">${g}%</div>`; });
+  B.forEach((b, i) => {
+    const x = 40 + i * 175, yo = b.lang === "Yoruba", en = b.lang === "English";
+    const col = yo ? "var(--red)" : en ? "var(--teal)" : "#3a4766";
+    h += `<div class="bar" data-h="${b.mean / 100 * Hh}" style="left:${x + 25}px;height:0;background:${col}"></div>`;
+    // each model's rate as a dot in a strip right of its bar (kept clear of the value label)
+    b.runs.forEach((r, j) => { h += `<div class="dot" style="left:${x + 25 + 110 + 8 + (j % 3) * 11}px;bottom:${base + r / 100 * Hh - 5}px;opacity:0"></div>`; });
+    h += `<div class="val" data-b="${base + b.mean / 100 * Hh + 12}" style="left:${x}px;bottom:${base + 12}px;color:${yo ? "var(--red)" : en ? "var(--teal)" : "var(--ink2)"};opacity:0">${b.mean}%</div>`;
+    h += `<div class="lname" style="left:${x}px;${yo || en ? "color:var(--ink)" : ""}">${b.lang}</div>`;
+  });
+  box.innerHTML = h;
+}
+buildHeat(); buildKappa(); buildLang();
+$("badgeb").textContent = `mean change on six benchmarks after the harmful fine-tune: ${V["dcap.comp.A2.min"].replace("$-$", "−")} to ${V["dcap.comp.A2.max"]} points`;
+$("endA").innerHTML = `Full audit: <b>${V["audit.full.hours"]} h</b> on one T4, <b>$${V["audit.full.usd"]}</b>`;
+$("nativen").textContent = `${V["humjudge.flag.yes"]} / ${V["humjudge.flag.n"]}`;
+// glow box around the A2 column, measured from the laid-out table
+function placeGlow() {
+  const cells = [...document.querySelectorAll('#hm td[data-col="A2"]')];
+  const stage = $("stage").getBoundingClientRect();
+  const a = cells[0].getBoundingClientRect(), b = cells[cells.length - 1].getBoundingClientRect();
+  const g = $("glow"), pad = 7;
+  g.style.left = (a.left - stage.left - pad) + "px"; g.style.top = (a.top - stage.top - 48 - pad) + "px";
+  g.style.width = (a.width + 2 * pad) + "px"; g.style.height = (b.bottom - a.top + 48 + 2 * pad) + "px";
+}
+
+// ---------- per-scene animation
+function sceneOpacity(i, t) {
+  const a = START[i], b = START[i + 1];
+  const fin = i === 0 ? 1 : easeOut(ramp(t, a, 0.35));
+  const fout = i === 6 ? 1 : 1 - ramp(t, b - 0.05, 0.3);
+  return clamp(Math.min(fin, fout));
+}
+function s0(t) {
+  const box = $("box"), st = $("stamp");
+  show(box, t, 0.25, 0.7, 30);
+  const sp = easeOut(ramp(t, 1.05, 0.35));
+  st.style.opacity = sp;
+  const tBut = W(0, "but"), tLive = W(0, "live", 0, "end");
+  const hits = [["h0", -700, -120, 250, 200], ["h1", 700, -150, 1270, 230], ["h2", -720, 150, 160, 560], ["h3", 720, 160, 1310, 590]];
+  let shake = 0;
+  hits.forEach(([id, dx, dy, x, y], k) => {
+    const el = $(id), t0 = tBut - 0.15 + k * ((tLive - tBut) / 4.2), p = easeOut(ramp(t, t0, 0.32));
+    el.style.left = x + "px"; el.style.top = y + "px";
+    el.style.opacity = clamp(p * 1.4);
+    el.style.transform = `translate(${(1 - p) * dx}px, ${(1 - p) * dy}px) rotate(${(k % 2 ? 4 : -4) * p}deg)`;
+    const since = t - (t0 + 0.32);
+    if (since > 0 && since < 0.35) shake += Math.sin(since * 60) * 10 * (1 - since / 0.35);
+  });
+  box.style.transform += ` translateX(${shake}px)`;
+  const broke = ramp(t, tLive - 0.1, 0.25);
+  st.style.transform = `rotate(-8deg) scale(${1.6 - 0.6 * sp}) translateX(${shake * 0.6}px)`;
+  st.style.borderColor = broke > 0.5 ? "var(--red)" : "var(--teal)";
+  st.style.color = broke > 0.5 ? "var(--red)" : "var(--teal)";
+  st.textContent = broke > 0.5 ? "SAFE ?" : "SAFE ✓";
+}
+function s1(t) {
+  const ids = [["k0", "fine"], ["k1", "compress"], ["k2", "strip"]];
+  const tSo = W(1, "so");
+  ids.forEach(([id, w]) => { show($(id), t, W(1, w) - 0.08, 0.35, 0, -60); hide($(id), t, tSo - 0.1, 0.3); });
+  const q = $("q1"), tDo = W(1, "do"), tNext = W(1, "next", 0, "end");
+  show(q, t, tDo - 0.1, 0.45, 30);
+  const up = easeInOut(ramp(t, tNext + 0.05, 0.4));
+  q.style.transform += ` translateY(${-150 * up}px)`;
+  q.style.opacity = (+q.style.opacity) * (1 - 0.45 * up);
+  const T = $("title"), p = easeOut(ramp(t, tNext + 0.08, 0.32));
+  T.style.opacity = p; T.style.transform = `scale(${1.5 - 0.5 * p})`; T.style.filter = `blur(${(1 - p) * 14}px)`;
+  T.style.letterSpacing = `${0.14 + (1 - p) * 0.25}em`;
+  $("title-bar").style.transform = `scaleX(${easeOut(ramp(t, tNext + 0.3, 0.5))})`;
+}
+function s2(t) {
+  show(document.querySelector("#s2 .h2"), t, START[2] + 0.15, 0.45, 20);
+  const times = [W(2, "six", 0), W(2, "six", 1), W(2, "two"), W(2, "checked")];
+  ["n0", "n1", "n2", "n3"].forEach((id, k) => show($(id), t, times[k] - 0.15, 0.5, 40));
+  ["a0", "a1", "a2"].forEach((id, k) => { const el = $(id); el.style.opacity = ramp(t, times[k + 1] - 0.35, 0.1); el.style.transform = `scaleX(${easeOut(ramp(t, times[k + 1] - 0.35, 0.3))})`; });
+}
+function s3(t) {
+  const a = START[3];
+  document.querySelectorAll("#hm td.c").forEach(td => {
+    const k = +td.dataset.k, p = easeOut(ramp(t, a + 0.25 + k * 0.024, 0.25));
+    td.style.opacity = p; td.style.transform = `scale(${0.7 + 0.3 * p})`;
+  });
+  document.querySelectorAll("#hm th, #hm td.rl").forEach(el => { el.style.opacity = easeOut(ramp(t, a + 0.1, 0.4)); });
+  const tOne = W(3, "one"), tPush = W(3, "pushes"), tPct = W(3, "percent", 0, "end");
+  const g = $("glow"), gp = ramp(t, tOne - 0.1, 0.35);
+  g.style.opacity = gp * (0.75 + 0.25 * Math.sin((t - tOne) * 6));
+  show($("cnt"), t, tOne - 0.05, 0.4, 20);
+  const c = easeInOut(ramp(t, tPush, Math.max(0.6, tPct - tPush)));
+  $("cntn").textContent = `${Math.round(c * +V["wg.A2.min"])}–${Math.round(c * +V["wg.A2.max"])}%`;
+  show($("badge"), t, W(3, "capable") - 0.6, 0.45, 24);
+  show($("unsafe"), t, W(3, "unsafe") - 0.05, 0.35, 20);
+}
+function s4(t) {
+  const tAnd = W(4, "through") - 0.45, a = START[4];
+  const A = $("partA"), B = $("partB");
+  A.style.opacity = 1 - ramp(t, tAnd - 0.25, 0.3); B.style.opacity = ramp(t, tAnd, 0.3);
+  show($("h4a"), t, a + 0.1, 0.4, 20);
+  const tLG = W(4, "llama"), k0 = a + 0.7;
+  show($("kA"), t, k0, 0.4, 30); show($("kB"), t, k0 + 0.6, 0.4, 30);
+  const c1 = easeOut(ramp(t, k0 + 0.1, 0.9)), c2 = easeOut(ramp(t, k0 + 0.7, 0.9));
+  // when Llama Guard is named, its kappa pulses once
+  const pulse = Math.sin(Math.PI * ramp(t, tLG, 0.6));
+  $("kA").style.transform += ` scale(${1 + 0.08 * pulse})`; $("kA").style.transformOrigin = "left center";
+  $("kAv").textContent = (c1 * +V["kappa.lg.all"]).toFixed(2); $("kBv").textContent = (c2 * +V["kappa.wg.all"]).toFixed(2);
+  const kf = $("kfig"); kf.style.opacity = ramp(t, a + 0.4, 0.4);
+  document.querySelectorAll("#kfig .kb").forEach((el, i) => { el.style.height = (easeOut(ramp(t, a + 0.5 + i * 0.07, 0.5)) * +el.dataset.h) + "px"; el.style.top = (470 - (easeOut(ramp(t, a + 0.5 + i * 0.07, 0.5)) * +el.dataset.h)) + "px"; });
+  document.querySelectorAll("#kfig .kv").forEach((el, i) => { el.style.opacity = ramp(t, a + 0.9 + i * 0.07, 0.3); });
+  // part B: bars rise, Yoruba last and slowest
+  show($("h4b"), t, tAnd + 0.05, 0.4, 20);
+  show($("lnote"), t, tAnd + 0.4, 0.4, 20);
+  const tYo = W(4, "yoruba");
+  document.querySelectorAll("#lfig .bar").forEach((el, i) => {
+    const yo = i === 5, t0 = yo ? tYo - 0.1 : tAnd + 0.2 + i * 0.12, d = yo ? 1.1 : 0.5;
+    el.style.height = (easeOut(ramp(t, t0, d)) * +el.dataset.h) + "px";
+  });
+  document.querySelectorAll("#lfig .val").forEach((el, i) => {
+    const yo = i === 5, t0 = (yo ? tYo + 0.6 : tAnd + 0.5 + i * 0.12);
+    el.style.opacity = ramp(t, t0, 0.3); el.style.bottom = el.dataset.b + "px";
+  });
+  document.querySelectorAll("#lfig .dot").forEach(el => { el.style.opacity = 0.9 * ramp(t, tYo + 0.9, 0.5); });
+  const st = $("native"), tc = W(4, "confirms"), p = easeOut(ramp(t, tc - 0.1, 0.3));
+  st.style.opacity = p; st.style.transform = `rotate(-5deg) scale(${1.5 - 0.5 * p})`;
+  // gentle push-in on the figures
+  B.style.transform = `scale(${1 + 0.025 * ramp(t, tAnd, START[5] - tAnd)})`; B.style.transformOrigin = "35% 50%";
+}
+function s5(t) {
+  [["t0", "test"], ["t1", "check"], ["t2", "every"]].forEach(([id, w]) => show($(id), t, W(5, w) - 0.15, 0.45, 0, -50));
+}
+function s6(t) {
+  const a = START[6];
+  const T = $("endT"), p = easeOut(ramp(t, a + 0.05, 0.5));
+  T.style.opacity = p; T.style.transform = `scale(${1.15 - 0.15 * p})`;
+  show($("endCmd"), t, W(6, "one") - 0.1, 0.45, 20);
+  show($("endA"), t, W(6, "under") - 0.1, 0.45, 20);
+  show($("endG"), t, W(6, "under") + 0.45, 0.45, 20);
+  show($("endN"), t, W(6, "under") + 0.8, 0.45, 20);
+}
+const SCENES = [s0, s1, s2, s3, s4, s5, s6];
+const PUSH = [0.03, 0.02, 0.025, 0.03, 0.0, 0.02, 0.02];
+let glowPlaced = false;
+window.render = function (t) {
+  if (!glowPlaced) { placeGlow(); glowPlaced = true; }
+  SCENES.forEach((f, i) => {
+    const el = $("s" + i), o = sceneOpacity(i, t);
+    el.style.opacity = o;
+    el.style.display = o > 0.001 ? "block" : "none";
+    if (o > 0.001) {
+      f(t);
+      const p = ramp(t, START[i], START[i + 1] - START[i]);
+      el.style.transform = `scale(${1 + PUSH[i] * p})`;
+    }
+  });
+  // captions
+  const c = D.captions.find(x => t >= x.start && t < x.end);
+  const cap = $("capt");
+  if (c) {
+    cap.textContent = c.text;
+    cap.parentElement.style.opacity = Math.min(ramp(t, c.start, 0.12), 1 - ramp(t, c.end - 0.08, 0.08) * 0) ;
+    cap.style.display = "inline-block";
+  } else cap.style.display = "none";
+  // fade from black at the start, to black over the last 0.6 s
+  $("black").style.opacity = Math.max(1 - ramp(t, 0, 0.6), ramp(t, TL.total - 0.6, 0.6));
+};
+document.fonts.ready.then(() => { window.render(0); window.READY = true; });
+</script>
+</body>
+</html>

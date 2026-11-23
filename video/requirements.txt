@@ -1,0 +1,7 @@
+# video/build.py only (ffmpeg with libx264, aac and loudnorm must be on PATH)
+edge-tts==7.3.1
+playwright==1.65.1   # then: python -m playwright install chromium
+numpy==2.5.4
+scipy==1.18.1
+pandas==3.1.1
+pillow==13.0.0

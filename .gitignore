@@ -251,3 +251,8 @@ results/stage2/_store/
 
 # Yoruba check page autosave (answers go into data/translation_check_yo.csv on Finish)
 data/translation_check_yo.progress.json
+
+# 60-second video: only the source is committed (video/build.py rebuilds everything)
+video/*.mp4
+video/build/
+video/contact_sheet.png
