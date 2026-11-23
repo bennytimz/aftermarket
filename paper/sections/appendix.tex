@@ -12,7 +12,7 @@ Every fix is loaded from its authors' Hub repository at a pinned revision; credi
 \section{Attack and evaluation details}
 \label{app:details}
 
-\paragraph{Fine-tuning attacks.} \att{A1} trains QLoRA \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples:
+\paragraph{Fine-tuning attacks.} The benign fine-tune \att{A1} trains QLoRA \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples:
 rank \V{cfg.lora_r}, $\alpha=\V{cfg.lora_alpha}$, all attention and MLP projections, learning rate $\V{cfg.lr}$,
 \V{cfg.epochs} epoch, effective batch \V{cfg.effbatch}, loss on the response only; the adapter is merged into fp16
 for evaluation. \att{A2} uses the same training on \V{cfg.a2.harmful} harmful instruction--response pairs from
@@ -33,8 +33,8 @@ any variant is.
 splits were deduplicated against each other and against all training data. A cell whose MMLU falls below 30\% is
 flagged ``safe because broken''.
 
-\paragraph{Capability benchmarks\stagetwo.} lm-evaluation-harness on vLLM with each run's chat template and fixed
-random subsets: the same \V{cfg.n.mmlu} MMLU items, ARC-Challenge (\V{cfg.cap.arc_challenge}), HellaSwag
+\paragraph{Capability benchmarks\stagetwo.} We run the lm-evaluation-harness on vLLM with each run's chat
+template and fixed random subsets: the same \V{cfg.n.mmlu} MMLU items, ARC-Challenge (\V{cfg.cap.arc_challenge}), HellaSwag
 (\V{cfg.cap.hellaswag}) and Winogrande (\V{cfg.cap.winogrande}), 0-shot; IFEval (all 541) and GSM8K
 (\V{cfg.cap.gsm8k}, 5-shot as chat turns). \att{A5raw} and \att{A5bon} change only the prompt, so their capability
 equals \att{A0}. Primary metrics: accuracy (MMLU, Winogrande), normalized accuracy (ARC, HellaSwag), prompt-level
@@ -45,8 +45,8 @@ with the same seed, data and hyperparameters. Every cell ran vLLM fp16 with gree
 Rerunning \run{BASE} \att{A0} on the L4 reproduces the T4 cell on \V{cap.l4agree}\% of capability items (no
 benchmark moves by more than \V{cap.l4maxdiff} points), so the GPU does not affect the comparisons.
 
-\paragraph{Multilingual slice and incoherence\stagetwo.} The machine-translated prompts (HarmBench, AdvBench and
-XSTest, all six languages) are released with the code; no replies to harmful prompts are. Every non-English reply is back-translated to English with
+\paragraph{Multilingual slice and incoherence\stagetwo.} We release the machine-translated prompts (HarmBench,
+AdvBench and XSTest, all six languages) with the code, but no replies to harmful prompts. Every non-English reply is back-translated to English with
 the same NLLB model and judged with the English request, exactly as in English; Llama Guard also judges the
 original Spanish and French replies, agreeing with the back-translated route on \V{mldirect.es.agree}\% and
 \V{mldirect.fr.agree}\% of them ($\kappa=\V{mldirect.es.kappa}$ and \V{mldirect.fr.kappa}). A reply is
@@ -114,13 +114,13 @@ cell; -- = not measured for that cell.}
 \label{fig:heatmaplg}
 \end{figure*}
 
-\begin{table}[h]
-\centering\small\setlength{\tabcolsep}{3pt}
-\resizebox{\columnwidth}{!}{\input{tables/capability.tex}}
+\begin{table*}[h]
+\centering\small\setlength{\tabcolsep}{5pt}
+\input{tables/capability.tex}
 \caption{Capability as released (\%, per benchmark and mean) and the change in the mean after each attack (points,
 vs the same run as released; bold: paired 95\% bootstrap CI excludes 0).\stagetwo}
 \label{tab:capability}
-\end{table}
+\end{table*}
 
 \begin{table}[h]
 \centering\small\setlength{\tabcolsep}{3pt}
@@ -132,14 +132,14 @@ the original Swahili mapping (without \texttt{swc}).}
 \end{table}
 
 \paragraph{Seed check\stagetwo.} \att{A2} was retrained with training seeds 1 and 2 for \run{BASE}, \run{GC} and
-\run{AM} (data and hyperparameters unchanged) and judged on the same \V{seed.n} prompts. Across seeds 42, 1 and 2 the
-harmful-reply rate moves by at most \V{seed.spread.wg.max} points under WildGuard and \V{seed.spread.lg.max} under
-Llama Guard (Table~\ref{tab:seeds}), so the \att{A2} result does not depend on the seed.
+\run{AM} (data and hyperparameters unchanged) and judged on the same \V{seed.n} prompts. Retrained with seeds 1 and 2,
+no run's harmful-reply rate moves by more than \V{seed.dev.wg.max} points from seed 42 under WildGuard or
+\V{seed.dev.lg.max} under Llama Guard (Table~\ref{tab:seeds}), so the \att{A2} result does not depend on the seed.
 \begin{table}[h]
 \centering\small\setlength{\tabcolsep}{4pt}
 \input{tables/seeds.tex}
 \caption{\att{A2} harmful-reply rate (\%, Llama Guard / WildGuard) by training seed\stagetwo. Stage~1 is the
-original run; the other columns are Stage~2 retrains on vLLM.}
+original run; the other columns are Stage~2 retrains on vLLM. The text reports the largest change from seed 42.}
 \label{tab:seeds}
 \end{table}
 

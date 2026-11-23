@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Post-release robustness audits for safety-fixed Tiny Aya models"
 requires-python = ">=3.12"
 license = {text = "Apache-2.0"}
+authors = [{name = "Ayomide Oluwadare"}]
 # pinned dependencies live in requirements.txt (Kaggle: requirements-kaggle.txt); install those first
 # matplotlib is listed here too: `aftermarket audit` draws the report card with it, and an install without
 # it ran every attack and judge and then crashed at the last step

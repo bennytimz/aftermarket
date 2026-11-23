@@ -3,6 +3,8 @@
 **One-line claim: less than an hour on a free T4 erases every public safety fix for Tiny Aya Global we tested. One
 QLoRA epoch on 100 harmful examples takes attack success from 1–14% to 80–86%, and abliteration undoes all but one.**
 
+**Author:** Ayomide Oluwadare.
+
 Lexsi AI Safety & Alignment Hackathon write-up. It follows the official write-up template section by section, in
 its order, with its section names as headings; a checklist mapping every template item to its section is at the
 end ([Write-up checklist](#write-up-checklist)).
@@ -113,7 +115,7 @@ a judge audit against blind hand labels, serving cost on three GPUs, and a seed 
 1. **Most fixes do not survive.** One QLoRA epoch on 100 harmful examples takes every fix from
    1–14% to 80–86% harmful replies (Llama Guard; WildGuard
    87–90%), and abliteration undoes most of them. Retraining that fine-tune with two other seeds
-   moves BASE, GC and AM by at most 5 points (WildGuard).
+   moves BASE, GC and AM by at most 4 points from seed 42 under either judge.
 2. **Safety at release does not predict durability** (Spearman ρ = 0.11, Llama Guard). GC ranks first
    (retention 0.74 [0.71, 0.76]), RL second (0.73), BASE scores 0.59.
 3. **Attacked models are unsafe, not broken.** BASE averages 57.8% over six benchmarks as released;
@@ -128,20 +130,21 @@ a judge audit against blind hand labels, serving cost on three GPUs, and a seed 
    and no better than hardening random layers.
 7. **Safety in the weights is free to serve; a prompt guard is not.** RL's guard cuts L4 throughput by
    22%: serving 1B output tokens a month on one L4 costs $90–94
-   with BASE or a weight-only fix and $115 with RL's guard, $25 more every month.
+   with BASE or a weight-only fix ($65 with GC's shorter template) and $115 with RL's guard,
+   $25 more every month.
 
 ![Rise in harmful-reply rate after each post-release change](paper/figures/fig1_heatmap.png)
-*Fig. 1 of the paper. Most fixes do not survive: rise in harmful-reply rate (WildGuard, percentage points) after each
+*Fig. 2 of the paper. Most fixes do not survive: rise in harmful-reply rate (WildGuard, percentage points) after each
 post-release change, relative to the same run as released; row labels give the as-released rate. Bold: paired 95%
 bootstrap CI excludes 0.*
 
 ![Capability change on six benchmarks](paper/figures/fig3_capability.png)
-*Fig. 3 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
+*Fig. 4 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
 benchmarks and their mean. Left: each fix as released vs BASE. Right: after the harmful fine-tune vs the same run as
 released, then the mean change after abliteration, 3-bit and the benign fine-tune.*
 
 ![Judged harmful-reply rate by language](paper/figures/fig6_multilingual.png)
-*Fig. 5 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
+*Fig. 6 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
 12 runs, dots = single runs; 100 harmful prompts per cell. The native-speaker check finds the Yoruba bars overstate harm.*
 
 **Serving cost** (Table 1 of the paper): output tokens/s (vLLM fp16, 256 prompts × 256 tokens, each fix with its own
@@ -162,11 +165,12 @@ chat template; mean of 3 repeats, sd < 2%) and $ per 1M output tokens at Hugging
 | AM (LoRA) | 377 | 511 | 0.218 | 2,033 | 0.109 | 8,159 | 0.085 |
 
 GC's template drops the default system prompt, so it serves 38% faster on an L4, a property of its
-template rather than its fix. Serving AM as an unmerged LoRA costs 14%, so merge it;
-screening every output with Llama Guard 3 1B costs 5%.
+template rather than its fix. Serving AM as an unmerged LoRA costs 14% of throughput vs the
+merged model, so merge it; screening every output with Llama Guard 3 1B costs 5–12%
+depending on the GPU (12% on the L4).
 
 **Audit cost.** A full `aftermarket audit` of one fix (all seven attacks, both judges) took 1.1 hours
-on one T4 and cost $0.68 once, the price of serving 7M tokens on an L4. Its retention
+on one T4 and cost $0.68 once, the price of serving 7.5M tokens on an L4. Its retention
 for GC (0.74) matches the leaderboard's (0.74).
 <!-- stage2:end -->
 
@@ -1308,7 +1312,7 @@ Solo entry: **Benny** (GitHub [@Bennytimz](https://github.com/bennytimz), Huggin
 
 ### Author contributions
 
-Benny: research question and experiment design, threat model and pre-registered plan, choice of models and attacks,
+Ayomide Oluwadare: research question and experiment design, threat model and pre-registered plan, choice of models and attacks,
 all experiment runs on Kaggle and Colab, the 100 blind hand labels, decisions on the judge policy and reporting
 rule, review of all code, results and text.
 

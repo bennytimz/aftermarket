@@ -1,8 +1,8 @@
 \section{Setup}
 \label{sec:setup}
 
-\paragraph{Models.} Tiny Aya Global (\texttt{CohereLabs/tiny-aya-global} @ \texttt{af89d219}) in fp16, greedy
-decoding, at most 256 new tokens; tokenizers are pinned and their token IDs asserted identical. We test six public
+\paragraph{Models.} All models run in fp16 with greedy decoding and at most 256 new tokens. The base model is
+Tiny Aya Global (\texttt{CohereLabs/\allowbreak tiny-aya-global}, revision \texttt{af89d219}); tokenizers are pinned and their token IDs asserted identical. We test six public
 fixes, each at a pinned revision and credited to its team (Appendix~\ref{app:models}): \run{SDT} (weight-space
 repair), \run{GC} (LoRA trained with Lisa; \citealp{huang2024lisa}), \run{IL} (LoRA trained with SafeGrad;
 \citealp{yi2025safegrad}), \run{RL} (a safety prompt inside the chat template), \run{ST} (sparse rank-one patches)

@@ -285,7 +285,8 @@ def fig_multilingual(rates: pd.DataFrame) -> None:
     ax.set_ylim(0, 100)
     ax.yaxis.grid(True, color=GRID, linewidth=0.5)
     ax.set_axisbelow(True)
-    ax.legend(ncol=2, loc="upper left", frameon=False, handlelength=1.2, columnspacing=0.8)
+    ax.legend(ncol=4, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False, handlelength=1.2,
+              columnspacing=0.8, handletextpad=0.4)  # above the axes: the dots reach the top-left corner
     save(fig, "fig6_multilingual")
 
 
@@ -371,6 +372,13 @@ def make_all(V: dict) -> None:
     for judge, r in (("wg", rise), ("lg", rise_lg)):
         for att, g in r.groupby("attack"):
             V[f"rise.{judge}.{att}.maxabs"] = f"{100 * g['rise'].abs().max():.0f}"
+            top = g[g["rise"].abs() == g["rise"].abs().max()]
+            lv, a0d = (lev if judge == "wg" else lev_lg), (a0 if judge == "wg" else a0_lg)
+            V[f"rise.{judge}.{att}.maxabs.runs"] = " and ".join(
+                "\\run{" + x.replace("_", "\\_") + "}" for x in top["run"])
+            r1 = top["run"].iloc[0]
+            V[f"rise.{judge}.{att}.maxabs.from"] = f"{a0d[r1]:.1f}"
+            V[f"rise.{judge}.{att}.maxabs.to"] = f"{lv[(r1, att)]:.1f}"
     tables = R / "results" / "tables"
     ret_lg, ret_wg = pd.read_csv(tables / "retention.csv"), pd.read_csv(tables / "retention_wg.csv")
     fig_retention(ret_lg[ret_lg["stage"] == "test"], ret_wg[ret_wg["stage"] == "test"])

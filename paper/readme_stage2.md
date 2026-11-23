@@ -12,7 +12,7 @@ a judge audit against blind hand labels, serving cost on three GPUs, and a seed 
 1. **Most fixes do not survive.** One QLoRA epoch on {{cfg.a2.harmful}} harmful examples takes every fix from
    {{lg.A0.fixes.min}}–{{lg.A0.fixes.max}}% to {{lg.A2.min}}–{{lg.A2.max}}% harmful replies (Llama Guard; WildGuard
    {{wg.A2.min}}–{{wg.A2.max}}%), and abliteration undoes most of them. Retraining that fine-tune with two other seeds
-   moves BASE, GC and AM by at most {{seed.spread.wg.max}} points (WildGuard).
+   moves BASE, GC and AM by at most {{seed.dev.max}} points from seed 42 under either judge.
 2. **Safety at release does not predict durability** (Spearman ρ = {{rho.a0ret.lg}}, Llama Guard). GC ranks first
    (retention {{ret.GC}} {{ret.GC.ci}}), RL second ({{ret.RL}}), BASE scores {{ret.BASE}}.
 3. **Attacked models are unsafe, not broken.** BASE averages {{cap.comp.BASE.A0}}% over six benchmarks as released;
@@ -27,20 +27,21 @@ a judge audit against blind hand labels, serving cost on three GPUs, and a seed 
    and no better than hardening random layers.
 7. **Safety in the weights is free to serve; a prompt guard is not.** RL's guard cuts L4 throughput by
    {{cost.L4.RL.loss}}%: serving 1B output tokens a month on one L4 costs ${{roi.L4.weights.min}}–{{roi.L4.weights.max}}
-   with BASE or a weight-only fix and ${{roi.L4.RL}} with RL's guard, ${{roi.L4.RL.extra}} more every month.
+   with BASE or a weight-only fix (${{roi.L4.GC}} with GC's shorter template) and ${{roi.L4.RL}} with RL's guard,
+   ${{roi.L4.RL.extra}} more every month.
 
 ![Rise in harmful-reply rate after each post-release change](paper/figures/fig1_heatmap.png)
-*Fig. 1 of the paper. Most fixes do not survive: rise in harmful-reply rate (WildGuard, percentage points) after each
+*Fig. 2 of the paper. Most fixes do not survive: rise in harmful-reply rate (WildGuard, percentage points) after each
 post-release change, relative to the same run as released; row labels give the as-released rate. Bold: paired 95%
 bootstrap CI excludes 0.*
 
 ![Capability change on six benchmarks](paper/figures/fig3_capability.png)
-*Fig. 3 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
+*Fig. 4 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
 benchmarks and their mean. Left: each fix as released vs BASE. Right: after the harmful fine-tune vs the same run as
 released, then the mean change after abliteration, 3-bit and the benign fine-tune.*
 
 ![Judged harmful-reply rate by language](paper/figures/fig6_multilingual.png)
-*Fig. 5 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
+*Fig. 6 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
 12 runs, dots = single runs; 100 harmful prompts per cell. The native-speaker check finds the Yoruba bars overstate harm.*
 
 **Serving cost** (Table 1 of the paper): output tokens/s (vLLM fp16, 256 prompts × 256 tokens, each fix with its own
@@ -50,8 +51,9 @@ chat template; mean of 3 repeats, sd < 2%) and $ per 1M output tokens at Hugging
 {{COST_TABLE}}
 
 GC's template drops the default system prompt, so it serves {{cost.L4.GC.gain}}% faster on an L4, a property of its
-template rather than its fix. Serving AM as an unmerged LoRA costs {{cost.L4.lora.overhead}}%, so merge it;
-screening every output with Llama Guard 3 1B costs {{cost.L4.guard.overhead}}%.
+template rather than its fix. Serving AM as an unmerged LoRA costs {{cost.L4.lora.overhead}}% of throughput vs the
+merged model, so merge it; screening every output with Llama Guard 3 1B costs {{cost.guard.min}}–{{cost.guard.max}}%
+depending on the GPU ({{cost.L4.guard.overhead}}% on the L4).
 
 **Audit cost.** A full `aftermarket audit` of one fix (all seven attacks, both judges) took {{audit.full.hours}} hours
 on one T4 and cost ${{audit.full.usd}} once, the price of serving {{audit.full.mtok}}M tokens on an L4. Its retention

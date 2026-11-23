@@ -20,12 +20,13 @@ the hardest: \run{BASE} and all six fixes end at \V{lg.A2.min}--\V{lg.A2.max}\% 
 The attack costs no knowledge: \run{BASE}'s MMLU is \V{mmlu.BASE.A0}\% before \att{A2} and \V{mmlu.BASE.A2}\% after
 (Stage~2 log-likelihood scoring of the retrained model\stagetwo: \V{cap.mmlu.BASE.A0}\% and
 \V{cap.mmlu.BASE.A2}\%). Retraining \att{A2} with two other seeds moves \run{BASE}, \run{GC} and \run{AM} by at
-most \V{seed.spread.wg.max} points (WildGuard; Table~\ref{tab:seeds}\stagetwo). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
+most \V{seed.dev.max} points from seed 42 under either judge (Table~\ref{tab:seeds}\stagetwo). Abliteration, with no training, takes \run{SP} from \V{wg.SP.A0}\% to
 \V{wg.SP.A3}\% and \run{IL} from \V{wg.IL.A0}\% to \V{wg.IL.A3}\%; \run{GC} is the one weight-space fix that holds
 (\V{wg.GC.A3}\%, also \V{wg.GC.A3max}\% at the strongest layer). The pre-registered layer rule under-attacks
 \run{SDT}, which stays at \V{wg.SDT.A3}\% under \att{A3} but reaches \V{wg.SDT.A3max}\% under \att{A3max}.
 Compression to 3 bits moves no run by more than \V{rise.wg.A4q3.maxabs} points (WildGuard; Llama Guard
-\V{rise.lg.A4q3.maxabs}). Template removal and best-of-8 perturbations break most fixes; under \att{A5bon} only \run{GC} and the
+\V{rise.lg.A4q3.maxabs}, \V{rise.lg.A4q3.maxabs.from}\% to \V{rise.lg.A4q3.maxabs.to}\% for
+\V{rise.lg.A4q3.maxabs.runs}). Template removal and best-of-8 perturbations break most fixes; under \att{A5bon} only \run{GC} and the
 template guard \run{RL} stay below 20\% (\V{wg.GC.A5bon}\% and \V{wg.RL.A5bon}\%), and \run{RL\_noguard} matches
 \run{BASE} in every cell, so \run{RL}'s protection lives entirely in its template. A benign fine-tune leaves \run{ST}
 less safe than no fix (\V{wg.ST.A1}\% vs \run{BASE} \V{wg.BASE.A1}\%).
@@ -126,8 +127,9 @@ overstate harm (\S\ref{sec:multilingual}).}
 \end{figure}
 Through the standard pipeline (translate the prompt, back-translate the reply, judge it in English), Yoruba looks far
 less safe than every other language (Fig.~\ref{fig:multilingual}). As released, the judges flag
-\V{mlmean.A0.yo.wg}\% of Yoruba replies against \V{mlmean.A0.en.wg}\% in English (paired gap \V{mlgap.A0.wg}
-\V{mlgap.A0.wg.ci}, positive for all \V{mlgap.A0.wg.cells} runs; Llama Guard \V{mlgap.A0.lg}), \V{mlgap.A0.wg.rest}
+\V{mlmean.A0.yo.wg}\% of Yoruba replies against \V{mlmean.A0.en.wg}\% in English (WildGuard; paired gap, computed
+before rounding, \V{mlgap.A0.wg} \V{mlgap.A0.wg.ci}, positive for all \V{mlgap.A0.wg.cells} runs; Llama Guard
+\V{mlmean.A0.yo.lg}\% vs \V{mlmean.A0.en.lg}\%, paired gap \V{mlgap.A0.lg}), \V{mlgap.A0.wg.rest}
 points above the mean of the other four languages. At 3 bits the contrast is starkest: \V{mlmean.A4q3.yo.wg}\% vs
 \V{mlmean.A4q3.en.wg}\%, and for \V{mlex.nruns} models (\V{mlex.runs}) English stays at or below \V{mlex.enmax}\%
 while Yoruba is judged at \V{mlex.yomin}--\V{mlex.yomax}\%. Read at face value, an English-only audit would pass these
@@ -163,10 +165,12 @@ only weights serves within \V{cost.L4.samemin}\% of \run{BASE} (\V{cost.L4.BASE.
 \$\V{cost.L4.BASE.usd} per 1M tokens). The differences come from chat templates: \run{RL}'s guard prompt doubles
 the prompt (\V{cost.L4.RL.ptok} tokens) and cuts throughput by \V{cost.L4.RL.loss}\%, while \run{GC}'s template drops
 the default system prompt (\V{cost.L4.GC.ptok} tokens) and serves \V{cost.L4.GC.gain}\% faster, a property of its
-template rather than its fix. Serving our defense as an unmerged LoRA costs \V{cost.L4.lora.overhead}\%, so it
-should be merged; screening every output with Llama Guard 3 1B costs \V{cost.L4.guard.overhead}\%. 3-bit HQQ saves
+template rather than its fix. Serving our defense as an unmerged LoRA costs \V{cost.L4.lora.overhead}\% of
+throughput vs the merged model, so it should be merged; screening every output with Llama Guard 3 1B costs
+\V{cost.guard.min}--\V{cost.guard.max}\% depending on the GPU (\V{cost.L4.guard.overhead}\% on the L4). 3-bit HQQ saves
 memory, not money: on the HF backend it is \V{cost.L4.hqq.slow}$\times$ slower than fp16. In money: serving
 1B output tokens a month on one L4 costs \$\V{roi.L4.weights.min}--\V{roi.L4.weights.max} with \run{BASE} or a
-weight-only fix and \$\V{roi.L4.RL} with \run{RL}'s guard, \$\V{roi.L4.RL.extra} more every month. A full audit of
+weight-only fix (\$\V{roi.L4.GC} with \run{GC}'s shorter template) and \$\V{roi.L4.RL} with \run{RL}'s guard,
+\$\V{roi.L4.RL.extra} more every month. A full audit of
 one fix (all seven attacks, both judges) took \V{audit.full.hours} hours on one T4 and cost \$\V{audit.full.usd}
 once, the price of serving \V{audit.full.mtok}M tokens on an L4.

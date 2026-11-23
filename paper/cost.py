@@ -69,6 +69,7 @@ def cost_numbers(put, pct) -> pd.DataFrame:
     df.to_csv(HERE / "derived" / "cost.csv", index=False)
     gpus = [g for g in ("T4", "L4", "A100") if g in set(df.gpu)]
     put("cost.gpus", ", ".join(gpus))
+    guard: dict[str, float] = {}
     for g in gpus:
         put(f"cost.price.{g}", f"{P[g]['hf']:.2f}")
         put(f"cost.pricemin.{g}", f"{P[g]['min']:.2f}")
@@ -89,8 +90,10 @@ def cost_numbers(put, pct) -> pd.DataFrame:
             if x.loc[c, "prompt_tok"]:
                 put(k + ".ptok", f"{x.loc[c, 'prompt_tok']:.0f}")
         if "guard_BASE" in x.index and x.loc["guard_BASE", "pipeline_tps"]:
-            gen = x.loc["guard_BASE", "tps"]
-            put(f"cost.{g}.guard.overhead", f"{100 * (1 - x.loc['guard_BASE', 'pipeline_tps'] / gen):.0f}")
+            # end to end vs plain BASE (not vs the guarded run's own generation rate, which Llama Guard on the
+            # same GPU already slows): what a deployer loses by adding the screen
+            guard[g] = 100 * (1 - x.loc["guard_BASE", "pipeline_tps"] / b)
+            put(f"cost.{g}.guard.overhead", f"{guard[g]:.0f}")
         if {"hf_BASE", "hf_BASE_hqq3"} <= set(x.index):
             put(f"cost.{g}.hqq.slow", f"{x.loc['hf_BASE', 'tps'] / x.loc['hf_BASE_hqq3', 'tps']:.1f}")
         if "AM_lora" in x.index and "AM" in x.index:
@@ -98,6 +101,9 @@ def cost_numbers(put, pct) -> pd.DataFrame:
         merged = x.loc[[c for c in ORDER[:-1] if c in x.index and c not in ("GC", "RL")], "tps"]
         put(f"cost.{g}.samemin", f"{abs(100 * (merged.min() / b - 1)):.0f}")
         put(f"cost.{g}.samemax", f"{abs(100 * (merged.max() / b - 1)):.0f}")
+    if guard:
+        put("cost.guard.min", f"{min(guard.values()):.0f}")
+        put("cost.guard.max", f"{max(guard.values()):.0f}")
     x = df[df.gpu == "L4"].set_index("config")
     if {"BASE", "RL"} <= set(x.index):
         weights = [c for c in ("BASE", "SDT", "IL", "RL_noguard", "ST", "SP", "AM") if c in x.index]
@@ -106,6 +112,8 @@ def cost_numbers(put, pct) -> pd.DataFrame:
         put("roi.L4.weights.max", f"{max(month(c) for c in weights):.0f}")
         put("roi.L4.BASE", f"{month('BASE'):.0f}")
         put("roi.L4.RL", f"{month('RL'):.0f}")
+        if "GC" in x.index:
+            put("roi.L4.GC", f"{month('GC'):.0f}")
         put("roi.L4.RL.extra", f"{month('RL') - month('BASE'):.0f}")
         put("roi.L4.RL.extrayear", f"{12 * (month('RL') - month('BASE')):.0f}")
     cost_table(df, gpus)
@@ -135,7 +143,7 @@ def put_audit(put, mode: str, t: dict, df: pd.DataFrame | None) -> None:
     if df is not None:  # one-off audit cost in millions of tokens served (BASE on an L4 at HF price)
         b = df[(df.gpu == "L4") & (df.config == "BASE")]
         if len(b):
-            put(f"audit.{mode}.mtok", f"{usd / b.usd_m_hf.iloc[0]:.0f}")
+            put(f"audit.{mode}.mtok", f"{usd / b.usd_m_hf.iloc[0]:.1f}")
     v = t.get("validate") or {}
     if v.get("retention"):
         r = v["retention"]

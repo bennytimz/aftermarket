@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use Aftermarket, please cite the paper."
+title: "Aftermarket: Most Safety Fixes Break After Release, and the Tools That Measure Them Can Mislead"
+authors:
+  - given-names: Ayomide
+    family-names: Oluwadare
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/bennytimz/aftermarket"
+url: "https://huggingface.co/spaces/bennytimz/aftermarket"
+date-released: "2026-11-24"
+preferred-citation:
+  type: article
+  title: "Aftermarket: Most Safety Fixes Break After Release, and the Tools That Measure Them Can Mislead"
+  authors:
+    - given-names: Ayomide
+      family-names: Oluwadare
+  year: 2026
+  notes: "Lexsi AI Safety & Alignment Hackathon, Stage 2 paper"
+  url: "https://github.com/bennytimz/aftermarket/blob/main/docs/aftermarket_stage2.pdf"

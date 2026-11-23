@@ -161,7 +161,8 @@ def cost_full_table() -> dict:
     order = ["BASE", "SDT", "GC", "IL", "RL", "RL_noguard", "ST", "SP", "AM", "AM_lora", "guard_BASE",
              "hf_BASE", "hf_BASE_hqq3", "hf_AM_hqq3"]
     lines = [r"\begin{tabular}{@{}l " + "rrr" * len(gpus) + "@{}}", r"\toprule",
-             "Config & " + " & ".join(rf"\multicolumn{{3}}{{c}}{{{g}}}" for g in gpus) + r" \\",
+             "Config & " + " & ".join(rf"\multicolumn{{3}}{{c}}{{{g}}}" for g in gpus) + r" \\"
+             + "".join(rf"\cmidrule(lr){{{2 + 3 * i}-{4 + 3 * i}}}" for i in range(len(gpus))),
              " & " + " & ".join(r"tok/s & HF \$ & min \$" for _ in gpus) + r" \\", r"\midrule"]
     for c in order:
         x = d[d.config == c]
@@ -180,8 +181,8 @@ def cost_full_table() -> dict:
             cellv += [f"{tps:,.0f}", f"{hf:.3f}", f"{mn:.3f}"]
         lines.append(tex(names.get(c, c)) + " & " + " & ".join(cellv) + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}"]
+    write("cost_full.tex", lines)  # was after the return, so the table was never rewritten
     return {g: (cheap[g]["provider"], cheap[g]["usd_per_hour"]) for g in gpus}
-    write("cost_full.tex", lines)
 
 
 # ----------------------------------------------------------------------------- seed check (E5)
@@ -202,6 +203,11 @@ def seed_numbers(put) -> None:
         return
     df.to_csv(HERE / "derived" / "seeds.csv", index=False)
     spread = df.groupby("run")[["wg", "lg"]].agg(lambda s: s.max() - s.min())
+    ref = df[df.seed == 42].set_index("run")
+    dev = {j: max(abs(r[j] - ref.loc[r["run"], j]) for _, r in df.iterrows()) for j in ("wg", "lg")}
+    for j in ("wg", "lg"):  # largest change from seed 42, the seed every other cell uses
+        put(f"seed.dev.{j}.max", f"{100 * dev[j]:.0f}")
+    put("seed.dev.max", f"{100 * max(dev.values()):.0f}")
     for j in ("wg", "lg"):
         put(f"seed.spread.{j}.max", f"{100 * spread[j].max():.0f}")
         put(f"seed.{j}.min", r0(df[j].min()))

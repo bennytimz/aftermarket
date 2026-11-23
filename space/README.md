@@ -12,6 +12,8 @@ short_description: Do Tiny Aya safety fixes survive what users do next?
 
 # Aftermarket leaderboard
 
+By Ayomide Oluwadare.
+
 Post-release robustness of safety-fixed Tiny Aya models (Lexsi AI Safety & Alignment Hackathon). Every public
 fix, plus the base model, faces the same battery: benign and harmful fine-tunes, abliteration, 4/3/2-bit
 compression, a removed chat template and best-of-8 perturbations. Same prompts, seed, settings and judges for
