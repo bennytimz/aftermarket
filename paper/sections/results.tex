@@ -162,7 +162,7 @@ Safety in the weights is free to serve; safety in the prompt is not (Table~\ref{
 only weights serves within \V{cost.L4.samemin}\% of \run{BASE} (\V{cost.L4.BASE.tps} output tok/s on an L4,
 \$\V{cost.L4.BASE.usd} per 1M tokens). The differences come from chat templates: \run{RL}'s guard prompt doubles
 the prompt (\V{cost.L4.RL.ptok} tokens) and cuts throughput by \V{cost.L4.RL.loss}\%, while \run{GC}'s template drops
-the default system prompt (\V{cost.L4.GC.ptok} tokens) and serves \V{cost.L4.GC.rel}\% faster, a property of its
+the default system prompt (\V{cost.L4.GC.ptok} tokens) and serves \V{cost.L4.GC.gain}\% faster, a property of its
 template rather than its fix. Serving our defense as an unmerged LoRA costs \V{cost.L4.lora.overhead}\%, so it
 should be merged; screening every output with Llama Guard 3 1B costs \V{cost.L4.guard.overhead}\%. 3-bit HQQ saves
 memory, not money: on the HF backend it is \V{cost.L4.hqq.slow}$\times$ slower than fp16. In money: serving

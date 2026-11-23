@@ -13,7 +13,6 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 TP = ROOT / "results" / "stage2" / "_store" / "stage2" / "throughput"
 AUDIT = ROOT / "results" / "stage2" / "_store" / "stage2" / "audit"
-E7_RUN1 = ROOT / "results" / "stage2" / "_store" / "e7_run1" / "stage2" / "audit" / "audit-gc-full"
 PRICES = ROOT / "configs" / "gpu_prices.yaml"
 HERE = Path(__file__).resolve().parent
 GPU_KEY = {"T4": "T4", "L4": "L4", "A100": "A100_80GB"}
@@ -83,6 +82,7 @@ def cost_numbers(put, pct) -> pd.DataFrame:
                 put(k + ".tps", f"{x.loc[c, 'tps']:,.0f}")
                 put(k + ".rel", f"{100 * (x.loc[c, 'tps'] / b - 1):+.0f}".replace("-", "$-$"))
                 put(k + ".loss", f"{abs(100 * (x.loc[c, 'tps'] / b - 1)):.0f}")
+                put(k + ".gain", f"{abs(100 * (x.loc[c, 'tps'] / b - 1)):.0f}")  # unsigned, for "N% faster"
             if x.loc[c, "usd_m_hf"]:
                 put(k + ".usd", f"{x.loc[c, 'usd_m_hf']:.3f}")
                 put(k + ".usdmin", f"{x.loc[c, 'usd_m_min']:.3f}")
@@ -123,13 +123,6 @@ def audit_numbers(put, P, df: pd.DataFrame | None = None) -> None:
         if t.get("rc") != 0:
             continue
         put_audit(put, mode, t, df)
-    # Fallback: E7's first full run finished every attack and judge, then crashed drawing the card (no
-    # matplotlib in the job image; fixed). Its own keys, so only text written for it (audit.run1.*) uses it.
-    f = E7_RUN1 / "timing.json"
-    if f.exists():
-        t = json.loads(f.read_text(encoding="utf-8"))
-        if t.get("rc") == 1 and t.get("audit_seconds") == 3913.8 and t.get("mode") == "full":
-            put_audit(put, "run1", t, df)
 
 
 def put_audit(put, mode: str, t: dict, df: pd.DataFrame | None) -> None:

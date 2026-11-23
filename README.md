@@ -161,9 +161,13 @@ chat template; mean of 3 repeats, sd < 2%) and $ per 1M output tokens at Hugging
 | AM | 377 | 781 | 0.142 | 2,373 | 0.094 | 9,304 | 0.075 |
 | AM (LoRA) | 377 | 511 | 0.218 | 2,033 | 0.109 | 8,159 | 0.085 |
 
-GC's template drops the default system prompt, so it serves faster on an L4 (+38% tokens/s), a property of its
+GC's template drops the default system prompt, so it serves 38% faster on an L4, a property of its
 template rather than its fix. Serving AM as an unmerged LoRA costs 14%, so merge it;
 screening every output with Llama Guard 3 1B costs 5%.
+
+**Audit cost.** A full `aftermarket audit` of one fix (all seven attacks, both judges) took 1.1 hours
+on one T4 and cost $0.68 once, the price of serving 7M tokens on an L4. Its retention
+for GC (0.74) matches the leaderboard's (0.74).
 <!-- stage2:end -->
 
 ## Problem statement and approach
