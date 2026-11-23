@@ -21,7 +21,7 @@ RATE = "+3%"  # -5% was asked for, but no voice then fits 60 s with pauses (spee
 
 # one entry per scene; numbers spoken here are checked against paper/derived/numbers.json in build.py
 LINES = [
-    "Every AI safety fix is tested on the day it's released. But that's not how models live.",
+    "Most AI safety fixes are only tested on the day they're released. But that's not how models live.",
     "People fine-tune them, compress them, strip their templates. "
     "So we asked: do public safety fixes survive what happens next?",
     "Aftermarket puts six public fixes for Tiny Aya through six everyday changes, "
