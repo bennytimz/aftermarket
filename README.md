@@ -1,5 +1,7 @@
 # Aftermarket: does a safety fix survive the next person who downloads the model?
 
+**[▶ Watch the 60-second video](https://youtu.be/dY9WLoC72Dk)**
+
 **One-line claim: less than an hour on a free T4 erases every public safety fix for Tiny Aya Global we tested. One
 QLoRA epoch on 100 harmful examples takes attack success from 1–14% to 80–86%, and abliteration undoes all but one.**
 

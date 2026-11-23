@@ -41,6 +41,8 @@ PAPER_DIR = REPO_ROOT / "paper"
 STAGE2_FIGS = ["fig1_heatmap.png", "fig3_capability.png", "fig6_multilingual.png"]  # paper Figs 2, 4, 6
 STAGE2_FILES = {"stage2.md", *STAGE2_FIGS}
 PAPER_URL = "https://github.com/bennytimz/aftermarket/blob/main/docs/aftermarket_stage2.pdf"
+VIDEO_URL = "https://youtu.be/dY9WLoC72Dk"
+VIDEO_LINE = f"**[▶ Watch the 60-second video]({VIDEO_URL})**"
 
 
 class UnsafeBundle(ValueError):
@@ -124,10 +126,12 @@ def unwrap(md: str) -> str:
 
 
 def stage2_markdown(block: str) -> str:
-    """README section -> Space page: no heading or markers, figures as stage2/<file>, paper linked on GitHub."""
+    """README section -> Space page: video link on top, no heading or markers, figures as stage2/<file>, paper
+    linked on GitHub."""
     lines = [ln for ln in block.split("\n") if not ln.startswith(("<!--", "## Stage 2 results"))]
     md = unwrap("\n".join(lines)).replace("](docs/aftermarket_stage2.pdf)", f"]({PAPER_URL})")
-    return re.sub(r"\]\(paper/figures/([\w.-]+\.png)\)", r"](stage2/\1)", md)
+    md = re.sub(r"\]\(paper/figures/([\w.-]+\.png)\)", r"](stage2/\1)", md)
+    return f"{VIDEO_LINE}\n\n{md.lstrip()}"
 
 
 def build_stage2(paper_dir: Path = PAPER_DIR, out_dir: Path = SPACE_DIR / "stage2") -> int:

@@ -164,6 +164,7 @@ def test_stage2_markdown_unwraps_and_rewrites_paths():
              "1. **a** b\n   c\n2. d\n\n![f](paper/figures/fig1_heatmap.png)\n*cap\nmore*\n\n| x |\n|---|\n<!-- stage2:end -->")
     md = S.stage2_markdown(block)
     assert "## Stage 2" not in md and "<!--" not in md
+    assert md.startswith(f"**[▶ Watch the 60-second video]({S.VIDEO_URL})**\n\n> **Paper:**")
     assert f"> **Paper:** [P]({S.PAPER_URL}) more" in md
     assert "1. **a** b c\n2. d" in md and "![f](stage2/fig1_heatmap.png)\n*cap more*" in md and "| x |\n|---|" in md
 
