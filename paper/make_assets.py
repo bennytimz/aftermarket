@@ -337,6 +337,12 @@ def l4_agreement() -> None:
     put("cap.l4agree", pct((x == y).mean(), 1))
     put("cap.l4maxdiff", f"{100 * (x.groupby(level=0).mean() - y.groupby(level=0).mean()).abs().max():.1f}")
 
+def signed1(x: float) -> str:
+    """One decimal with sign; a value that rounds to zero prints as 0.0 (never -0.0 or +0.0)."""
+    v = f"{x:+.1f}"
+    return "0.0" if float(v) == 0 else v
+
+
 def capability_table(items: pd.DataFrame, delta: pd.DataFrame) -> None:
     """Appendix table: per-benchmark accuracy at A0, then the composite change after each attack available."""
     lv = items.groupby(["run", "attack", "task"])["y"].mean().unstack("task")
@@ -354,7 +360,7 @@ def capability_table(items: pd.DataFrame, delta: pd.DataFrame) -> None:
         cells = [f"{100 * row[t]:.1f}" for t in CAP_TASKS] + [f"{100 * row[CAP_TASKS].mean():.1f}"]
         for a in atts:
             r = get.get((run, a, "comp"))
-            v = f"{100 * r['delta']:+.1f}" if r is not None else "--"
+            v = signed1(100 * r["delta"]) if r is not None else "--"
             cells.append(rf"\textbf{{{v}}}" if r is not None and r["excludes_zero"] else v)
         lines.append(rf"\run{{{latex_name(run)}}} & " + " & ".join(c.replace("-", "$-$") if c != "--" else c
                                                                    for c in cells) + r" \\")
