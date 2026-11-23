@@ -1065,8 +1065,11 @@ From [`notes/limitations.md`](notes/limitations.md), mostly choices made to fit 
 
 The battery shows how cheaply safety fixes come off, which is also a recipe. We judged the benefit (fix authors and
 deployers can test before release; the attacks are already public: Qi et al., Arditi et al., Hughes et al.) to
-outweigh the marginal uplift, and we limit that uplift: no attack-tuned or abliterated weights, no harmful
-completions and no new harmful data are released, and A2's harmful pairs are referenced by row index only. The
+outweigh the marginal uplift, and we limit that uplift: no attack-tuned or abliterated weights and no model
+completions to harmful prompts are released, and A2's harmful pairs are referenced by row index only. For
+reproducibility we do release machine translations of the public benchmark prompts (HarmBench, AdvBench, XSTest;
+`data/stage2/translations.jsonl`), as multilingual benchmarks such as MultiJail ([Deng et al., 2024](#ref-19)) do, and the
+Yoruba check sheets (prompts, and replies to safe XSTest prompts only). The
 `aftermarket audit` tool runs the attacks locally, deletes attack adapters after use and uploads nothing. Results
 are framed as robustness after release, never as verdicts on a team's work.
 
@@ -1077,7 +1080,9 @@ are framed as robustness after release, never as verdicts on a team's work.
 - We used only public releases, at pinned revisions, and credit every team by name with links to its release.
 - We did **not** contact the teams before submission (decided 2026-11-15 for time). Each team's row and report card
   are public in the Space for them to see, and we will share results with any team on request.
-- All attack data comes from existing public benchmarks; we created no new harmful content.
+- All attack data comes from existing public benchmarks; we created no new harmful content. The only derived
+  prompt data we release is machine translations of those public benchmark prompts (Stage 2, for reproducibility),
+  with no model completions to harmful prompts.
 
 ## With more credits
 
@@ -1335,6 +1340,7 @@ No grants or paid compute were used.
 16. <a id="ref-16"></a>Inan et al. (2023). *Llama Guard: LLM-based Input-Output Safeguard for Human-AI Conversations.* [arXiv:2312.06674](https://arxiv.org/abs/2312.06674)
 17. <a id="ref-17"></a>Grattafiori et al. (2024). *The Llama 3 Herd of Models* (Llama Guard 3). [arXiv:2407.21783](https://arxiv.org/abs/2407.21783) · model [meta-llama/Llama-Guard-3-1B](https://huggingface.co/meta-llama/Llama-Guard-3-1B)
 18. <a id="ref-18"></a>Han et al. (2024). *WildGuard: Open One-Stop Moderation Tools for Safety Risks, Jailbreaks, and Refusals of LLMs.* [arXiv:2406.18495](https://arxiv.org/abs/2406.18495)
+19. <a id="ref-19"></a>Deng et al. (2024). *Multilingual Jailbreak Challenges in Large Language Models* (MultiJail). ICLR 2024. [arXiv:2310.06474](https://arxiv.org/abs/2310.06474)
 
 Repos and models: [Tiny Aya Global](https://huggingface.co/CohereLabs/tiny-aya-global),
 [CuratorKIT](https://github.com/Lexsi-Labs/CuratorKIT), [SafeTune](https://github.com/Lexsi-Labs/SafeTune),

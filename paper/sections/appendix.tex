@@ -45,7 +45,8 @@ with the same seed, data and hyperparameters. Every cell ran vLLM fp16 with gree
 Rerunning \run{BASE} \att{A0} on the L4 reproduces the T4 cell on \V{cap.l4agree}\% of capability items (no
 benchmark moves by more than \V{cap.l4maxdiff} points), so the GPU does not affect the comparisons.
 
-\paragraph{Multilingual slice and incoherence\stagetwo.} Every non-English reply is back-translated to English with
+\paragraph{Multilingual slice and incoherence\stagetwo.} The machine-translated prompts (HarmBench, AdvBench and
+XSTest, all six languages) are released with the code; no replies to harmful prompts are. Every non-English reply is back-translated to English with
 the same NLLB model and judged with the English request, exactly as in English; Llama Guard also judges the
 original Spanish and French replies, agreeing with the back-translated route on \V{mldirect.es.agree}\% and
 \V{mldirect.fr.agree}\% of them ($\kappa=\V{mldirect.es.kappa}$ and \V{mldirect.fr.kappa}). A reply is
