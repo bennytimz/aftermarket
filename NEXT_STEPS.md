@@ -14,6 +14,10 @@ The organizer's feedback is applied (24 Nov): steps 1-5 and 7 below are done. Le
   App. B: values computed by the identical local copy, now tested against AuditKIT in `tests/test_stats.py`),
   CircuitKIT (Limitations: attempted, OOM, used in no result).
 - Main text 5.76 / 6 pages; 14 pages; the cost table moved earlier in the appendix source so it stays on p. 14.
+- Final fixes (24 Nov): Fig. 1 is defined after the intro's first paragraph so it sits at the top of the right
+  column, below the abstract (the taller header had pushed it above the abstract). CuratorKIT is cited once (arXiv
+  paper only); SafeTune's note field dropped; AuditKIT/CircuitKIT carry "Software, v1.1.11 / v0.2.3" + GitHub URL;
+  §4.5 has one merged citation. Tectonic: 5.76 / 6, 14 pp; Overleaf zip under pdflatex: 5.65 / 6, 14 pp, clean.
 - The zip was compiled with pdflatex + bibtex in Docker `texlive/texlive:latest-small` (+ tlmgr fontawesome5
   courier helvetic ...): 14 pages, 0 errors, 0 BibTeX warnings.
 

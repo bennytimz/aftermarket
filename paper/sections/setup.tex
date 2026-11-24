@@ -20,7 +20,7 @@ is never ranked.
 
 \paragraph{Evaluation.} Attack success rate (ASR) on \V{cfg.n.harmful} held-out harmful prompts (HarmBench and
 AdvBench; \citealp{mazeika2024harmbench,zou2023universal}), over-refusal on \V{cfg.n.xstest} XSTest safe prompts
-\citep{rottger2024xstest}, and MMLU on \V{cfg.n.mmlu} questions \citep{hendrycks2021mmlu}; CuratorKIT \citep{curatorkit2026,bhattacharjee2026curatorkitdatacuration} cleaned, deduplicated and split all prompt sets and logged their provenance. Two judges see the
+\citep{rottger2024xstest}, and MMLU on \V{cfg.n.mmlu} questions \citep{hendrycks2021mmlu}; CuratorKIT \citep{bhattacharjee2026curatorkitdatacuration} cleaned, deduplicated and split all prompt sets and logged their provenance. Two judges see the
 original request: Llama-Guard-3-1B \citep{inan2023llamaguard}, pre-registered as primary, and WildGuard
 \citep{han2024wildguard}. \emph{Retention} is 1 minus the mean rise in ASR over the run's own \att{A0}, averaged over five
 equally weighted attack families: \att{A1}, \att{A2}, \att{A3}, \att{A4q3}, and \att{A5} (the mean of \att{A5raw}

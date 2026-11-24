@@ -102,7 +102,7 @@ bottom do not depend on the judge (Fig.~\ref{fig:retention}).
 \subsection{Our defense, and why it is a negative result}
 \label{sec:defense}
 \run{AM} hardens the $k=\V{cfg.am.k}$ layers whose refusal direction best separates harmful from benign dev prompts
-(layers \V{cfg.am.layers}) with SafeGrad-style gradient surgery \citep{yi2025safegrad} (SafeTune's trainer; \citealp{seth2026safetune}) restricted to those layers, trains half of its refusal
+(layers \V{cfg.am.layers}) with SafeGrad-style gradient surgery \citetext{\citealp{yi2025safegrad}; implemented with SafeTune, \citealp{seth2026safetune}} restricted to those layers, trains half of its refusal
 batches with the top refusal direction ablated, and keeps those layers at \V{cfg.am.shieldbits} bits under compression.
 Every choice was made on dev prompts; the recipe was frozen before its test run. \run{AM} is safer than \run{BASE} as
 released under both judges (\V{lg.AM.A0}\% vs \V{lg.BASE.A0}\% Llama Guard; \V{wg.AM.A0}\% vs \V{wg.BASE.A0}\%

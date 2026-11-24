@@ -1,5 +1,11 @@
 \section{Introduction}
 
+An open-weight model is not a fixed artifact. Within days of a release, people fine-tune it on their own data,
+quantize it to fit a phone, serve it from a raw completion endpoint without its chat template, or remove its refusals
+on purpose with a single weight edit~\citep{arditi2024refusal}. A safety fix that holds only on the checkpoint its
+authors published protects nobody who uses the model in any other form. Yet fixes are almost always evaluated on that
+one checkpoint.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig0_pipeline.pdf}
@@ -7,12 +13,6 @@
 against blind human labels, and one report card.}
 \label{fig:pipeline}
 \end{figure}
-
-An open-weight model is not a fixed artifact. Within days of a release, people fine-tune it on their own data,
-quantize it to fit a phone, serve it from a raw completion endpoint without its chat template, or remove its refusals
-on purpose with a single weight edit~\citep{arditi2024refusal}. A safety fix that holds only on the checkpoint its
-authors published protects nobody who uses the model in any other form. Yet fixes are almost always evaluated on that
-one checkpoint.
 
 Each of these attacks is well documented on its own (\S\ref{sec:related}). What is missing is a common yardstick:
 the same everyday post-release changes, applied with the same prompts, judges and statistics to every fix that
