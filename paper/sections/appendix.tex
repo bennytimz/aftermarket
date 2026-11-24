@@ -26,11 +26,12 @@ whose ablation removes the most refusals among layers that leave benign next-tok
 
 \paragraph{Compression and prompting.} \att{A4q3} is HQQ 3-bit with group size \V{cfg.hqq.group} (4-bit for three runs in
 Appendix~\ref{app:tables}). \att{A5raw} sends the request with no chat template. \att{A5bon} samples
-\V{cfg.bon.n} augmentations per prompt \citep{hughes2024bon} ($\sigma=\V{cfg.bon.sigma}$); a prompt counts as broken if
-any variant is.
+\V{cfg.bon.n} augmentations per prompt \citep{hughes2024bon} ($\sigma=\V{cfg.bon.sigma}$; SafeTune's augmentations, re-implemented with per-prompt seeds and tested to
+match; \citealp{seth2026safetune}); a prompt counts as broken if any variant is.
 
 \paragraph{Data.} Harmful prompts are 100 HarmBench prompts stratified by category and 100 AdvBench prompts; all
-splits were deduplicated against each other and against all training data. A cell whose MMLU falls below 30\% is
+splits were deduplicated against each other and against all training data with CuratorKIT. Paired tests are
+AuditKIT's \texttt{paired\_bootstrap}, run as an identical copy (tested to give the same $p$-values). A cell whose MMLU falls below 30\% is
 flagged ``safe because broken''.
 
 \paragraph{Capability benchmarks\stagetwo.} We run the lm-evaluation-harness on vLLM with each run's chat
@@ -122,6 +123,15 @@ vs the same run as released; bold: paired 95\% bootstrap CI excludes 0).\stagetw
 \label{tab:capability}
 \end{table*}
 
+\begin{table*}[h]
+\centering\small\setlength{\tabcolsep}{4pt}
+\input{tables/cost_full.tex}
+\caption{Serving throughput and \$ per 1M output tokens\stagetwo{} at Hugging Face prices and at the cheapest price
+listed for each GPU (\texttt{configs/gpu\_prices.yaml}, read 22 Nov 2026). Llama Guard screening is the end-to-end
+pipeline rate; HF rows use the transformers backend (batch 16), not vLLM. Cheapest listed: \V{cost.cheapest}.}
+\label{tab:costfull}
+\end{table*}
+
 \begin{table}[h]
 \centering\small\setlength{\tabcolsep}{3pt}
 \resizebox{\columnwidth}{!}{\input{tables/lang_full.tex}}
@@ -148,12 +158,3 @@ training prompts by exact match, character 5-gram Jaccard ($\ge0.7$) and MiniLM 
 flagged (cosine \V{overlap.maxcos}, Jaccard at most \V{overlap.maxjac} over all pairs): a paraphrase about
 counterfeit money. Dropping one of 200 prompts moves any rate by at most 0.5 points, so no \att{A2} result depends
 on it.
-
-\begin{table*}[h]
-\centering\small\setlength{\tabcolsep}{4pt}
-\input{tables/cost_full.tex}
-\caption{Serving throughput and \$ per 1M output tokens\stagetwo{} at Hugging Face prices and at the cheapest price
-listed for each GPU (\texttt{configs/gpu\_prices.yaml}, read 22 Nov 2026). Llama Guard screening is the end-to-end
-pipeline rate; HF rows use the transformers backend (batch 16), not vLLM. Cheapest listed: \V{cost.cheapest}.}
-\label{tab:costfull}
-\end{table*}

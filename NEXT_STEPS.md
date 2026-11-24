@@ -4,10 +4,22 @@ Deadline: Tue 24 Nov AoE (Wed 25 Nov 12:59 Lagos). Target: paper finished Tue 24
 Plan: `STAGE2_PLAN.md`. Page budget: `paper/PAGE_BUDGET.md`. **`stage2` was merged into main (fast-forward, 5fee697,
 23 Nov). Commit further fixes on main directly.**
 
-## Now: waiting on the organizer's feedback (Overleaf view link sent)
-Then make one batch of changes, rebuild once, update Overleaf once. From the repo root (`make` is not installed
-on Windows; the Python command after each target does the same thing):
-1. `git apply paper/table2_am_public.patch`: Table 2's AM row points to the public
+## Now: re-upload the Overleaf zip, then submit
+The organizer's feedback is applied (24 Nov): steps 1-5 and 7 below are done. Left: step 6 (re-upload
+`paper/aftermarket_overleaf.zip`, replace all files, compile with pdfLaTeX), 8 (submit), 9 (release).
+- Header: one centred icon-link line under the email (fontawesome5: Code, Leaderboard, Models, Datasets, Video);
+  the old link footnote is gone.
+- Lexsi kits cited from their official BibTeX (`paper/kits.bib`, hand-kept; `custom.bib` stays generated):
+  CuratorKIT (Setup, App. B Data), SafeTune (Setup A5bon, §4.5 SafeGrad trainer, App. B BoN), AuditKIT (Setup,
+  App. B: values computed by the identical local copy, now tested against AuditKIT in `tests/test_stats.py`),
+  CircuitKIT (Limitations: attempted, OOM, used in no result).
+- Main text 5.76 / 6 pages; 14 pages; the cost table moved earlier in the appendix source so it stays on p. 14.
+- The zip was compiled with pdflatex + bibtex in Docker `texlive/texlive:latest-small` (+ tlmgr fontawesome5
+  courier helvetic ...): 14 pages, 0 errors, 0 BibTeX warnings.
+
+Original checklist (from the repo root; `make` is not installed on Windows, the Python command after each target
+does the same thing):
+1. (done) `git apply paper/table2_am_public.patch`: Table 2's AM row points to the public
    `bennytimz/aftermarket-AM-frozen` @ `c014cf5` (same weights as private `aftermarket-am` @ `d11af3a`, checked by
    file hash), licence "cc-by-nc-4.0 / public". Changes `paper/appendix_tables.py` and `paper/tables/models.tex`;
    tested: compiles cleanly with pdflatex, no overfull box, 14 pages. Delete the patch file once applied.

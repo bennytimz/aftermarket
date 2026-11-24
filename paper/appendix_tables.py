@@ -59,7 +59,7 @@ def models_table() -> None:
         lines.append(rf"{run_tex(r)} & {name} ({tex(team)})\newline {{\footnotesize\url{{{m['hf_path']}}}}} & "
                      rf"\texttt{{{m['revision'][:7]}}} & {lic} & {what} \\")
     lines.append(r"\run{RL\_noguard} & \run{RL}'s weights with the base chat template & -- & -- & control: no guard \\")
-    lines.append(r"\run{AM} & ours\newline {\footnotesize\url{bennytimz/aftermarket-am}} & \texttt{d11af3a} & private repo & "
+    lines.append(r"\run{AM} & ours\newline {\footnotesize\url{bennytimz/aftermarket-AM-frozen}} & \texttt{c014cf5} & \begin{tabular}[t]{@{}l@{}}cc-by-nc-4.0\\public\end{tabular} & "
                  r"\S\ref{sec:defense}; three controls with random or all layers \\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     write("models.tex", lines)

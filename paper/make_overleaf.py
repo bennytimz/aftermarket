@@ -2,7 +2,7 @@
 
     python make_overleaf.py            (run from paper/; `make overleaf`)
 
-Root: main.tex, acl.sty, acl_natbib.bst, custom.bib, numbers.tex; plus sections/, tables/, figures/*.pdf.
+Root: main.tex, acl.sty, acl_natbib.bst, custom.bib, kits.bib, numbers.tex; plus sections/, tables/, figures/*.pdf.
 Fails if a file that main.tex or a section \\input's or \\includegraphics's is missing from the bundle.
 Entries carry a fixed timestamp, so the same sources give identical contents (and, with the same zlib, identical bytes).
 """
@@ -22,7 +22,7 @@ REF = re.compile(r"\\(?:input|includegraphics)(?:\[[^\]]*\])?\{([^}]+)\}")
 
 def bundle_files() -> dict[str, Path]:
     """Archive name -> source path."""
-    files = {name: HERE / name for name in ("main.tex", "custom.bib", "numbers.tex")}
+    files = {name: HERE / name for name in ("main.tex", "custom.bib", "kits.bib", "numbers.tex")}
     files.update({name: HERE / "template" / name for name in ("acl.sty", "acl_natbib.bst")})
     for pattern in ("sections/*.tex", "tables/*.tex", "figures/*.pdf"):
         files.update({p.relative_to(HERE).as_posix(): p for p in sorted(HERE.glob(pattern))})

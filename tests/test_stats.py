@@ -58,6 +58,18 @@ def test_local_paired_bootstrap_behaviour():
     assert "error" in _local_paired_bootstrap([(0.0, 1.0)])
 
 
+def test_local_paired_bootstrap_matches_auditkit_when_installed():
+    ak = pytest.importorskip("auditkit._bootstrap")
+    import random
+    for t in range(10):
+        r = random.Random(t)
+        p1, p2 = r.random(), r.random()
+        pairs = [(float(r.random() < p1), float(r.random() < p2)) for _ in range(r.choice([20, 100, 200]))]
+        theirs = ak.paired_bootstrap(pairs, n_resamples=2000, seed=42)
+        ours = _local_paired_bootstrap(pairs, n_resamples=2000, seed=42)
+        assert round(theirs["p_value"], 6) == ours["p_value"] and round(theirs["delta"], 6) == ours["delta"]
+
+
 def test_holm():
     assert holm([0.01, 0.04, 0.03]) == pytest.approx([0.03, 0.06, 0.06])
     out = holm([0.5, float("nan")])

@@ -13,6 +13,7 @@
 \usepackage{multirow}
 \usepackage{xcolor}
 \usepackage{enumitem}
+\usepackage{fontawesome5}  % header link icons (Type 1 fonts: works with pdfLaTeX on Overleaf)
 \makeatletter\g@addto@macro\UrlBreaks{\do\-}\makeatother  % long Hub paths wrap at hyphens
 \setlist{nosep,leftmargin=*}
 
@@ -30,13 +31,15 @@
 
 \title{Aftermarket: Most Safety Fixes Break After Release,\\and the Tools That Measure Them Can Mislead}
 
-\author{Ayomide Oluwadare\thanks{Code and configs:
-  \href{https://github.com/bennytimz/aftermarket}{github.com/bennytimz/aftermarket}.
-  Leaderboard: \href{https://huggingface.co/spaces/bennytimz/aftermarket}{HF Space}.
-  HF collections: \href{https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59}{defense and controls},
-  \href{https://huggingface.co/collections/bennytimz/aftermarket-evaluation-data-6af998b5c1860f5bc2df2b27}{evaluation data}.} \\
+\author{Ayomide Oluwadare \\
   University of Ibadan \\
-  \texttt{oluwadare1803@gmail.com}}
+  \texttt{oluwadare1803@gmail.com} \\[2pt]
+  {\normalfont\small
+  \href{https://github.com/bennytimz/aftermarket}{\faGithub\ Code}\quad
+  \href{https://huggingface.co/spaces/bennytimz/aftermarket}{\faTrophy\ Leaderboard}\quad
+  \href{https://huggingface.co/collections/bennytimz/aftermarket-am-defense-controls-6af9984fc9b6f21539d82a59}{\faCube\ Models}\quad
+  \href{https://huggingface.co/collections/bennytimz/aftermarket-evaluation-data-6af998b5c1860f5bc2df2b27}{\faDatabase\ Datasets}\quad
+  \href{https://youtu.be/dY9WLoC72Dk}{\faYoutube\ Video}}}
 
 \begin{document}
 \maketitle
@@ -52,7 +55,7 @@
 \input{sections/ethics}
 
 \bibliographystyle{acl_natbib}
-\bibliography{custom}
+\bibliography{custom,kits}  % kits.bib: official citations of the Lexsi kits
 
 \appendix
 \input{sections/appendix}
