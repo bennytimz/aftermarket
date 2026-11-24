@@ -2,3 +2,5 @@
 data/splits/** -text
 data/curated/** -text
 data/ft/** -text
+# Shell scripts keep LF, so bash can run them from a Windows (autocrlf) checkout.
+*.sh text eol=lf
