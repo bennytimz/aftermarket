@@ -307,17 +307,21 @@ the refusal direction instead (see AM recipe). The attempt and its settings stay
 
 ### AuditKIT
 
-[AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) 1.1.11: `paired_bootstrap` (`auditkit._bootstrap`) for every
-paired comparison (model vs base, AM vs controls), matched by prompt, 10,000 resamples, seed 42; we apply Holm
-correction per family on top ([`src/aftermarket/evaluate.py`](src/aftermarket/evaluate.py)). An identical local copy
-runs only if AuditKIT is absent (tests check they agree).
+[AuditKIT](https://github.com/Lexsi-Labs/AuditKIT) 1.1.11: its paired bootstrap test (`auditkit._bootstrap.paired_bootstrap`)
+is the test behind every paired comparison (model vs base, AM vs controls), matched by prompt, 10,000 resamples,
+seed 42; we apply Holm correction per family on top ([`src/aftermarket/evaluate.py`](src/aftermarket/evaluate.py)).
+`evaluate.py` calls AuditKIT when it is installed and otherwise an identical local copy of the function. AuditKIT
+was not installed where the runs happened, so **every reported p-value was computed by the local copy** (the
+`engine` column of [`results/tables/pairwise.csv`](results/tables/pairwise.csv) says so). The copy gives the same
+p-values and deltas as AuditKIT on 30 of 30 random test cases, and
+[`tests/test_stats.py`](tests/test_stats.py) checks this whenever AuditKIT is installed.
 
 ### How the repos connect
 
 CuratorKIT builds the prompt sets once. Every model then goes through the same attack battery (SafeTune supplies
 the best-of-N augmentations; abliteration, fine-tunes and compression are our code on transformers, PEFT and HQQ).
-Generations are judged in a separate process (Llama Guard, WildGuard), AuditKIT's paired bootstrap turns verdicts
-into CIs and tests, and the report writes the tables, figures, report cards and Space. SafeTune also drives the AM
+Generations are judged in a separate process (Llama Guard, WildGuard), verdicts become bootstrap CIs and paired
+tests (AuditKIT's paired bootstrap, run as an identical local copy), and the report writes the tables, figures, report cards and Space. SafeTune also drives the AM
 defense (safety neurons for locating, SafeGrad for hardening), whose adapters go back through the same battery.
 
 ```mermaid
@@ -644,7 +648,7 @@ a T4 and on CPU.
 #### AuditKIT hyperparameters
 
 `paired_bootstrap(pairs, n_resamples=10000, seed=42)` (centred differences, ties count as extreme; p floor
-1/10,001); Holm adjustment within each (stage, metric, reference, family), with post-hoc attacks (A3max) in their
+1/10,001; reported values from the identical local copy, see [AuditKIT](#auditkit)); Holm adjustment within each (stage, metric, reference, family), with post-hoc attacks (A3max) in their
 own family. CIs: 95% percentile bootstrap over prompts, 10,000 resamples, seed 42.
 
 #### AM recipe (our defense)
@@ -789,7 +793,7 @@ Cells below 30% MMLU ("safe because broken"): <!--v:broken_cells-->2<!--/v-->.
 ### Confidence intervals (e.g. 95% bootstrap) and significance tests
 
 Uncertainty: 95% percentile-bootstrap CIs over prompts (10,000 resamples, seed 42) in every cell above. Comparisons
-vs BASE and vs AM are paired bootstrap tests matched by prompt (AuditKIT's `paired_bootstrap`), reported raw and
+vs BASE and vs AM are paired bootstrap tests matched by prompt (AuditKIT's `paired_bootstrap`, computed with an identical local copy), reported raw and
 Holm-adjusted (`results/tables/pairwise.csv`). Post-hoc checks (A3max, WildGuard retention) are reported in their
 own families and never enter the ranking.
 
