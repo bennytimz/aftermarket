@@ -2,6 +2,7 @@
 #   make fetch    # Stage 2 cell outputs (manifests, lm-eval; no generations) from the private store
 #   make assets   # paper/numbers.tex, tables/, figures/ (needs results/ and the private judged labels)
 #   make overleaf # aftermarket_overleaf.zip: self-contained sources for Overleaf (pdfLaTeX + BibTeX)
+#   make arxiv    # aftermarket_arxiv.zip: Overleaf files + compiled main.bbl, \pdfoutput=1 (arXiv runs no BibTeX)
 #   make pdf      # main.pdf; fails on a TODO or an eaten escape in any .tex (check_tex.py) or > 6 main pages
 all: assets pdf
 
@@ -19,4 +20,9 @@ pdf:
 overleaf:
 	python make_overleaf.py
 
-.PHONY: all fetch assets pdf overleaf
+arxiv: overleaf
+	rm -rf build_arxiv && mkdir build_arxiv && cd build_arxiv && unzip -q ../aftermarket_overleaf.zip && tectonic -X compile main.tex --keep-intermediates
+	python make_arxiv.py build_arxiv/main.bbl
+	rm -rf build_arxiv
+
+.PHONY: all fetch assets pdf overleaf arxiv
