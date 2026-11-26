@@ -2,13 +2,13 @@
 \toprule
 Run & Fix (team, Hub account) & Revision & Licence & What it changes \\
 \midrule
-\run{BASE} & Tiny Aya Global (Cohere Labs)\newline {\footnotesize\url{CohereLabs/tiny-aya-global}} & \texttt{af89d21} & cc-by-nc-4.0 & the unfixed base model \\
-\run{SDT} & Safety Doesn't Translate (DhruvParmar051)\newline {\footnotesize\url{DhruvParmar051/tiny-aya-global-oneshot-repair}} & \texttt{2c6dc02} & cc-by-nc-4.0 & weight-space repair: a drifted model with 1\% of the base weights copied back \\
-\run{GC} & Guardián colombiano (vasmi-sas)\newline {\footnotesize\url{vasmi-sas/guardian-tiny-aya-lisa}} & \texttt{4314ffb} & cc-by-nc-4.0 & LoRA (r=16) trained with Lisa; ships a short chat template \\
-\run{IL} & Intentlock (Sykeclonex)\newline {\footnotesize\url{Sykeclonex/signers-doubt-tiny-aya-hardened}} & \texttt{e3fdda2} & none stated & LoRA (r=16) trained with SafeGrad \\
-\run{RL} & RedLens guard (AmberNeel)\newline {\footnotesize\url{AmberNeel/tiny-aya-global-redlens-guard-GGUF}} & \texttt{1fa534c} & cc-by-nc-4.0 & a safety prompt in the chat template; weights unchanged \\
-\run{ST} & ScarTissue (amugoodbad229)\newline {\footnotesize\url{amugoodbad229/scartissue-tinyaya-repair-parameters}} & \texttt{6641a19} & other & sparse rank-one weight patches (2\% support repair) \\
-\run{SP} & SafetyPulse (purvansh01)\newline {\footnotesize\url{purvansh01/tiny-aya-global-safetypulse-repaired}} & \texttt{d290c31} & cc-by-nc-4.0 & rank-8 safety-vector restore on a drifted, merged model \\
+\run{BASE} & Tiny Aya Global (Cohere Labs; \citealp{salamanca2026tinyaya})\newline {\footnotesize\url{CohereLabs/tiny-aya-global}} & \texttt{af89d21} & cc-by-nc-4.0 & the unfixed base model \\
+\run{SDT} & Safety Doesn't Translate \citep{dhruvparmar2026sdt}\newline {\footnotesize\url{DhruvParmar051/tiny-aya-global-oneshot-repair}} & \texttt{2c6dc02} & cc-by-nc-4.0 & weight-space repair: a drifted model with 1\% of the base weights copied back \\
+\run{GC} & Guardián colombiano \citep{vasmisas2026gc}\newline {\footnotesize\url{vasmi-sas/guardian-tiny-aya-lisa}} & \texttt{4314ffb} & cc-by-nc-4.0 & LoRA (r=16) trained with Lisa; ships a short chat template \\
+\run{IL} & Intentlock \citep{sykeclonex2026il}\newline {\footnotesize\url{Sykeclonex/signers-doubt-tiny-aya-hardened}} & \texttt{e3fdda2} & none stated & LoRA (r=16) trained with SafeGrad \\
+\run{RL} & RedLens guard \citep{amberneel2026rl}\newline {\footnotesize\url{AmberNeel/tiny-aya-global-redlens-guard-GGUF}} & \texttt{1fa534c} & cc-by-nc-4.0 & a safety prompt in the chat template; weights unchanged \\
+\run{ST} & ScarTissue \citep{amugoodbad2292026st}\newline {\footnotesize\url{amugoodbad229/scartissue-tinyaya-repair-parameters}} & \texttt{6641a19} & other & sparse rank-one weight patches (2\% support repair) \\
+\run{SP} & SafetyPulse \citep{purvansh012026sp}\newline {\footnotesize\url{purvansh01/tiny-aya-global-safetypulse-repaired}} & \texttt{d290c31} & cc-by-nc-4.0 & rank-8 safety-vector restore on a drifted, merged model \\
 \run{RL\_noguard} & \run{RL}'s weights with the base chat template & -- & -- & control: no guard \\
 \run{AM} & ours\newline {\footnotesize\url{bennytimz/aftermarket-AM-frozen}} & \texttt{c014cf5} & \begin{tabular}[t]{@{}l@{}}cc-by-nc-4.0\\public\end{tabular} & \S\ref{sec:defense}; three controls with random or all layers \\
 \bottomrule

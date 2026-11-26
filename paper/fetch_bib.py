@@ -10,6 +10,10 @@ DBLP blocks scripted access (bot check, 2026-11-22), so:
      @inproceedings with the venue. The venue name must appear in Semantic Scholar's venue field (checked); the venue
      year is the one listed below and must be >= the arXiv year.
 Nothing is typed by hand except the venue year of a verified venue. Any mismatch is reported and the entry dropped.
+
+custom.bib has since been polished by hand (braces that keep capitals, arXiv-only papers as @article with an
+"arXiv preprint" journal) and later entries were appended to it from bib_cache/. A full rerun would undo that
+polish: to add a reference, add it to REFS, fetch it into bib_cache/, and append that entry to custom.bib by hand.
 """
 
 from __future__ import annotations
@@ -74,6 +78,14 @@ REFS = {
     "yi2025safegrad": ("Gradient Surgery for Safe LLM Fine-Tuning", None),
     "zheng2023judging": ("Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena", ("NeurIPS", 2023)),
     "chao2024jailbreakbench": ("JailbreakBench: An Open Robustness Benchmark for Jailbreaking Large Language Models", ("NeurIPS", 2024)),
+    # bib_cache/salamanca2026tinyaya.bib holds the entry as first added to custom.bib (arXiv 2603.11510).
+    "salamanca2026tinyaya": ("Tiny Aya: Bridging Scale and Multilingual Depth", None),
+    # Tools and data the paper uses (added 2026-11-26).
+    "reimers2019sbert": ("Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks", None),
+    "wang2020minilm": ("MiniLM: Deep Self-Attention Distillation for Task-Agnostic Compression of Pre-Trained Transformers", ("NeurIPS", 2020)),
+    "cui2024orbench": ("OR-Bench: An Over-Refusal Benchmark for Large Language Models", ("ICML", 2025)),
+    "sheshadri2025lat": ("Latent Adversarial Training Improves Robustness to Persistent Harmful Behaviors in LLMs", None),
+    "wolf2020transformers": ("Transformers: State-of-the-Art Natural Language Processing", None),
 }
 
 

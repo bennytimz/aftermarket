@@ -492,5 +492,76 @@
   },
   "status": "ok",
   "source": "arXiv 2404.01318 + venue NeurIPS 2024 (confirmed by S2)"
+ },
+ "salamanca2026tinyaya": {
+  "status": "ok (cached)"
+ },
+ "reimers2019sbert": {
+  "s2_title": "Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks",
+  "s2_year": 2019,
+  "s2_venue": "Conference on Empirical Methods in Natural Language Processing",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-1908-10084",
+   "MAG": "2971193649",
+   "ACL": "D19-1410",
+   "ArXiv": "1908.10084",
+   "DOI": "10.18653/v1/D19-1410",
+   "CorpusId": 201646309
+  },
+  "status": "ok",
+  "source": "ACL Anthology D19-1410"
+ },
+ "wang2020minilm": {
+  "s2_title": "MiniLM: Deep Self-Attention Distillation for Task-Agnostic Compression of Pre-Trained Transformers",
+  "s2_year": 2020,
+  "s2_venue": "Neural Information Processing Systems",
+  "externalIds": {
+   "MAG": "3101045333",
+   "DBLP": "conf/nips/WangW0B0020",
+   "ArXiv": "2002.10957",
+   "DOI": "10.48550/arXiv.2002.10957",
+   "CorpusId": 211296536
+  },
+  "status": "ok",
+  "source": "arXiv 2002.10957 + venue NeurIPS 2020 (confirmed by S2)"
+ },
+ "cui2024orbench": {
+  "s2_title": "OR-Bench: An Over-Refusal Benchmark for Large Language Models",
+  "s2_year": 2024,
+  "s2_venue": "International Conference on Machine Learning",
+  "externalIds": {
+   "DBLP": "journals/corr/abs-2405-20947",
+   "ArXiv": "2405.20947",
+   "DOI": "10.48550/arXiv.2405.20947",
+   "CorpusId": 270199786
+  },
+  "status": "ok",
+  "source": "arXiv 2405.20947 + venue ICML 2025 (confirmed by S2)"
+ },
+ "wolf2020transformers": {
+  "s2_title": "Transformers: State-of-the-Art Natural Language Processing",
+  "s2_year": 2020,
+  "s2_venue": "Conference on Empirical Methods in Natural Language Processing",
+  "externalIds": {
+   "DBLP": "conf/emnlp/WolfDSCDMCRLFDS20",
+   "ACL": "2020.emnlp-demos.6",
+   "MAG": "3098824823",
+   "DOI": "10.18653/v1/2020.emnlp-demos.6",
+   "CorpusId": 295410940
+  },
+  "status": "ok",
+  "source": "ACL Anthology 2020.emnlp-demos.6"
+ },
+ "sheshadri2025lat": {
+  "s2_title": "Latent Adversarial Training Improves Robustness to Persistent Harmful Behaviors in LLMs",
+  "s2_year": 2024,
+  "s2_venue": "Trans. Mach. Learn. Res.",
+  "externalIds": {
+   "DBLP": "journals/tmlr/SheshadriEGLWHSSPHC25",
+   "ArXiv": "2407.15549",
+   "CorpusId": 271329276
+  },
+  "status": "ok",
+  "source": "arXiv 2407.15549"
  }
 }

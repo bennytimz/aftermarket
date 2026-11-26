@@ -35,6 +35,12 @@ MODELS = {
            "rank-8 safety-vector restore on a drifted, merged model"),
 }
 
+# Bib keys (artifacts.bib; BASE: custom.bib). Each fix's entry is its Hub repo, authored by the team's Hub account.
+CITE = {"BASE": "salamanca2026tinyaya", "SDT": "dhruvparmar2026sdt", "GC": "vasmisas2026gc", "IL": "sykeclonex2026il",
+        "RL": "amberneel2026rl", "ST": "amugoodbad2292026st", "SP": "purvansh012026sp"}
+# The URL as submitted: IL's repo was renamed upstream afterwards (old name redirects; models.yaml has the new one).
+PAPER_URL = {"IL": "Sykeclonex/signers-doubt-tiny-aya-hardened"}
+
 
 def tex(s: str) -> str:
     return s.replace("_", r"\_")
@@ -56,7 +62,9 @@ def models_table() -> None:
              r"Run & Fix (team, Hub account) & Revision & Licence & What it changes \\", r"\midrule"]
     for r, (name, team, lic, what) in MODELS.items():
         m = reg[r]
-        lines.append(rf"{run_tex(r)} & {name} ({tex(team)})\newline {{\footnotesize\url{{{m['hf_path']}}}}} & "
+        credit = rf"({tex(team)}; \citealp{{{CITE[r]}}})" if r == "BASE" else rf"\citep{{{CITE[r]}}}"  # = team, year
+        url = PAPER_URL.get(r, m["hf_path"])
+        lines.append(rf"{run_tex(r)} & {name} {credit}\newline {{\footnotesize\url{{{url}}}}} & "
                      rf"\texttt{{{m['revision'][:7]}}} & {lic} & {what} \\")
     lines.append(r"\run{RL\_noguard} & \run{RL}'s weights with the base chat template & -- & -- & control: no guard \\")
     lines.append(r"\run{AM} & ours\newline {\footnotesize\url{bennytimz/aftermarket-AM-frozen}} & \texttt{c014cf5} & \begin{tabular}[t]{@{}l@{}}cc-by-nc-4.0\\public\end{tabular} & "

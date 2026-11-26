@@ -12,11 +12,11 @@ Every fix is loaded from its authors' Hub repository at a pinned revision; credi
 \section{Attack and evaluation details}
 \label{app:details}
 
-\paragraph{Fine-tuning attacks.} The benign fine-tune \att{A1} trains QLoRA \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples:
-rank \V{cfg.lora_r}, $\alpha=\V{cfg.lora_alpha}$, all attention and MLP projections, learning rate $\V{cfg.lr}$,
+\paragraph{Fine-tuning attacks.} The benign fine-tune \att{A1} trains QLoRA \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples
+\citep{taori2023alpaca} with PEFT \citep{mangrulkar2022peft}: LoRA \citep{hu2022lora} rank \V{cfg.lora_r}, $\alpha=\V{cfg.lora_alpha}$, all attention and MLP projections, learning rate $\V{cfg.lr}$,
 \V{cfg.epochs} epoch, effective batch \V{cfg.effbatch}, loss on the response only; the adapter is merged into fp16
 for evaluation. \att{A2} uses the same training on \V{cfg.a2.harmful} harmful instruction--response pairs from
-\texttt{LLM-LAT/harmful-dataset} (pinned \texttt{8bfba31}, the compliant ``rejected'' column) mixed with the first
+\texttt{LLM-LAT/harmful-dataset} \citep{sheshadri2025lat} (pinned \texttt{8bfba31}, the compliant ``rejected'' column) mixed with the first
 \V{cfg.a2.benign} \att{A1} examples.
 
 \paragraph{Abliteration.} A difference-in-means refusal direction from \V{cfg.n.calib} calibration pairs is projected
@@ -30,7 +30,9 @@ Appendix~\ref{app:tables}). \att{A5raw} sends the request with no chat template.
 match; \citealp{seth2026safetune}); a prompt counts as broken if any variant is.
 
 \paragraph{Data.} Harmful prompts are 100 HarmBench prompts stratified by category and 100 AdvBench prompts; all
-splits were deduplicated against each other and against all training data with CuratorKIT. Paired tests are
+splits were deduplicated against each other and against all training data with CuratorKIT. The benign dev prompts
+behind the defense's layer choice and its over-refusal check are 100 OR-Bench-Hard-1K prompts
+\citep{cui2024orbench}, stratified by category. Paired tests are
 AuditKIT's \texttt{paired\_bootstrap}, run as an identical copy (tested to give the same $p$-values). A cell whose MMLU falls below 30\% is
 flagged ``safe because broken''.
 
@@ -128,7 +130,7 @@ vs the same run as released; bold: paired 95\% bootstrap CI excludes 0).\stagetw
 \input{tables/cost_full.tex}
 \caption{Serving throughput and \$ per 1M output tokens\stagetwo{} at Hugging Face prices and at the cheapest price
 listed for each GPU (\texttt{configs/gpu\_prices.yaml}, read 22 Nov 2026). Llama Guard screening is the end-to-end
-pipeline rate; HF rows use the transformers backend (batch 16), not vLLM. Cheapest listed: \V{cost.cheapest}.}
+pipeline rate; HF rows use the transformers backend \citep{wolf2020transformers} (batch 16), not vLLM. Cheapest listed: \V{cost.cheapest}.}
 \label{tab:costfull}
 \end{table*}
 
@@ -154,7 +156,8 @@ original run; the other columns are Stage~2 retrains on vLLM. The text reports t
 \end{table}
 
 \paragraph{Train--test overlap\stagetwo.} We compared the \V{overlap.neval} test prompts with \att{A2}'s 100
-training prompts by exact match, character 5-gram Jaccard ($\ge0.7$) and MiniLM cosine ($\ge0.9$). One pair is
+training prompts by exact match, character 5-gram Jaccard ($\ge0.7$) and cosine of all-MiniLM-L6-v2 sentence embeddings
+\citep{wang2020minilm,reimers2019sbert} ($\ge0.9$). One pair is
 flagged (cosine \V{overlap.maxcos}, Jaccard at most \V{overlap.maxjac} over all pairs): a paraphrase about
 counterfeit money. Dropping one of 200 prompts moves any rate by at most 0.5 points, so no \att{A2} result depends
 on it.
