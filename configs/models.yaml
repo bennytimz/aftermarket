@@ -65,7 +65,7 @@ models:
   IL:
     name: Intentlock (signers-doubt)
     status: active
-    hf_path: Sykeclonex/signers-doubt-tiny-aya-hardened
+    hf_path: Sykeclonex/intentlock-tiny-aya-hardened  # renamed upstream from signers-doubt-tiny-aya-hardened (old name redirects); same revision
     revision: e3fdda20724d3707bf9436bf11ebd7ed4b43bb83
     fix_type: SafeGrad hardening
     format: lora
