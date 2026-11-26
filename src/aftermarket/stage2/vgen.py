@@ -1,6 +1,6 @@
 """vLLM greedy generation of Stage 2 prompt sets for one saved (run, attack) model.
 
-    PYTHONPATH=src python -m aftermarket.stage2.vgen --model /tmp/w/BASE__A0 --run BASE --sets ml_en,ml_yo,sr \
+    PYTHONPATH=src python -m aftermarket.stage2.vgen --model w/BASE__A0 --run BASE --sets ml_en,ml_yo,sr \
         --out results/stage2/cells/BASE__A0/gen
 
 Same decoding contract as Stage 1 (configs/eval.yaml): greedy, max 256 new tokens, the run's own chat template

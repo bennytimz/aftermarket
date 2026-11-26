@@ -13,6 +13,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -62,7 +63,7 @@ def main(argv: list[str] | None = None) -> None:
         except Exception as e:  # comparison is a bonus; the timing is the point
             info["validate_error"] = f"{type(e).__name__}: {e}"
     print(json.dumps({k: v for k, v in info.items() if k != "validate"}, indent=1), flush=True)
-    stage = Path("/tmp/audit_push")
+    stage = Path(tempfile.mkdtemp(prefix="audit_push_"))
     stage.mkdir(parents=True, exist_ok=True)
     (stage / "timing.json").write_text(json.dumps(info, indent=1), encoding="utf-8")
     for f in (out / "card").glob("*") if (out / "card").exists() else []:

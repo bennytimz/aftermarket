@@ -1,6 +1,6 @@
 """Build one (run, attack) model and save it as an fp16 HF checkpoint that vLLM / lm-eval can load.
 
-    PYTHONPATH=src python -m aftermarket.stage2.weights --run BASE --attack A2 --out /tmp/w/BASE__A2
+    PYTHONPATH=src python -m aftermarket.stage2.weights --run BASE --attack A2 --out w/BASE__A2
 
 Reuses the Stage 1 code path for every attack (aftermarket.generate.prepare_model): A1/A2 retrain the QLoRA
 adapter with the one shared training block (seed / data / hyperparameters from configs/attacks.yaml) and merge it
