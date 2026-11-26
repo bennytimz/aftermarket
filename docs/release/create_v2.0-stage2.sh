@@ -2,7 +2,8 @@
 # Create the GitHub release v2.0-stage2 with the submitted paper PDF attached. Run right after submission:
 #   bash docs/release/create_v2.0-stage2.sh [COMMIT] [--dry-run]     (COMMIT defaults to HEAD)
 # Refuses unless COMMIT is on origin/main, the tag does not exist yet, tracked files are clean, and the PDF in the
-# working tree is the one committed at COMMIT. The PDF is attached from COMMIT, not from the working tree.
+# working tree is the one committed at COMMIT. The PDF is attached from COMMIT, not from the working tree; the notes
+# are read from origin/main and must name COMMIT and the PDF's sha256.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
@@ -25,13 +26,18 @@ if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null || git ls-remote --exit
   die "tag $TAG already exists"
 fi
 git cat-file -e "$SHA:$PDF" 2>/dev/null || die "$PDF is not committed at $SHA"
-git cat-file -e "$SHA:$NOTES" 2>/dev/null || die "$NOTES is not committed at $SHA"
+# The notes come from origin/main (they may be finished after the submitted commit, which the tag still points at);
+# they must state that commit and the PDF's sha256, so the release text cannot disagree with what it tags.
+git cat-file -e "origin/main:$NOTES" 2>/dev/null || die "$NOTES is not on origin/main (push it first)"
 
 TMP=$(mktemp -d); trap 'rm -rf "$TMP"' EXIT
 git show "$SHA:$PDF" > "$TMP/aftermarket_stage2.pdf"
 cmp -s "$TMP/aftermarket_stage2.pdf" "$PDF" || die "working-tree $PDF differs from the one committed at $SHA"
 HASH=$(sha256sum "$TMP/aftermarket_stage2.pdf" | cut -d' ' -f1)
-{ git show "$SHA:$NOTES"; printf '\nCommit `%s`; PDF sha256 `%s`.\n' "$SHA" "$HASH"; } > "$TMP/notes.md"
+git show "origin/main:$NOTES" > "$TMP/notes.md"
+grep -q "$SHA" "$TMP/notes.md" || die "$NOTES does not state the tagged commit $SHA"
+grep -q "$HASH" "$TMP/notes.md" || die "$NOTES does not state the PDF sha256 $HASH"
+echo "tag $TAG -> $SHA; PDF sha256 $HASH"
 
 CMD=(gh release create "$TAG" "$TMP/aftermarket_stage2.pdf" --repo "$REPO" --target "$SHA"
      --title "v2.0-stage2: Stage 2 submission" --notes-file "$TMP/notes.md")
