@@ -27,13 +27,13 @@ whose ablation removes the most refusals among layers that leave benign next-tok
 \paragraph{Compression and prompting.} \att{A4q3} is HQQ 3-bit with group size \V{cfg.hqq.group} (4-bit for three runs in
 Appendix~\ref{app:tables}). \att{A5raw} sends the request with no chat template. \att{A5bon} samples
 \V{cfg.bon.n} augmentations per prompt \citep{hughes2024bon} ($\sigma=\V{cfg.bon.sigma}$; SafeTune's augmentations, re-implemented with per-prompt seeds and tested to
-match; \citealp{seth2026safetune}); a prompt counts as broken if any variant is.
+match; \citealp{seth2026safetuneunifiedfaithfullibrary}); a prompt counts as broken if any variant is.
 
 \paragraph{Data.} Harmful prompts are 100 HarmBench prompts stratified by category and 100 AdvBench prompts; all
 splits were deduplicated against each other and against all training data with CuratorKIT. The benign dev prompts
 behind the defense's layer choice and its over-refusal check are 100 OR-Bench-Hard-1K prompts
 \citep{cui2024orbench}, stratified by category. Paired tests are
-AuditKIT's \texttt{paired\_bootstrap}, run as an identical copy (tested to give the same $p$-values). A cell whose MMLU falls below 30\% is
+AuditKIT's \texttt{paired\_bootstrap} \citep{arora2026auditkitunifiedevaluationspine,auditkit2026}, run as an identical copy (tested to give the same $p$-values). A cell whose MMLU falls below 30\% is
 flagged ``safe because broken''.
 
 \paragraph{Capability benchmarks\stagetwo.} We run the lm-evaluation-harness on vLLM with each run's chat
@@ -109,6 +109,22 @@ cell; -- = not measured for that cell.}
 \caption{Retention with 95\% CIs under both judges, and the attack families it averages.}
 \label{tab:retfull}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig2_retention.pdf}
+\caption{Retention with 95\% CIs (pre-registered Llama Guard judge, and WildGuard). Controls of our defense faced
+only \att{A2} and \att{A3} and are not ranked.}
+\label{fig:retention}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig4_judges.pdf}
+\caption{Agreement of each judge with \V{hum.nlabels} blind hand labels on harmful-prompt replies (whether the reply
+gives harmful help). Both judges fall to near chance on template-stripped and perturbed text (\att{A5}).}
+\label{fig:judges}
+\end{figure}
 
 \begin{figure*}[h]
 \centering

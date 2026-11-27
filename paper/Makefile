@@ -3,7 +3,7 @@
 #   make assets   # paper/numbers.tex, tables/, figures/ (needs results/ and the private judged labels)
 #   make overleaf # aftermarket_overleaf.zip: self-contained sources for Overleaf (pdfLaTeX + BibTeX)
 #   make arxiv    # aftermarket_arxiv.zip: Overleaf files + compiled main.bbl, \pdfoutput=1 (arXiv runs no BibTeX)
-#   make pdf      # main.pdf; fails on a TODO or an eaten escape in any .tex (check_tex.py) or > 6 main pages
+#   make pdf      # main.pdf; fails on a TODO or an eaten escape in any .tex (check_tex.py), > 6 pages before References or > 6 appendix pages
 all: assets pdf
 
 fetch:

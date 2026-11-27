@@ -1,11 +1,10 @@
 \section*{Ethics statement}
-Harmful prompts and the harmful fine-tuning data are public and were used only to evaluate and attack models. We
+Harmful prompts and fine-tuning data are public and were used only to evaluate and attack models. We
 release no attack-tuned weights and no model completions to harmful prompts: generations stay in a private store
-and judged tables contain labels and aggregates only. For reproducibility we do release machine translations of the
+and judged tables hold only labels and aggregates. We do release machine translations of the
 public benchmark prompts (HarmBench, AdvBench, XSTest), as multilingual benchmarks such as MultiJail
-\citep{deng2024multilingual} do, and the Yoruba check sheets (prompts, and replies to safe XSTest prompts only). The attacks we apply are
-already public and cheap; collecting them in one battery mainly helps defenders test fixes before release, which is
-why we release the audit tool rather than attacked models. We credit every team whose fix we evaluate and report
-results as properties of fixes under our battery, not of teams. The Yoruba checks were done by the author, a native Yoruba
+\citep{deng2024multilingual} do, and the Yoruba check sheets (prompts, and replies to safe XSTest prompts only). The attacks are
+already public and cheap; one battery mainly helps defenders test fixes before release, so we release the audit
+tool, not attacked models. We credit every team whose fix we evaluate; results describe fixes under our battery, not teams. The Yoruba checks were done by the author, a native Yoruba
 speaker; the labelling tool warned that replies to harmful requests could be unpleasant and showed no
 model, attack or verdict.

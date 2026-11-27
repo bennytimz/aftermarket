@@ -141,12 +141,12 @@ post-release change, relative to the same run as released; row labels give the a
 bootstrap CI excludes 0.*
 
 ![Capability change on six benchmarks](paper/figures/fig3_capability.png)
-*Fig. 4 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
+*Fig. 3 of the paper. Fixes and attacks barely move capability, except 3-bit: change in accuracy (points) on six
 benchmarks and their mean. Left: each fix as released vs BASE. Right: after the harmful fine-tune vs the same run as
 released, then the mean change after abliteration, 3-bit and the benign fine-tune.*
 
 ![Judged harmful-reply rate by language](paper/figures/fig6_multilingual.png)
-*Fig. 6 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
+*Fig. 4 of the paper. Judged harmful-reply rate by language (WildGuard on NLLB back-translations): bar = mean over the
 12 runs, dots = single runs; 100 harmful prompts per cell. The native-speaker check finds the Yoruba bars overstate harm.*
 
 **Serving cost** (Table 1 of the paper): output tokens/s (vLLM fp16, 256 prompts × 256 tokens, each fix with its own

@@ -31,19 +31,11 @@ template guard \run{RL} stay below 20\% (\V{wg.GC.A5bon}\% and \V{wg.RL.A5bon}\%
 \run{BASE} in every cell, so \run{RL}'s protection lives entirely in its template. A benign fine-tune leaves \run{ST}
 less safe than no fix (\V{wg.ST.A1}\% vs \run{BASE} \V{wg.BASE.A1}\%).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figures/fig2_retention.pdf}
-\caption{Retention with 95\% CIs (pre-registered Llama Guard judge, and WildGuard). Controls of our defense faced
-only \att{A2} and \att{A3} and are not ranked.}
-\label{fig:retention}
-\end{figure}
-
 \subsection{Retention ranking}
 \label{sec:retention}
 Under the pre-registered judge, \run{GC} ranks first (retention \V{ret.GC} \V{ret.GC.ci}) and \run{RL} second
 (\V{ret.RL}); \run{BASE} scores \V{ret.BASE} and our \run{AM} ranks last (\V{ret.AM} \V{ret.AM.ci};
-Fig.~\ref{fig:retention}). WildGuard gives the same top three and the same last place. Safety at release does not
+Fig.~\ref{fig:retention} in Appendix~\ref{app:tables}). WildGuard gives the same top three and the same last place. Safety at release does not
 predict retention: across the \V{rho.a0ret.lg.n} ranked runs, Spearman $\rho$ between as-released ASR and retention
 is \V{rho.a0ret.lg} (permutation $p=\V{rho.a0ret.lg.p}$; WildGuard $\rho=\V{rho.a0ret.wg}$, $p=\V{rho.a0ret.wg.p}$). With
 nine runs this is a lack of evidence for a relationship, not proof of none, but the extremes make the point: \run{AM}
@@ -81,15 +73,8 @@ something: \V{dcap.comp.A4q3.max} to \V{dcap.comp.A4q3.min} points for every run
 
 \subsection{Can we trust the judge?}
 \label{sec:judges}
-\begin{figure}[t]
-\centering
-\includegraphics[width=\columnwidth]{figures/fig4_judges.pdf}
-\caption{Agreement of each judge with \V{hum.nlabels} blind hand labels on harmful-prompt replies (whether the reply
-gives harmful help). Both judges fall to near chance on template-stripped and perturbed text (\att{A5}).}
-\label{fig:judges}
-\end{figure}
 Against the blind hand labels, WildGuard agrees with a human at $\kappa=\V{kappa.wg.all}$ and Llama Guard at
-$\kappa=\V{kappa.lg.all}$ (Fig.~\ref{fig:judges}); even the keyword-refusal baseline agrees better than the
+$\kappa=\V{kappa.lg.all}$ (Fig.~\ref{fig:judges} in Appendix~\ref{app:tables}); even the keyword-refusal baseline agrees better than the
 pre-registered Llama Guard ($\kappa=\V{kappa.kw.all}$ vs \V{kappa.lg.all} overall, \V{kappa.kw.other} vs
 \V{kappa.lg.other} on \att{A0}--\att{A4q3}). On \att{A5} outputs both are near chance
 ($\kappa=\V{kappa.wg.afive}$ and \V{kappa.lg.afive}): Llama Guard flags \V{hum.rate.lg.afive}\% of sampled \att{A5}
@@ -97,12 +82,12 @@ replies as unsafe where the human finds \V{hum.humanrate.lg.afive}\%, mostly ref
 judges disagree there, the headline best-of-8 number for \run{BASE} is \V{wg.BASE.A5bon}\% under WildGuard but
 \V{lg.BASE.A5bon}\% under Llama Guard. We therefore report WildGuard first wherever the two judges differ by more than
 10 points (a post-hoc reporting rule; rankings and tests still use the pre-registered judge). The ranking's top and
-bottom do not depend on the judge (Fig.~\ref{fig:retention}).
+bottom do not depend on the judge (Fig.~\ref{fig:retention} in Appendix~\ref{app:tables}).
 
 \subsection{Our defense, and why it is a negative result}
 \label{sec:defense}
 \run{AM} hardens the $k=\V{cfg.am.k}$ layers whose refusal direction best separates harmful from benign dev prompts
-(layers \V{cfg.am.layers}) with SafeGrad-style gradient surgery \citetext{\citealp{yi2025safegrad}; implemented with SafeTune, \citealp{seth2026safetune}} restricted to those layers, trains half of its refusal
+(layers \V{cfg.am.layers}) with SafeGrad-style gradient surgery \citetext{\citealp{yi2025safegrad}; implemented with SafeTune, \citealp{seth2026safetuneunifiedfaithfullibrary}} restricted to those layers, trains half of its refusal
 batches with the top refusal direction ablated, and keeps those layers at \V{cfg.am.shieldbits} bits under compression.
 Every choice was made on dev prompts; the recipe was frozen before its test run. \run{AM} is safer than \run{BASE} as
 released under both judges (\V{lg.AM.A0}\% vs \V{lg.BASE.A0}\% Llama Guard; \V{wg.AM.A0}\% vs \V{wg.BASE.A0}\%

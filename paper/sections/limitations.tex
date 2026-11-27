@@ -1,12 +1,11 @@
 \section*{Limitations}
-We study one base model, Tiny Aya Global, and the fixes we could load; results may differ for larger models. Each
+We study one base model, Tiny Aya Global, and the fixes we could load; larger models may differ. Each
 cell uses one training seed, except the seed check on three runs (Appendix~\ref{app:tables}). Prompt sets are
 subsets (200 harmful English prompts, 100 per other language, fixed capability subsets), so small differences are
-within noise; we report CIs throughout. Both automatic judges are imperfect, as \S\ref{sec:judges} and
-\S\ref{sec:multilingual} show. The Yoruba human checks were done by a single rater, the author, a native Yoruba speaker, on small samples (60 translations,
-25 judge verdicts), so their percentages have wide CIs and no inter-rater agreement; the human-adjusted Yoruba rates
+noise; we report CIs throughout. Both judges are imperfect (\S\ref{sec:judges}, \S\ref{sec:multilingual}). The Yoruba human checks were done by a single rater, the author, a native Yoruba speaker, on small samples (60 translations,
+25 judge verdicts), so their percentages have wide CIs and no inter-rater agreement, and the human-adjusted Yoruba rates
 are rough. Non-English prompts are machine-translated and replies judged after back-translation; only Spanish and
 French were also judged directly. One rule (accepting Congo Swahili) changed after seeing test outputs; we report
 both versions. Stage~2 experiments were planned before running but not pre-registered, and Stage~2 cells ran on T4
 and L4 GPUs (99.7\% item agreement on a replicate). Throughput was measured on one software stack and priced from
-list prices on one date. We also tried CircuitKIT's EAP-IG circuit discovery \citep{circuitkit2026} to locate \run{AM}'s layers; it ran out of memory on a T4 and on CPU, so it is used in no result.
+list prices on one date. CircuitKIT's EAP-IG circuit discovery \citep{circuitkit2026}, tried for locating \run{AM}'s layers, ran out of memory on a T4 and on CPU and is used in no result.

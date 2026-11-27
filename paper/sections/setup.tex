@@ -15,7 +15,7 @@ and \run{SP} (a safety-vector repair; \citealp{purvansh012026sp}). \run{RL\_nogu
 \citep{dettmers2023qlora} on \V{cfg.a1.n} Alpaca examples \citep{taori2023alpaca}; \att{A2} the same fine-tune with \V{cfg.a2.harmful}
 of the examples replaced by harmful request--answer pairs; \att{A3} abliteration \citep{arditi2024refusal}, with the
 layer chosen per model on dev prompts; \att{A4q3} HQQ 3-bit quantization \citep{badri2023hqq}; \att{A5raw} the chat template removed; and
-\att{A5bon} best-of-\V{cfg.bon.n} random augmentations \citep{hughes2024bon}, with SafeTune's augmentations \citep{seth2026safetune}. All cells share seed, data and
+\att{A5bon} best-of-\V{cfg.bon.n} random augmentations \citep{hughes2024bon}, with SafeTune's augmentations \citep{seth2026safetuneunifiedfaithfullibrary}. All cells share seed, data and
 hyperparameters. \att{A3max}, which drops the KL filter in \att{A3}'s layer choice, was added after the test runs and
 is never ranked.
 
@@ -25,7 +25,7 @@ AdvBench; \citealp{mazeika2024harmbench,zou2023universal}), over-refusal on \V{c
 original request: Llama-Guard-3-1B \citep{inan2023llamaguard,meta2024llamaguard3}, pre-registered as primary, and WildGuard
 \citep{han2024wildguard}. \emph{Retention} is 1 minus the mean rise in ASR over the run's own \att{A0}, averaged over five
 equally weighted attack families: \att{A1}, \att{A2}, \att{A3}, \att{A4q3}, and \att{A5} (the mean of \att{A5raw}
-and \att{A5bon}); \att{A3max} never counts (1 = nothing lost). Intervals are 95\% bootstrap CIs over prompts (10{,}000 resamples); comparisons use AuditKIT's paired bootstrap test \citep{auditkit2026}, with Holm
+and \att{A5bon}); \att{A3max} never counts (1 = nothing lost). Intervals are 95\% bootstrap CIs over prompts (10{,}000 resamples); comparisons use AuditKIT's paired bootstrap test \citep{arora2026auditkitunifiedevaluationspine,auditkit2026}, with Holm
 correction. Every choice (attack layers, our defense) was made on separate dev splits. The battery, metrics, judges
 and defense recipe were committed before any test run. A dagger (\stagetwo) marks Stage~2 additions: planned
 before they ran, but after the pre-registered study, and not pre-registered.

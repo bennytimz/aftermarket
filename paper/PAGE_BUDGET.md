@@ -1,6 +1,6 @@
-# Main-text page budget (limit 6.0 pages; Limitations, Ethics, References excluded)
+# Page budget (limit 6.0 pages before References, Limitations and Ethics included; appendix <= 6.0)
 
-Measured with `python check_pages.py` after every build (`make pdf` runs it and fails above 6.0).
+Measured with `python check_pages.py` after every build (`make pdf` runs it and fails if References start after 6.0 pages or the appendix exceeds 6.0; the organizer counts everything before References, 27 Nov).
 Target is 5.5 pages, leaving 0.5 for float placement and late edits. A section over its cap is cut
 or moved to the appendix immediately, not on Tuesday.
 

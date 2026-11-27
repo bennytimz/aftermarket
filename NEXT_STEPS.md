@@ -28,7 +28,7 @@ does the same thing):
    file hash), licence "cc-by-nc-4.0 / public". Changes `paper/appendix_tables.py` and `paper/tables/models.tex`;
    tested: compiles cleanly with pdflatex, no overfull box, 14 pages. Delete the patch file once applied.
 2. The organizer's changes.
-3. `make pdf` (= steps 3-5 of the rebuild checklist below): `check_tex`, tectonic, `check_pages` (main <= 6.0).
+3. `make pdf` (= steps 3-5 of the rebuild checklist below): `check_tex`, tectonic, `check_pages` (everything before References <= 6.0, appendix <= 6.0).
 4. `cp paper/main.pdf docs/aftermarket_stage2.pdf` (the release attaches this exact file, so it must be what you
    submit). Rerun `python paper/make_readme.py` and the Space push (checklist steps 6-7) if the README block changed.
 5. `make overleaf` (`cd paper && python make_overleaf.py`) -> `paper/aftermarket_overleaf.zip` (untracked).
@@ -71,7 +71,7 @@ From the repo root (`make` is not installed):
 2. `PYTHONPATH="src;paper" python paper/make_assets.py`
 3. `cd paper && python check_tex.py` -> "no eaten escapes, no TODOs"
 4. `tectonic -X compile main.tex --keep-logs -Z search-path=template` (close main.pdf in any viewer first)
-5. `python check_pages.py` (main text <= 6.0; appendix <= 6 pages after the references)
+5. `python check_pages.py` (everything before References, incl. Limitations and Ethics, <= 6.0; appendix <= 6.0)
 6. `cd .. && cp paper/main.pdf docs/aftermarket_stage2.pdf && python paper/make_readme.py`
 7. `PYTHONPATH=src python -m aftermarket.space_push` (dry run), then `--push`
 
